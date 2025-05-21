@@ -1,0 +1,105 @@
+@charset "UTF-8";
+
+@font-face {
+    font-family: 'GongGothicMedium';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/GongGothicMedium.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "GongGothicMedium";
+}
+
+#map {
+	position: relative;
+	width:100vw;
+	height:92vh;
+	z-index: 1;
+}
+
+#toggle-info-btn {
+    border-radius : 0 20px 20px 0; 
+    max-height: 80px;
+}
+
+
+#tour-info {
+    width: 300px;
+    max-width: 40vw; /* 최대 너비 제한 */
+    min-width: 150px; /* 최소 너비 설정 */
+}
+
+#route-info {
+	position: absolute;
+	width: 250px;
+	height: 75vh;
+    max-width: 20vw; /* 최대 너비 제한 */
+    min-width: 200px; /* 최소 너비 설정 */
+	top:0;
+	right:0;
+	margin-top: 10vh;
+	z-index:1;
+}
+
+#route-container {
+	width: 100%;
+}
+
+#landmarkName {
+	color: var(--bs-blue);
+}
+
+#landmarkURL {
+    text-overflow: clip;
+}
+
+#favorite:hover {
+    cursor: pointer;
+}
+
+#addRouteButton {
+	width: auto;
+	align-self: flex-end;
+}
+
+#deleteRouteButton {
+	width: auto;
+	display: none;
+	align-self: flex-end;
+}
+
+#getRouteButton {
+	width: auto;
+	margin: 10px;
+	align-self: flex-end;
+}
+
+#saveRouteButton {
+	width: auto;
+	margin: 10px;
+	align-self: flex-start;
+}
+
+.form-select:hover {
+    cursor: pointer;
+}
+
+.bi-star-fill {
+    stroke: gray;
+    stroke-width: 1;
+}
+
+.bi-star {
+    stroke: gray;
+    stroke-width: 1;
+}
+
+.filters {
+    position: absolute;
+    z-index: 2;
+    right: 0;
+}

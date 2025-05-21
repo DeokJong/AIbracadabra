@@ -1,0 +1,20 @@
+package com.ssafy.restcontroller;
+
+import com.ssafy.model.dto.request.LoginRequest;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+
+@RestController
+@RequestMapping("/api/v1/auth")
+public class RestAuthControllerImpl implements RestAuthController {
+
+	@Override
+	public void loginForSwagger(LoginRequest loginRequest) {
+	}
+
+	@Override
+	public void logoutForSwagger() {
+	}
+
+}

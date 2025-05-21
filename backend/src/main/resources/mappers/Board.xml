@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.model.dao.BoardDao">
+
+	<resultMap id="boardMap"
+		type="com.ssafy.model.dto.domain.Board">
+		<!-- PK -->
+		<id column="bno" property="bno" jdbcType="INTEGER" />
+		<!-- 내부 로직용 회원번호 -->
+		<result column="mno" property="mno" jdbcType="INTEGER" />
+		<!-- 게시판 타입 -->
+		<result column="board_type" property="boardType"
+			jdbcType="VARCHAR" />
+		<!-- 작성자 이름 -->
+		<result column="author" property="author" jdbcType="VARCHAR" />
+		<!-- 조회수 -->
+		<result column="views" property="views" jdbcType="INTEGER" />
+		<!-- 질문 제목 -->
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<!-- 질문 내용 -->
+		<result column="content" property="content"
+			jdbcType="LONGVARCHAR" />
+		<!-- 작성일시 -->
+		<result column="created_date" property="createdDate"
+			jdbcType="TIMESTAMP" />
+		<!-- 수정 완료일시 -->
+		<result column="updated_date" property="updatedDate"
+			jdbcType="TIMESTAMP" />
+		<!-- 공개 여부 -->
+		<result column="visibility" property="visibility"
+			jdbcType="VARCHAR" />
+		<collection property="comments"
+			ofType="com.ssafy.model.dto.domain.Comment" resultMap="commentMap"
+			columnPrefix="c_" />
+	</resultMap>
+
+	<!-- 댓글 테이블 -->
+	<resultMap id="commentMap"
+		type="com.ssafy.model.dto.domain.Comment">
+		<id column="cno" property="cno" />
+		<result column="bno" property="bno" />
+		<result column="mno" property="mno" />
+		<result column="author" property="author" />
+		<result column="content" property="content" />
+		<result column="created_date" property="createdDate" />
+		<result column="updated_date" property="updatedDate" />
+	</resultMap>
+
+
+	<insert id="add"
+		parameterType="com.ssafy.model.dto.domain.Board"
+		useGeneratedKeys="true" keyProperty="bno" keyColumn="bno">
+		INSERT INTO boards
+		(mno, board_type,author, title, content, visibility)
+		VALUES
+		(#{mno},
+		#{boardType},#{author} ,#{title}, #{content}, #{visibility})
+	</insert>
+
+	<!-- 댓글 추가하기 -->
+	<insert id="addComment"
+		parameterType="com.ssafy.model.dto.domain.Comment"
+		useGeneratedKeys="true" keyProperty="cno" keyColumn="cno">
+		INSERT INTO
+		comments
+		(bno, mno, author, content, created_date)
+		VALUES
+		(#{bno},
+		#{mno}, #{author}, #{content}, NOW())
+	</insert>
+	
+	<!-- 댓글 삭제하기 -->
+	<delete id="removeComment" parameterType="int">
+		DELETE FROM comments
+		where cno=#{cno}
+	
+	</delete>
+	
+	<!-- 댓글 수정하기 -->
+	<update id="setComment" parameterType="com.ssafy.model.dto.domain.Comment" >
+		update comments 
+		set content=#{content},
+		updated_date = NOW()
+		where cno=#{cno}
+	
+	</update>
+	
+	<!-- 댓글 하나 가져오기 수정이나 삭제할 때 체크용도로 사용 -->
+	<select id="getCommentCno" parameterType="com.ssafy.model.dto.domain.Comment" resultMap="commentMap">
+		select * from comments
+		where cno = #{cno}
+	</select>
+
+
+	<!-- 단일 게시글 조회 댓글 테이블이랑 조인해서 댓글들을 list형태로 저장 collection 사용 -->
+	<select id="getBoardDetail" parameterType="int"
+		resultMap="boardMap">
+		SELECT
+		b.bno AS bno,
+		b.mno AS mno,
+		b.board_type AS board_type,
+		b.author AS author,
+		b.views AS views,
+		b.title AS title,
+		b.content AS content,
+		b.created_date AS created_date,
+		b.updated_date AS updated_date,
+		b.visibility AS visibility,
+
+		c.cno AS c_cno,
+		c.bno AS c_bno,
+		c.mno AS c_mno,
+		c.author AS c_author,
+		c.content AS c_content,
+		c.created_date AS c_created_date,
+		c.updated_date AS c_updated_date
+		FROM boards b
+		LEFT JOIN
+		comments c ON b.bno = c.bno
+		WHERE b.bno = #{bno}
+	</select>
+
+
+
+	<!-- 이거는 수정 페이지로 이동할 떄해당 게시물만 가져오는거임 댓글은 굳이 안가져와도 됨 -->
+	<select id="getBoardBno" parameterType="int"
+		resultMap="boardMap">
+		SELECT *
+		FROM boards
+		where bno=#{bno}
+	</select>
+
+	<!-- 제목으로 검색 -->
+	<select id="getByTitle" parameterType="string"
+		resultMap="boardMap">
+		SELECT *
+		FROM boards
+		WHERE title LIKE CONCAT('%', #{title},
+		'%')
+	</select>
+
+	<!-- 전체 게시글 조회 -->
+	<select id="getAllBoards" resultMap="boardMap">
+		SELECT *
+		FROM boards
+		ORDER BY
+		bno DESC
+	</select>
+
+
+	<!-- 게시글 수정 -->
+	<update id="set"
+		parameterType="com.ssafy.model.dto.domain.Board">
+		UPDATE boards
+		SET title = #{title},
+		content = #{content},
+		views = #{views},
+		visibility = #{visibility},
+		updated_date = NOW()
+		WHERE bno = #{bno}
+	</update>
+
+	<!-- 게시글 삭제 (하나) -->
+	<delete id="remove" parameterType="int">
+		DELETE FROM boards
+		WHERE bno =
+		#{bno}
+	</delete>
+
+	<!-- 게시글 삭제 (회원 전체) -->
+	<delete id="removeAll" parameterType="int">
+		DELETE FROM boards
+		WHERE mno
+		= #{mno}
+	</delete>
+
+</mapper>
