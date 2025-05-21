@@ -1,0 +1,39 @@
+.card-img {
+    width: 100%;       /* 가로는 카드 폭에 맞춤 */
+    height: 250px;     /* 원하는 높이로 고정 */
+    object-fit: cover; /* 비율 유지하며 넘치는 부분은 잘림 */
+    object-position: center; /* 가운데 기준으로 잘리도록 (옵션) */
+  }
+
+.starclick {
+  background-color: rgb(209, 243, 248) !important; 
+}
+  
+.card-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* 최대 4줄까지 표시 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 100px;
+  margin-bottom: 10px;
+}
+
+.card-body {
+  overflow: hidden;
+}
+
+/* 카드 애니메이션 효과 */
+.col {
+  transition: all 0.5s ease;
+}
+
+/* 빈 컨테이너 메시지 애니메이션 */
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

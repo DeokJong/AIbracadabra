@@ -1,0 +1,30 @@
+# Eclipse metadata
+.metadata/
+.settings/
+*.log
+
+# Eclipse specific plugin data
+*.prefs
+*.dat
+*.ser
+*.ini
+*.bak
+
+# Build output
+**/target/
+/bin/
+/build/
+
+# 서버 관련 폴더 (예시로 Server 이름일 경우)
+Server/
+server/
+servers/
+
+# Maven
+*.class
+*.jar
+*.war
+*.ear
+
+.DS_Store
+.idea

@@ -1,0 +1,43 @@
+services:
+  mysql-container:
+    image: mysql:8.0
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=ssafytrip
+      - MYSQL_USER=ssafy
+      - MYSQL_PASSWORD=ssafy
+    volumes:
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+  redis:
+    image: redis:6.2
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+
+  springboot-container:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:     
+      - mysql-container
+      - redis
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  redis_data:
