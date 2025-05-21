@@ -1,0 +1,32 @@
+/* src/assets/fonts.css */
+@font-face {
+  font-family: 'SBAggro';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroL.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SBAggro';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroM.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SBAggro';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* 앱 전체 기본 폰트로 설정 */
+body, .v-application {
+  font-family: 'SBAggro', sans-serif !important;
+
+  .text-h1, .text-h2, .text-h3, .text-h4, .text-h5, .text-h6 {
+    font-family: 'SBAggro', sans-serif !important
+  }
+
+  .title {
+    font-family: 'SBAggro', sans-serif !important
+  }
+}
