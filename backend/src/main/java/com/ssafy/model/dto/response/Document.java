@@ -36,7 +36,7 @@ public class Document {
         private String homepage;
         private String address;
         private String overview;
-        private ContentTypeId contentsTypeId;
+        private String contentsTypeId;
         private String contentId;
     }
 }

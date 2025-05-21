@@ -68,7 +68,7 @@ public class TourInfoResponse {
         private String cat2;
         private String cat3;
         private String contentid;
-        private ContentTypeId contenttypeid;
+        private String contenttypeid;
         private Long createdtime;
         private String firstimage;
         private String firstimage2;

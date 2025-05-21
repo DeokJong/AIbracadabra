@@ -27,10 +27,6 @@ public enum ContentTypeId {
     this.description = description;
   }
 
-  @JsonValue
-  public String getCode() {
-    return code;
-  }
 
   /**
    * ID에 해당하는 Enum을 Optional로 반환

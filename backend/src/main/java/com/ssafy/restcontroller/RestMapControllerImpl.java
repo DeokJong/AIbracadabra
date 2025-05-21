@@ -27,7 +27,7 @@ public class RestMapControllerImpl implements ResponseEntityHelper, RestMapContr
 
 	@Override
 	public Mono<ResponseEntity<?>> searchContents(String mapX, String mapY, String radius, ContentTypeId contentTypeId, Integer pageNo) {
-		return mapService.searchContent(mapX, mapY, contentTypeId, pageNo, radius).map(raw -> handleResponse(raw, "OK", HttpStatus.OK));
+		return mapService.searchContent(mapX, mapY, contentTypeId.getCode() , pageNo, radius).map(raw -> handleResponse(raw, "OK", HttpStatus.OK));
 	}
 
 	@Override
