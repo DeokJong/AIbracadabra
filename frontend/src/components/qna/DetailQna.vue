@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import axios from 'axios'
 import { CommonResponse } from '@/service/common'
 import { BoardSummary } from './ItemTable.vue'
 import { useAuth } from '@/hooks/useAuth'
-import WithdrawModal from '@/components/modal/BoardDeleteModal.vue'
+import WithdrawModal from '@/components/modal/QnaDeleteModal.vue'
 import { useModal } from '@/hooks/useModal'
+import CommentDeleteModal from '../modal/CommentDeleteModal.vue'
+import { useToast } from 'vue-toastification'
+import  RegistComment from '@/components/comment/RegistComment.vue'
 
 
 const auth = useAuth()
@@ -34,7 +37,11 @@ type Comment = {
 const boardData = reactive<BoardDetail>({} as BoardDetail)
 
 onMounted(async () => {
-  const detailApiUrl = `api/v1${route.path}`
+    // const raw = route.params.bno
+  const params = route.params as { bno: string }
+
+  const bno = Number(params.bno)
+  const detailApiUrl = `api/v1/board/${bno}`
   const response = await axios.get<CommonResponse<BoardDetail>>(detailApiUrl)
   // TODO 니가 결과값에 맞춰서 바꾸어라
   // 그런데 내가 지금 페이지 네이션 관련해서 다루고 있으니 일단은 남겨라
@@ -48,12 +55,39 @@ const openWithdrawModal = async () => {
   } catch {
   }
 }
+const onDeleteComment = async (comment: Comment) => {
+  try {
+    // 1) 모달 띄우고
+    await addModal(CommentDeleteModal)
+    // 2) 확인되면 삭제 API 호출
+    await axios.delete(`/api/v1/board/${boardData.bno}/comment/${comment.cno}`)
+    // 3) 로컬 배열에서 즉시 제거
+    const idx = boardData.comments.findIndex(c => c.cno === comment.cno)
+    if (idx !== -1) boardData.comments.splice(idx, 1)
+  } catch {
+    // 취소했거나 에러
+  }
+}
 
 const onRowClick = () => {
 
   router.push({ 
     path: `/board/${boardData.bno}/edit`
   })
+}
+const showCommentForm = ref(false)
+
+const onWriteComment = () => {
+  if (!auth.isLoggined) {
+    useToast().info('로그인이 필요합니다.')
+    router.push('/login')
+    return
+  }
+  showCommentForm.value = !showCommentForm.value
+}
+const onCommentAdded = (comment: any) => {
+  boardData.comments.push(comment)
+  showCommentForm.value = false
 }
 
 
@@ -73,7 +107,7 @@ const onRowClick = () => {
               <span class="dot">·</span>
               <span>{{ boardData.createdDate }}</span>
               <span class="dot">·</span>
-              <span>조회 {{ boardData.views }}</span>
+              <span>조회 {{ boardData.views/2 }}</span>
             </div>
             <!-- 오른쪽: 수정/삭제 버튼 -->
             <div class="header-actions" v-if="auth.isLoggined && auth.userInfo.name === boardData.author">
@@ -105,7 +139,44 @@ const onRowClick = () => {
             {{ boardData.content }}
           </div>
 
+          <!-- 댓글 리스트 -->
+          <v-divider class="mb-4"></v-divider>
+          <div class="comments-wrap" v-if="boardData.comments && boardData.comments.length >= 0"  >
+            <div class="comments-header">
+              댓글 ({{ boardData.comments.length }})
+            </div>
+            <div v-for="comment in boardData.comments" :key="comment.cno" class="comment-bubble mb-3">
+              <v-avatar size="32" class="mr-2">
+                <span>{{ comment.author.charAt(0) }}</span>
+              </v-avatar>
+              <div class="bubble-body">
+                <div class="bubble-meta">{{ comment.author }} · {{ comment.createdDate }}</div>
+                <div class="bubble-content">{{ comment.content }}</div>
+                <div class="comment-actions mt-2"
+                  v-if="auth.isLoggined && auth.userInfo.name === comment.author">
+                  <v-btn small text >
+                    수정
+                  </v-btn>
+                  <v-btn small text color="error" @click="onDeleteComment(comment)">
+                    삭제
+                  </v-btn>
+                </div>
+
+              </div>
+            </div>
+          </div>
         </v-sheet>
+        <v-row justify="center" class="mt-6">
+          <v-btn color="primary" @click="onWriteComment">
+            댓글쓰기
+          </v-btn>
+        </v-row>
+        <RegistComment
+          v-if="showCommentForm"
+          :bno="boardData.bno"
+          @submitted="onCommentAdded"
+          @cancelled="showCommentForm = false"
+        />
       </v-col>
     </v-row>
   </v-container>

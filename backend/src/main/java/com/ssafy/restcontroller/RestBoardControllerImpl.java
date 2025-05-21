@@ -100,5 +100,15 @@ public class RestBoardControllerImpl implements ResponseEntityHelper, RestBoardC
 		return handleResponse("OK", HttpStatus.NO_CONTENT);
 	}
 
+	@Override
+    public ResponseEntity<?> deleteComment(Integer bno, Integer cno, CustomUserDetails userDetails) {
+		Member member = userDetails.getMember();
+		Comment existing = bService.getCommentCno(cno);
+		if (existing.getMno() != member.getMno()) {
+			return handleResponse("FORBIDDEN", HttpStatus.FORBIDDEN);
+		}
+        bService.removeComment(cno);
+        return handleResponse("OK", HttpStatus.NO_CONTENT);
+    }
 
 }

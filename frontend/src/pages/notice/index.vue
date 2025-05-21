@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import ItemTable from '@/components/qna/ItemTable.vue';
+import ItemTable from '@/components/notice/ItemTable.vue';
 import { buildQueryString } from '@/util/queryParams';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';

@@ -2,7 +2,7 @@
   <v-data-table
     :loading="table.loading"
     :headers="table.headers"
-    :items="table.items"
+    :items="boardItems"
     v-model:items-per-page="table.itemsPerPage"
     v-model:page="table.page"
     :server-items-length="table.totalItems"
@@ -18,10 +18,14 @@
         <td>{{ item.title }}</td>
         <td>{{ item.author }}</td>
         <td>{{ item.createdDate }}</td>
-        <td>{{ item.views }}</td>
+        <td>{{ item.views/2 }}</td>
       </tr>
     </template>
   </v-data-table>
+  <div class="button-wrap" >
+    <v-btn color="primary" @click="handleWriteClick">글쓰기</v-btn>
+  </div>
+
 </template>
 
 <script setup lang="ts">
@@ -31,15 +35,18 @@ export type BoardSummary = {
   author: string
   createdDate: string
   views: number
+  boardType: string
 }
 
 import { CommonResponse } from '@/service/common'
 import axios from 'axios'
 
-import { reactive, onMounted } from 'vue'
+import { reactive, onMounted, computed } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/hooks/useAuth'
+
+
 
 const auth = useAuth()
 
@@ -51,7 +58,9 @@ const props = defineProps({
     required: true
   }
 })
-
+const boardItems = computed(() =>
+  table.items.filter(i => i.boardType === 'board')
+)
 const table = reactive({
   loading: true,
   headers: [
@@ -70,18 +79,35 @@ const table = reactive({
   
 })
 
+
+// onMounted(async () => {
+//   table.items = await axios.get<CommonResponse<BoardSummary[]>>(props.apiCallUrl)
+//     .then((response) => {
+//       console.log(response.data.data)
+//       return response.data.data
+//     })
+//     .catch(() => {
+//       useToast().info('데이터를 가져오는 중 오류가 발생했습니다.')
+//       return []
+//     })
+//   table.loading = false
+// })
 onMounted(async () => {
-  table.items = await axios.get<CommonResponse<BoardSummary[]>>(props.apiCallUrl)
-    .then((response) => {
-      console.log(response.data.data)
-      return response.data.data
-    })
-    .catch(() => {
-      useToast().info('데이터를 가져오는 중 오류가 발생했습니다.')
-      return []
-    })
-  table.loading = false
+  try {
+    const response = await axios.get(props.apiCallUrl)
+    const data = response.data.data  // 여기에 { total, list, ... }
+
+    table.items = Array.isArray(data.list) ? data.list : []
+    table.totalItems = data.total || 0
+  } catch (error) {
+    useToast().info('데이터를 가져오는 중 오류가 발생했습니다.')
+    table.items = []
+    table.totalItems = 0
+  } finally {
+    table.loading = false
+  }
 })
+
 
 const onRowClick = (item: BoardSummary) => {
   console.log(item)         // { id: ..., title: ..., … }
@@ -92,6 +118,15 @@ const onRowClick = (item: BoardSummary) => {
     path: `/board/${item.bno}`
     })
 }
+const handleWriteClick = () => {
+  if (!auth.isLoggined) {
+    useToast().info('로그인이 필요합니다.')
+    router.push('/login')
+    return
+  }
+  router.push('/board/write')
+}
+
 
 </script>
 
@@ -99,5 +134,10 @@ const onRowClick = (item: BoardSummary) => {
 .row:hover {
   background-color: lightgray;
   cursor: pointer;
+}
+.button-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
 }
 </style>

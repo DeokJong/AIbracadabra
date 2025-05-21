@@ -5,11 +5,11 @@ import axios from 'axios'
 import { CommonResponse } from '@/service/common'
 import { BoardSummary } from './ItemTable.vue'
 import { useAuth } from '@/hooks/useAuth'
-import WithdrawModal from '@/components/modal/BoardDeleteModal.vue'
+import WithdrawModal from '@/components/modal/NoticeDeleteModal.vue'
 import { useModal } from '@/hooks/useModal'
 import CommentDeleteModal from '../modal/CommentDeleteModal.vue'
 import { useToast } from 'vue-toastification'
-import  RegistComment from '@/components/comment/RegistComment.vue'
+import RegistComment from '@/components/comment/RegistComment.vue'
 
 
 const auth = useAuth()
@@ -35,9 +35,15 @@ type Comment = {
 }
 
 const boardData = reactive<BoardDetail>({} as BoardDetail)
+const comments = ref<Comment[]>([])
 
 onMounted(async () => {
-  const detailApiUrl = `api/v1${route.path}`
+    // const raw = route.params.bno
+  const params = route.params as { bno: string }
+
+  const bno = Number(params.bno)
+
+  const detailApiUrl = `api/v1/board/${bno}`
   const response = await axios.get<CommonResponse<BoardDetail>>(detailApiUrl)
   // TODO 니가 결과값에 맞춰서 바꾸어라
   // 그런데 내가 지금 페이지 네이션 관련해서 다루고 있으니 일단은 남겨라
@@ -81,11 +87,29 @@ const onWriteComment = () => {
   }
   showCommentForm.value = !showCommentForm.value
 }
-const onCommentAdded = (comment: any) => {
-  boardData.comments.push(comment)
-  showCommentForm.value = false
-}
+// const onCommentAdded = (comment: any) => {
+//   boardData.comments.push(comment)
+//   showCommentForm.value = false
+// }
+/** 여기서 댓글 API 호출 + splice */
+async function onCommentSubmit(content: string) {
+    console.log('🐣 onCommentSubmit!', content)
 
+  try {
+    const res = await axios.post<CommonResponse<Comment>>(
+      `/api/v1/board/${boardData.bno}/comment`,
+      { content }
+    )
+    const newComment = res.data.data
+    // 삭제 로직처럼 splice 로 추가
+    boardData.comments.splice(boardData.comments.length, 0, newComment)
+    useToast().success('댓글이 등록되었습니다.')
+  } catch {
+    useToast().error('댓글 등록에 실패했습니다.')
+  } finally {
+    showCommentForm.value = false
+  }
+}
 
 </script>
 
@@ -141,7 +165,7 @@ const onCommentAdded = (comment: any) => {
             <div class="comments-header">
               댓글 ({{ boardData.comments.length }})
             </div>
-            <div v-for="comment in boardData.comments" :key="comment.cno" class="comment-bubble mb-3">
+            <div v-for="comment   in boardData.comments" :key="comment.cno" class="comment-bubble mb-3">
               <v-avatar size="32" class="mr-2">
                 <span>{{ comment.author.charAt(0) }}</span>
               </v-avatar>
@@ -170,7 +194,7 @@ const onCommentAdded = (comment: any) => {
         <RegistComment
           v-if="showCommentForm"
           :bno="boardData.bno"
-          @submitted="onCommentAdded"
+          @submitted="onCommentSubmit"
           @cancelled="showCommentForm = false"
         />
       </v-col>

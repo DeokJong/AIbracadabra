@@ -102,7 +102,7 @@ public interface RestBoardController {
 		)),
 		@ApiResponse(responseCode = "400", description = "잘못된 요청 바디")
 	})
-	@PutMapping("/{bno}/comment")
+	@PostMapping("/{bno}/comment")
 	ResponseEntity<?> addComment(
 		@PathVariable("bno") Integer bno,
 		@RequestBody Comment comment,
@@ -123,4 +123,18 @@ public interface RestBoardController {
 		@RequestBody Comment comment,
 		@AuthenticationPrincipal CustomUserDetails userDetails
 	);
+	
+	
+	@Operation(summary = "댓글 삭제", description = "게시글 번호(bno)와 댓글 번호(cno)에 해당하는 댓글을 삭제합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "삭제 성공"),
+        @ApiResponse(responseCode = "403", description = "삭제 권한 없음"),
+        @ApiResponse(responseCode = "404", description = "댓글을 찾을 수 없음")
+    })
+    @DeleteMapping("/{bno}/comment/{cno}")
+    ResponseEntity<?> deleteComment(
+        @PathVariable("bno") Integer bno,
+        @PathVariable("cno") Integer cno,
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    );
 }
