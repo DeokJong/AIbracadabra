@@ -2,6 +2,6 @@
   <KakaoMapWrapper />
 </template>
 
-<script setup>
-import KakaoMapWrapper from '@/components/kakaoMap.vue'
+<script setup lang="ts">
+import KakaoMapWrapper from '@/components/map/kakaoMap.vue'
 </script>
