@@ -14,6 +14,7 @@ export enum ContentType {
   ACCOMMODATION = 'ACCOMMODATION',
   SHOPPING = 'SHOPPING',
   RESTAURANT = 'RESTAURANT',
+  UNDEFINE = 'UNDEFINE'
 }
 
 export const DEFAULT_KAKAO_MAP_PROPS: KakaoMapProps = {
@@ -36,13 +37,15 @@ export type FullDocument = Document & {
   overview: string
 }
 
+export type KakaoDocumentMeta = {
+  numOfRows: number
+  pageNo: number
+  totalCount: number
+  end: boolean
+}
+
 export type KakaoDocument<T> = {
-  meta: {
-    numOfRows: number
-    pageNo: number
-    totalCount: number
-    end: boolean
-  }
+  meta: KakaoDocumentMeta
   documents: T[]
 }
 
@@ -55,6 +58,13 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
 
   const kakaoMapProps = ref<KakaoMapProps>(DEFAULT_KAKAO_MAP_PROPS)
   const markerProps = ref<KakaoMapMarkerPropsWithInfo[]>([])
+  const markerMeta = reactive<KakaoDocumentMeta>({
+    numOfRows: 0,
+    pageNo: 0,
+    totalCount: 0,
+    end: true,
+  }  as KakaoDocumentMeta)
+  const lastSearchContentType = ref<ContentType>(ContentType.UNDEFINE)
   const currentContent = reactive<FullDocument>({} as FullDocument)
 
   const locationSearch = async (query: string, pageNo: number = 1) => {
@@ -80,6 +90,8 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
       .then((response) => {
         if (response.data.data.meta.numOfRows) {
           const document: FullDocument[] = response.data.data.documents
+          Object.assign(markerMeta, response.data.data.meta)
+          lastSearchContentType.value = document.length ?  ContentCodeResolver(document[0].contentsTypeId) : ContentType.UNDEFINE
           markerProps.value = []
           document.forEach((ele) => {
             markerProps.value.push({
@@ -97,7 +109,7 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
             })
           })
         } else {
-          toast.info("조회된 데이터가 없습니다")
+          toast.info('조회된 데이터가 없습니다')
         }
       })
       .catch(() => {
@@ -119,8 +131,10 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
 
   return {
     markerProps,
+    markerMeta,
     kakaoMapProps,
     currentContent,
+    lastSearchContentType,
     locationSearch,
     contentSearch,
     contentDetailSearch,
@@ -148,6 +162,30 @@ const ContentTypeImageResolver = (code: string, type: string = 'png'): string =>
     default:
       // 알 수 없는 코드일 경우 기본 이미지
       return `UNKNOWN.${type}`
+  }
+}
+
+const ContentCodeResolver = (code: string) => {
+  switch (code) {
+    case '12':
+      return ContentType.TOURIST_SPOT
+    case '14':
+      return ContentType.CULTURE_FACILITY
+    case '15':
+      return ContentType.FESTIVAL_EVENT
+    case '25':
+      return ContentType.TRAVEL_COURSE
+    case '28':
+      return ContentType.LEISURE_SPORTS
+    case '32':
+      return ContentType.ACCOMMODATION
+    case '38':
+      return ContentType.SHOPPING
+    case '39':
+      return ContentType.RESTAURANT
+    default:
+      // 알 수 없는 코드일 경우 기본 이미지
+      return ContentType.UNDEFINE
   }
 }
 
