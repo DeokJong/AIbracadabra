@@ -62,6 +62,14 @@ public class BoardServiceImpl implements BoardService {
 		}	
 	}
 
+	@Override
+	public List<Board> getBoardViews(String boardType) {
+		List<Board> list = boardDao.getBoardViews(boardType);
+		if(list == null) {
+			throw new RecordNotFoundException("게시글을 찾을 수 없습니다.");
+		}
+		return list;
+	}
 
 	@Override
 	public Board set(Board board) {
@@ -233,6 +241,8 @@ public class BoardServiceImpl implements BoardService {
 			return Integer.compare(o.cost, this.cost);
 		}
 	}
+
+
 
 
 

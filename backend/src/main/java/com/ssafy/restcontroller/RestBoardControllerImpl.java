@@ -46,7 +46,12 @@ public class RestBoardControllerImpl implements ResponseEntityHelper, RestBoardC
 		Board board = bService.getBoardDetail(bno);
 		return handleResponse(board, "OK", HttpStatus.OK);
 	}
-
+	
+    @Override
+    public ResponseEntity<List<Board>> boardViews(String boardType) {
+        List<Board> list = bService.getBoardViews(boardType);
+        return ResponseEntity.ok(list);
+    }
 
 	@Override
 	public ResponseEntity<?> register(Board board, CustomUserDetails userDetails) {

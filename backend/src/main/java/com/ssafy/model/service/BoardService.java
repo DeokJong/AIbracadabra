@@ -25,6 +25,8 @@ public interface BoardService {
     List<Board> boardFindWord(String text);
     
     PageInfo<Board> getByBoardType(String boardType, Integer currentPage);
+    
+    List<Board> getBoardViews(String boardType);
 
     void addComment(Comment comment);
 

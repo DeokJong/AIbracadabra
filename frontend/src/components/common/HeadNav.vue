@@ -6,7 +6,7 @@
         <!-- 로고 -->
         <v-col cols="auto">
           <router-link to="/">
-            <img src="@/assets/logo.svg" alt="로고" class="logo" />
+            <img src="@/assets/logo2.png" alt="로고" class="logo" />
           </router-link>
         </v-col>
 
@@ -17,6 +17,7 @@
           <v-btn text to="/map">관광지도</v-btn>
           <v-btn text to="/board">게시판</v-btn>
           <v-btn text to="/notice">공지사항</v-btn>
+          <v-btn text to="/qna">문의하기</v-btn>
           <v-btn text to="/news">뉴스정보보기</v-btn>
           <v-btn v-if="!isLoggined" text to="/login">
             로그인

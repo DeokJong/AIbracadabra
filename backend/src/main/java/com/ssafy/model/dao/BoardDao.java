@@ -1,6 +1,9 @@
 package com.ssafy.model.dao;
 
 import com.github.pagehelper.Page;
+
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.ssafy.model.dto.domain.Board;
@@ -29,6 +32,9 @@ public interface BoardDao {
 	
 	// 게시글을 boardType으로 선택해서 가져오기
 	Page<Board> getBoardType(String boardType);
+	
+	// view로 가져오기
+	List<Board> getBoardViews(String boardType);
 
 	// 게시판 글 삭제
 	int remove(int bno);

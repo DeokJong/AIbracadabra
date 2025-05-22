@@ -10,6 +10,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +57,26 @@ public interface RestBoardController {
         @RequestParam(defaultValue = "1") Integer currentPage,
         @RequestParam("boardType") String boardType
     );
+    
+    @Operation(
+            summary = "게시판 조회수 순 조회",
+            description = "주어진 boardType에 해당하는 게시글을 조회수 순으로 반환합니다."
+        )
+        @ApiResponses({
+            @ApiResponse(
+                responseCode = "200",
+                description = "조회 성공",
+                content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = Board.class))
+                )
+            ),
+            @ApiResponse(responseCode = "404", description = "해당 유형의 게시글이 존재하지 않습니다.")
+        })
+        @GetMapping("/views/{boardType}")
+        ResponseEntity<List<Board>> boardViews(
+            @PathVariable("boardType") String boardType
+        );
 	
 	
 

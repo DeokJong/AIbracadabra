@@ -1,20 +1,61 @@
 <template>
   <ItemTable
-    :apiCallUrl="apiCallUrl"
+    :items="table.items"
+    :pages="table.pages"
+    :currentPage="table.page"
+    :loading="table.loading"
+    @update:currentPage="fetchData"
+    @write="goWrite"
   />
 </template>
 
 <script setup lang="ts">
-import ItemTable from '@/components/notice/ItemTable.vue';
-import { buildQueryString } from '@/util/queryParams';
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { reactive, onMounted } from 'vue'
+import axios from 'axios'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuth } from '@/hooks/useAuth'
+import ItemTable, { BoardSummary } from '@/components/notice/ItemTable.vue'
 
-const route = useRoute();
+const auth   = useAuth()
+const router = useRouter()
+const route  = useRoute()
 
 const API_URL = '/api/v1/board'
-const QUERY_STRING = buildQueryString(route.query)
 
-const apiCallUrl = computed(() => `${API_URL}${QUERY_STRING ? '?' + QUERY_STRING : ''}`)
+const table = reactive({
+  items: [] as BoardSummary[],
+  page:  Number(route.query.currentPage) || 1,
+  pages: 0,
+  loading: false,
+})
 
+async function fetchData(newPage = table.page) {
+  table.loading = true
+  try {
+    const res = await axios.get(API_URL, {
+      params: {
+        boardType:   'notice',         // 반드시 boardType 파라미터 첨부
+        currentPage: newPage,
+        pageSize:    table.itemsPerPage ?? 20
+      }
+    })
+    // 컨트롤러 Impl 에서 직접 PageInfo 반환하거나, handleResponse wrapper 사용 여부에 따라
+    // res.data.data || res.data 중 하나를 택하도록 처리
+    const payload = res.data.data ?? res.data
+    table.items = payload.list
+    table.pages = payload.pages
+    table.page  = newPage
+  } finally {
+    table.loading = false
+  }
+}
+
+function goWrite() {
+  if (!auth.isLoggined) {
+    return router.push('/login')
+  }
+  router.push('/notice/write')
+}
+
+onMounted(() => fetchData(table.page))
 </script>
