@@ -49,6 +49,7 @@ const { logout } = useAuth();
 .gradient-header {
   /* 왼쪽 #4facfe → 오른쪽 #00f2fe 그라데이션 */
   background: linear-gradient(90deg, #4B6DFF 0%, #6DC7FC 100%);
+  z-index: 1000;
 }
 
 .logo {
