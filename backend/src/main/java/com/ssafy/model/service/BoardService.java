@@ -23,6 +23,8 @@ public interface BoardService {
     Board getBoardDetail(int bno);
 
     List<Board> boardFindWord(String text);
+    
+    PageInfo<Board> getByBoardType(String boardType, Integer currentPage);
 
     void addComment(Comment comment);
 

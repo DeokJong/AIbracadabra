@@ -1,35 +1,40 @@
 <template>
   <v-data-table
-    :loading="table.loading"
-    :headers="table.headers"
-    :items="boardItems"
-    v-model:items-per-page="table.itemsPerPage"
-    v-model:page="table.page"
-    :server-items-length="table.totalItems"
-    items-per-page-text="페이지당 데이터 수"
-    no-data-text="데이터가 없습니다."
-    class="elevation-1"
-
+    :loading="loading"
+    :headers="headers"
+    :items="items"
+    v-model:items-per-page="itemsPerPage"
     hide-default-footer
+    class="elevation-1"
   >
-  <template #item="{ item, props }">
-      <tr v-bind="props" @click="() => onRowClick(item)" class="row">
+    <template #item="{ item, props }">
+      <tr v-bind="props" @click="onRowClick(item)" class="row">
         <td>{{ item.bno }}</td>
         <td>{{ item.title }}</td>
         <td>{{ item.author }}</td>
         <td>{{ item.createdDate }}</td>
-        <td>{{ item.views/2 }}</td>
+        <td>{{ item.views }}</td>
       </tr>
     </template>
   </v-data-table>
-  <div class="button-wrap" >
-    <v-btn color="primary" @click="handleWriteClick">글쓰기</v-btn>
-  </div>
 
+  <v-pagination
+    v-model="currentPageInternal"
+    :length="pages"
+    @update:model-value="onPageChange"
+    class="mt-4"
+  />
+
+  <div class="button-wrap">
+    <v-btn color="primary" @click="$emit('write')">글쓰기</v-btn>
+  </div>
 </template>
 
 <script setup lang="ts">
-export type BoardSummary = {
+import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+
+export interface BoardSummary {
   bno: number
   title: string
   author: string
@@ -38,96 +43,43 @@ export type BoardSummary = {
   boardType: string
 }
 
-import { CommonResponse } from '@/service/common'
-import axios from 'axios'
+// 부모로부터 받는 props
+const props = defineProps<{
+  items: BoardSummary[]
+  pages: number
+  currentPage: number
+  loading: boolean
+}>()
 
-import { reactive, onMounted, computed } from 'vue'
-import { useToast } from 'vue-toastification'
-import { useRouter } from 'vue-router'
-import { useAuth } from '@/hooks/useAuth'
+// 자식이 emit 할 이벤트
+const emit = defineEmits<{
+  (e: 'update:currentPage', v: number): void
+  (e: 'write'): void
+}>()
 
+const router = useRouter()
+const itemsPerPage = 20
+const headers = [
+  { title: '글번호', value: 'bno' },
+  { title: '제목',   value: 'title' },
+  { title: '작성자', value: 'author' },
+  { title: '작성일', value: 'createdDate' },
+  { title: '조회수', value: 'views' },
+]
 
+// v-pagination 과 부모 currentPage 동기화
+const currentPageInternal = ref(props.currentPage)
+watch(() => props.currentPage, v => (currentPageInternal.value = v))
 
-const auth = useAuth()
-
-const router = useRouter();
-
-const props = defineProps({
-  apiCallUrl: {
-    type: String,
-    required: true
-  }
-})
-const boardItems = computed(() =>
-  table.items.filter(i => i.boardType === 'board')
-)
-const table = reactive({
-  loading: true,
-  headers: [
-    { title: '글번호',  value: 'bno' },
-    { title: '제목',    value: 'title' },
-    { title: '작성자',  value: 'author' },
-    { title: '작성일',  value: 'createdDate' },
-    { title: '조회수',  value: 'views' },
-    { title: ' ',       value: 'actions', sortable: false },
-
-  ],
-  items: [] as BoardSummary[],
-  page: 1,
-  itemsPerPage: 20,  // 
-  totalItems: 0,  // 이거는 서버에서 보내주는 거임 그래서  서버단에서 meta로 데이터 묶어서 하기
-  
-})
-
-
-// onMounted(async () => {
-//   table.items = await axios.get<CommonResponse<BoardSummary[]>>(props.apiCallUrl)
-//     .then((response) => {
-//       console.log(response.data.data)
-//       return response.data.data
-//     })
-//     .catch(() => {
-//       useToast().info('데이터를 가져오는 중 오류가 발생했습니다.')
-//       return []
-//     })
-//   table.loading = false
-// })
-onMounted(async () => {
-  try {
-    const response = await axios.get(props.apiCallUrl)
-    const data = response.data.data  // 여기에 { total, list, ... }
-
-    table.items = Array.isArray(data.list) ? data.list : []
-    table.totalItems = data.total || 0
-  } catch (error) {
-    useToast().info('데이터를 가져오는 중 오류가 발생했습니다.')
-    table.items = []
-    table.totalItems = 0
-  } finally {
-    table.loading = false
-  }
-})
-
-
-const onRowClick = (item: BoardSummary) => {
-  console.log(item)         // { id: ..., title: ..., … }
-  console.log(item.bno)      // 숫자 ID
-  // router 이용해서 자세한 페이지로 넘기기
-  console.log(JSON.stringify(item))
-  router.push({ 
-    path: `/board/${item.bno}`
-    })
-}
-const handleWriteClick = () => {
-  if (!auth.isLoggined) {
-    useToast().info('로그인이 필요합니다.')
-    router.push('/login')
-    return
-  }
-  router.push('/board/write')
+// 페이지 변경 시 부모에게 알림
+function onPageChange(v: number) {
+  emit('update:currentPage', v)
 }
 
-
+// row 클릭 시 상세 페이지로 이동
+function onRowClick(item: BoardSummary) {
+  router.push(`/board/${item.bno}`)
+}
 </script>
 
 <style scoped>

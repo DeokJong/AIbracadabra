@@ -1,12 +1,10 @@
 <template>
   <v-container class="py-6">
     <v-card class="pa-6" max-width="800" elevation="3">
-      <!-- Flex 컨테이너, justify-space-between으로 좌우 정렬 -->
       <v-card-title class="d-flex align-center justify-space-between">
         <span class="text-h5 font-weight-bold">공지사항 작성</span>
 
-        <!-- 또는 justify-space-between 대신 아래와 같이만 해도 됩니다 -->
-        <!-- <v-radio-group v-model="form.visibility" row class="ml-auto"> -->
+
         <v-radio-group
           v-model="form.visibility"
           row

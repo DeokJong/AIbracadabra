@@ -71,10 +71,17 @@ const onDeleteComment = async (comment: Comment) => {
   }
 }
 
+
+
+// **수정 중인 댓글 ID** 및 **임시 컨텐츠**
+const editingCommentId = ref<number | null>(null)
+const editingContent = ref<string>('')
+
+
 const onRowClick = () => {
 
   router.push({ 
-    path: `/board/${boardData.bno}/edit`
+    path: `/${boardData.boardType}/${boardData.bno}/edit`
   })
 }
 const showCommentForm = ref(false)
@@ -103,11 +110,42 @@ async function onCommentSubmit(content: string) {
     const newComment = res.data.data
     // 삭제 로직처럼 splice 로 추가
     boardData.comments.splice(boardData.comments.length, 0, newComment)
-    useToast().success('댓글이 등록되었습니다.')
+      window.location.reload()
   } catch {
     useToast().error('댓글 등록에 실패했습니다.')
   } finally {
     showCommentForm.value = false
+  }
+}
+
+
+function startEdit(comment: Comment) {
+  editingCommentId.value = comment.cno
+  editingContent.value = comment.content
+}
+
+function cancelEdit() {
+  editingCommentId.value = null
+  editingContent.value = ''
+}
+
+async function saveEdit(comment: Comment) {
+  try {
+    await axios.put(
+      `/api/v1/board/${boardData.bno}/comment/${comment.cno}`,
+      { content: editingContent.value }
+    )
+    // 로컬 데이터 업데이트
+    const idx = boardData.comments.findIndex(c => c.cno === comment.cno)
+    if (idx !== -1) {
+      boardData.comments[idx].content = editingContent.value
+      boardData.comments[idx].updatedDate = new Date().toISOString()
+    }
+    useToast().success('댓글이 수정되었습니다.')
+  } catch {
+    useToast().error('댓글 수정에 실패했습니다.')
+  } finally {
+    cancelEdit()
   }
 }
 
@@ -127,69 +165,83 @@ async function onCommentSubmit(content: string) {
               <span class="dot">·</span>
               <span>{{ boardData.createdDate }}</span>
               <span class="dot">·</span>
-              <span>조회 {{ boardData.views/2 }}</span>
+              <span>조회 {{ boardData.views / 2 }}</span>
             </div>
-            <!-- 오른쪽: 수정/삭제 버튼 -->
-            <div class="header-actions" v-if="auth.isLoggined && auth.userInfo.name === boardData.author">
-              <v-btn
-                small
-                text
-                @click="onRowClick"
-
-              >
-                수정
-              </v-btn>
-              <v-btn
-                small
-                text
-                color="error"
-                @click="openWithdrawModal"
-              >
-                삭제
-              </v-btn>
+            <div 
+              class="header-actions"
+              v-if="auth.isLoggined && auth.userInfo.name === boardData.author && auth.userInfo?.role==='admin'"
+            >
+              <v-btn small text @click="onRowClick">수정</v-btn>
+              <v-btn small text color="error" @click="openWithdrawModal">삭제</v-btn>
             </div>
-
           </div>
 
-
-          <v-divider class="mb-6"></v-divider>
+          <v-divider class="mb-6" />
 
           <!-- 본문 -->
           <div class="content mb-8">
             {{ boardData.content }}
           </div>
+        </v-sheet>
 
-          <!-- 댓글 리스트 -->
-          <v-divider class="mb-4"></v-divider>
-          <div class="comments-wrap" v-if="boardData.comments && boardData.comments.length >= 0"  >
-            <div class="comments-header">
-              댓글 ({{ boardData.comments.length }})
-            </div>
-            <div v-for="comment   in boardData.comments" :key="comment.cno" class="comment-bubble mb-3">
-              <v-avatar size="32" class="mr-2">
-                <span>{{ comment.author.charAt(0) }}</span>
-              </v-avatar>
-              <div class="bubble-body">
-                <div class="bubble-meta">{{ comment.author }} · {{ comment.createdDate }}</div>
-                <div class="bubble-content">{{ comment.content }}</div>
-                <div class="comment-actions mt-2"
-                  v-if="auth.isLoggined && auth.userInfo.name === comment.author">
-                  <v-btn small text >
-                    수정
-                  </v-btn>
+        <v-divider class="mb-4" />
+
+        <!-- 댓글 리스트 -->
+        <div v-if="boardData.comments?.length !== undefined">
+          <div class="comments-header mb-2">
+            댓글 ({{ boardData.comments.length }})
+          </div>
+
+          <div
+            v-for="comment in boardData.comments"
+            :key="comment.cno"
+            class="comment-bubble mb-4"
+          >
+            <v-avatar size="32" class="mr-2">
+              <span>{{ comment.author.charAt(0) }}</span>
+            </v-avatar>
+
+            <div class="bubble-body">
+              <!-- 보기 모드 -->
+              <div v-if="editingCommentId !== comment.cno">
+                <div class="bubble-meta">
+                  {{ comment.author }} · {{ comment.createdDate }}
+                </div>
+                <div class="bubble-content mb-2">
+                  {{ comment.content }}
+                </div>
+                <div
+                  class="comment-actions"
+                  v-if="auth.isLoggined && auth.userInfo.name === comment.author"
+                >
+                  <v-btn small text @click="startEdit(comment)">수정</v-btn>
                   <v-btn small text color="error" @click="onDeleteComment(comment)">
                     삭제
                   </v-btn>
                 </div>
+              </div>
 
+              <!-- 편집 모드 -->
+              <div v-else>
+                <v-textarea
+                  v-model="editingContent"
+                  rows="4"
+                  outlined
+                />
+                <v-row class="mt-2" justify="end">
+                  <v-btn text @click="cancelEdit">취소</v-btn>
+                  <v-btn color="primary" class="ml-2" @click="saveEdit(comment)">
+                    저장
+                  </v-btn>
+                </v-row>
               </div>
             </div>
           </div>
-        </v-sheet>
+        </div>
+
+        <!-- 댓글 쓰기 버튼 & 폼 -->
         <v-row justify="center" class="mt-6">
-          <v-btn color="primary" @click="onWriteComment">
-            댓글쓰기
-          </v-btn>
+          <v-btn color="primary" @click="onWriteComment">댓글쓰기</v-btn>
         </v-row>
         <RegistComment
           v-if="showCommentForm"
@@ -201,6 +253,7 @@ async function onCommentSubmit(content: string) {
     </v-row>
   </v-container>
 </template>
+
 
 <style scoped>
 .board-detail-modern {

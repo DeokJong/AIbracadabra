@@ -28,6 +28,8 @@ public interface RestBoardController {
 	@GetMapping
 	ResponseEntity<?> boardList(@RequestParam(defaultValue = "1") Integer currentPage);
 
+	
+	
 	@Operation(summary = "게시판 상세 조회", description = "게시판 번호(bno)에 해당하는 게시판의 상세 정보를 조회합니다.")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "조회 성공", content =
@@ -40,6 +42,20 @@ public interface RestBoardController {
 	@GetMapping("/{bno}")
 	ResponseEntity<?> detail(@PathVariable("bno") Integer bno);
 
+	
+    @Operation(summary = "게시글 boardType으로 목록 조회", description = "전체 게시글 또는 boardType으로 필터링된 목록을 반환합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "조회 성공",
+            content = @Content(mediaType = "application/json",
+                array = @ArraySchema(schema = @Schema(implementation = Board.class))))
+    })
+    @GetMapping(params = "boardType")
+    ResponseEntity<?> boardList(
+        @RequestParam(defaultValue = "1") Integer currentPage,
+        @RequestParam("boardType") String boardType
+    );
+	
+	
 
 	@Operation(summary = "게시판 등록", description = "새로운 게시판을 등록합니다.")
 	@ApiResponses({

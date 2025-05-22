@@ -26,7 +26,7 @@
     </template>
   </v-data-table>
 
-  <div class="button-wrap">
+  <div class="button-wrap" v-if="auth.userInfo?.role === 'admin'">
     <v-btn color="primary" @click="handleWriteClick">
       글쓰기
     </v-btn>

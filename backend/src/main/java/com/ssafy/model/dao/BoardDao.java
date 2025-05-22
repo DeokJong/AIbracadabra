@@ -26,6 +26,9 @@ public interface BoardDao {
 	
 	// 게시글 상세페이지 전용으로 가져오는데 댓글까지 동시에 가져올거임
 	Board getBoardDetail(int bno);
+	
+	// 게시글을 boardType으로 선택해서 가져오기
+	Page<Board> getBoardType(String boardType);
 
 	// 게시판 글 삭제
 	int remove(int bno);

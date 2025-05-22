@@ -49,6 +49,14 @@
 	</resultMap>
 
 
+	<!-- boardType으로만 검색 -->
+	<select id="getBoardType" resultMap="boardMap">
+		select *
+		from boards
+		where board_type=#{boardType}
+	</select>
+
+
 	<insert id="add"
 		parameterType="com.ssafy.model.dto.domain.Board"
 		useGeneratedKeys="true" keyProperty="bno" keyColumn="bno">

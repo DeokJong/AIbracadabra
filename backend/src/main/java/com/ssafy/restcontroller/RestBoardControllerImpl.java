@@ -27,6 +27,19 @@ public class RestBoardControllerImpl implements ResponseEntityHelper, RestBoardC
 		PageInfo<Board> board = bService.getAllBoards(currentPage);
 		return handleResponse(board, "OK", HttpStatus.OK);
 	}
+	
+	@Override
+	public ResponseEntity<?> boardList(Integer currentPage, String boardType) {
+		PageInfo<Board> pageInfo;
+        if (boardType != null && !boardType.isEmpty()) {
+            // boardType으로 필터링
+            pageInfo = bService.getByBoardType(boardType, currentPage);
+        } else {
+            // 전체 게시글
+            pageInfo = bService.getAllBoards(currentPage);
+        }
+        return new ResponseEntity<>(pageInfo, HttpStatus.OK);
+	}
 
 	@Override
 	public ResponseEntity<?> detail(Integer bno) {
@@ -110,5 +123,7 @@ public class RestBoardControllerImpl implements ResponseEntityHelper, RestBoardC
         bService.removeComment(cno);
         return handleResponse("OK", HttpStatus.NO_CONTENT);
     }
+
+
 
 }

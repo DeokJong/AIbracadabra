@@ -54,6 +54,14 @@ public class BoardServiceImpl implements BoardService {
 			return new PageInfo<>(page);
 		}
 	}
+	@Override
+	public PageInfo<Board> getByBoardType(String boardType, Integer currentPage) {
+		try (Page<Board> page = PageHelper.startPage(currentPage, DEFAULT_PAGE_SIZE, "created_date DESC" )) {
+			boardDao.getBoardType(boardType);
+			return new PageInfo<>(page);
+		}	
+	}
+
 
 	@Override
 	public Board set(Board board) {
@@ -225,6 +233,7 @@ public class BoardServiceImpl implements BoardService {
 			return Integer.compare(o.cost, this.cost);
 		}
 	}
+
 
 
 }
