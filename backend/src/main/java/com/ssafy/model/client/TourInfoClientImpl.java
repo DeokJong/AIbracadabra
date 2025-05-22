@@ -91,7 +91,7 @@ public class TourInfoClientImpl implements TourInfoClient {
             String mapY,
             Integer pageNo,
             String radius,
-            ContentTypeId contentTypeId,
+            String contentTypeId,
             String primaryCategoryCode,
             String secondaryCategoryCode) {
 
@@ -105,7 +105,7 @@ public class TourInfoClientImpl implements TourInfoClient {
                             .queryParam("radius", radius);
 
                     Optional.ofNullable(contentTypeId)
-                            .ifPresent(ct -> builder.queryParam("contentTypeId", ct.getCode()));
+                            .ifPresent(ct -> builder.queryParam("contentTypeId", ct));
                     Optional.ofNullable(primaryCategoryCode)
                             .ifPresent(pc -> builder.queryParam("primaryCategoryCode", pc));
                     Optional.ofNullable(secondaryCategoryCode)

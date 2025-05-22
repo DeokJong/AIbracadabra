@@ -53,7 +53,7 @@ public class MapServiceImpl implements MapService {
 	}
 
 	@Override
-	public Mono<Document> searchContent(String mapX, String mapY, ContentTypeId contentTypeId, Integer pageNo, String radius) {
+	public Mono<Document> searchContent(String mapX, String mapY, String contentTypeId, Integer pageNo, String radius) {
 		return tourInfoClient.locationBasedList(mapX, mapY, pageNo, radius, contentTypeId)
 			.map(result -> {
 				var body = result.getResponse().getBody();

@@ -65,15 +65,14 @@ const table = reactive({
   ],
   items: [] as BoardSummary[],
   page: 1,
-  itemsPerPage: 20,  // 
+  itemsPerPage: 20,  //
   totalItems: 0,  // 이거는 서버에서 보내주는 거임 그래서  서버단에서 meta로 데이터 묶어서 하기
-  
+
 })
 
 onMounted(async () => {
   table.items = await axios.get<CommonResponse<BoardSummary[]>>(props.apiCallUrl)
     .then((response) => {
-      console.log(response.data.data)
       return response.data.data
     })
     .catch(() => {
@@ -88,7 +87,7 @@ const onRowClick = (item: BoardSummary) => {
   console.log(item.bno)      // 숫자 ID
   // router 이용해서 자세한 페이지로 넘기기
   console.log(JSON.stringify(item))
-  router.push({ 
+  router.push({
     path: `/board/${item.bno}`
     })
 }
