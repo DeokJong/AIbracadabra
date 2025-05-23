@@ -1,11 +1,10 @@
 package com.ssafy.model.service.impl;
 
-import com.ssafy.constant.ContentTypeId;
 import com.ssafy.model.client.KakaoClient;
 import com.ssafy.model.client.TourInfoClient;
 import com.ssafy.model.dto.client.AddressSearchResponse;
 import com.ssafy.model.dto.client.SearchResponse;
-import com.ssafy.model.dto.response.Document;
+import com.ssafy.model.dto.domain.Document;
 import com.ssafy.model.service.MapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

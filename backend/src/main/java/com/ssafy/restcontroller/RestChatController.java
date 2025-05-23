@@ -1,6 +1,6 @@
 package com.ssafy.restcontroller;
 
-import com.ssafy.model.dto.response.PromptResponse;
+import com.ssafy.model.dto.domain.PromptResponse;
 import com.ssafy.security.dto.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

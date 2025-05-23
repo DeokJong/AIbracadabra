@@ -1,9 +1,9 @@
-package com.ssafy.model.dto.response;
+package com.ssafy.model.dto.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ssafy.constant.ContentTypeId;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
 
@@ -27,6 +27,7 @@ public class Document {
     @Data
     @Builder
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Jacksonized
     public static class Item {
         private String mapX;
         private String mapY;

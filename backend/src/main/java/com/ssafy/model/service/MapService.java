@@ -1,9 +1,8 @@
 package com.ssafy.model.service;
 
-import com.ssafy.constant.ContentTypeId;
 import com.ssafy.model.dto.client.AddressSearchResponse;
 import com.ssafy.model.dto.client.SearchResponse;
-import com.ssafy.model.dto.response.Document;
+import com.ssafy.model.dto.domain.Document;
 import reactor.core.publisher.Mono;
 
 public interface MapService {
