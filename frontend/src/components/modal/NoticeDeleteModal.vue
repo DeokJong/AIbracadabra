@@ -31,7 +31,7 @@ import { ref, defineEmits,reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
-import { BoardSummary } from '../notice/ItemTable.vue'
+import { BoardSummary } from '@/components/notice/ItemTable.vue'
 
 
 
