@@ -19,7 +19,7 @@ public class RestPlanControllerImpl implements ResponseEntityHelper, RestPlanCon
 	public ResponseEntity<?> createPlan(CustomUserDetails userDetails, Plan plan) {
 		plan.setMno(userDetails.getMember().getMno());
 		planService.insert(plan);
-		return handleResponse("CREATE PLAN", HttpStatus.CREATED);
+		return handleResponse(plan,"CREATE PLAN", HttpStatus.CREATED);
 	}
 
 	@Override

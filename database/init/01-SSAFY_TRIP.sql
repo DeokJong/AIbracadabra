@@ -102,9 +102,7 @@ CREATE TABLE `comments` (
     DEFAULT CURRENT_TIMESTAMP
     ON UPDATE CURRENT_TIMESTAMP
     COMMENT '수정 완료일시',
-
   PRIMARY KEY (`cno`),
-
   -- 외래키 제약
   CONSTRAINT `fk_comments_boards`
     FOREIGN KEY (`bno`)
@@ -130,7 +128,7 @@ CREATE TABLE `plan` (
     PRIMARY KEY (`pno`),
     KEY `idx_mno` (`mno`),
     CONSTRAINT `fk_plan_member` FOREIGN KEY (`mno`) REFERENCES `members` (`mno`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '여행 계획 저장 테이블';
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '여행 계획 저장 테이블';
 
 
 --
