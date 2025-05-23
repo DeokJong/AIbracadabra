@@ -5,11 +5,11 @@ import axios from 'axios'
 import { CommonResponse } from '@/service/common'
 import { BoardSummary } from '@/components/board/ItemTable.vue'
 import { useAuth } from '@/hooks/useAuth'
-import WithdrawModal from '@/components/modal/BoardDeleteModal.vue'
+import WithdrawModal from '@/components/modal/NoticeDeleteModal.vue'
 import { useModal } from '@/hooks/useModal'
 import CommentDeleteModal from '@/components/modal/CommentDeleteModal.vue'
 import { useToast } from 'vue-toastification'
-import  RegistComment from '@/components/comment/RegistComment.vue'
+import RegistComment from '@/components/comment/RegistComment.vue'
 
 
 const auth = useAuth()
@@ -35,9 +35,15 @@ type Comment = {
 }
 
 const boardData = reactive<BoardDetail>({} as BoardDetail)
+const comments = ref<Comment[]>([])
 
 onMounted(async () => {
-  const detailApiUrl = `api/v1${route.path}`
+    // const raw = route.params.bno
+  const params = route.params as { bno: string }
+
+  const bno = Number(params.bno)
+
+  const detailApiUrl = `api/v1/board/${bno}`
   const response = await axios.get<CommonResponse<BoardDetail>>(detailApiUrl)
   // TODO 니가 결과값에 맞춰서 바꾸어라
   // 그런데 내가 지금 페이지 네이션 관련해서 다루고 있으니 일단은 남겨라
@@ -65,6 +71,13 @@ const onDeleteComment = async (comment: Comment) => {
   }
 }
 
+
+
+// **수정 중인 댓글 ID** 및 **임시 컨텐츠**
+const editingCommentId = ref<number | null>(null)
+const editingContent = ref<string>('')
+
+
 const onRowClick = () => {
 
   router.push({ 
@@ -81,20 +94,11 @@ const onWriteComment = () => {
   }
   showCommentForm.value = !showCommentForm.value
 }
-
-// **수정 중인 댓글 ID** 및 **임시 컨텐츠**
-const editingCommentId = ref<number | null>(null)
-const editingContent = ref<string>('')
-
-function startEdit(comment: Comment) {
-  editingCommentId.value = comment.cno
-  editingContent.value = comment.content
-}
-
-function cancelEdit() {
-  editingCommentId.value = null
-  editingContent.value = ''
-}
+// const onCommentAdded = (comment: any) => {
+//   boardData.comments.push(comment)
+//   showCommentForm.value = false
+// }
+/** 여기서 댓글 API 호출 + splice */
 async function onCommentSubmit(content: string) {
     console.log('🐣 onCommentSubmit!', content)
 
@@ -112,6 +116,17 @@ async function onCommentSubmit(content: string) {
   } finally {
     showCommentForm.value = false
   }
+}
+
+
+function startEdit(comment: Comment) {
+  editingCommentId.value = comment.cno
+  editingContent.value = comment.content
+}
+
+function cancelEdit() {
+  editingCommentId.value = null
+  editingContent.value = ''
 }
 
 async function saveEdit(comment: Comment) {
@@ -134,7 +149,6 @@ async function saveEdit(comment: Comment) {
   }
 }
 
-
 </script>
 
 <template>
@@ -153,14 +167,14 @@ async function saveEdit(comment: Comment) {
               <span class="dot">·</span>
               <span>조회 {{ boardData.views / 2 }}</span>
             </div>
-            <div
+            <div 
               class="header-actions"
-              v-if="auth.userInfo?.role==='admin'||auth.isLoggined && auth.userInfo.name === boardData.author"
+              v-if="auth.isLoggined && auth.userInfo.name === boardData.author && auth.userInfo?.role==='admin'"
             >
               <v-btn small text @click="onRowClick">수정</v-btn>
               <v-btn small text color="error" @click="openWithdrawModal">삭제</v-btn>
             </div>
-          </div>  
+          </div>
 
           <v-divider class="mb-6" />
 
@@ -239,6 +253,8 @@ async function saveEdit(comment: Comment) {
     </v-row>
   </v-container>
 </template>
+
+
 <style scoped>
 .board-detail-modern {
   max-width: 100%;

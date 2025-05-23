@@ -9,6 +9,7 @@ export interface UserInfo {
   mno: number
   name: string
   email: string
+  role: string
 }
 
 export type LoginRequest = {
@@ -35,6 +36,7 @@ const GUEST_USER: UserInfo = {
   mno: -1,
   name: '',
   email: '',
+  role: 'GUEST'
 }
 
 export const useAuth = defineStore(
@@ -56,7 +58,7 @@ export const useAuth = defineStore(
         userInfo.mno = data.mno
         userInfo.name = data.name
         userInfo.email = data.email
-
+        userInfo.role = data.role
         isLoggined.value = true
       } catch (err) {
         if (isAxiosError(err) && err.response?.status === 401) {

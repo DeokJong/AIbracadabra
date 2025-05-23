@@ -14,7 +14,7 @@ import { reactive, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuth } from '@/hooks/useAuth'
-import ItemTable, { BoardSummary } from '@/components/board/ItemTable.vue'
+import ItemTable, { BoardSummary } from '@/components/notice/ItemTable.vue'
 
 const auth   = useAuth()
 const router = useRouter()
@@ -34,7 +34,7 @@ async function fetchData(newPage = table.page) {
   try {
     const res = await axios.get(API_URL, {
       params: {
-        boardType:   'board',         // 반드시 boardType 파라미터 첨부
+        boardType:   'notice',         // 반드시 boardType 파라미터 첨부
         currentPage: newPage,
         pageSize:    table.itemsPerPage ?? 20
       }
@@ -54,7 +54,7 @@ function goWrite() {
   if (!auth.isLoggined) {
     return router.push('/login')
   }
-  router.push('/board/write')
+  router.push('/notice/write')
 }
 
 onMounted(() => fetchData(table.page))

@@ -5,7 +5,7 @@ import axios from 'axios'
 import { CommonResponse } from '@/service/common'
 import { BoardSummary } from '@/components/board/ItemTable.vue'
 import { useAuth } from '@/hooks/useAuth'
-import WithdrawModal from '@/components/modal/BoardDeleteModal.vue'
+import WithdrawModal from '@/components/modal/QnaDeleteModal.vue'
 import { useModal } from '@/hooks/useModal'
 import CommentDeleteModal from '@/components/modal/CommentDeleteModal.vue'
 import { useToast } from 'vue-toastification'
@@ -37,7 +37,11 @@ type Comment = {
 const boardData = reactive<BoardDetail>({} as BoardDetail)
 
 onMounted(async () => {
-  const detailApiUrl = `api/v1${route.path}`
+    // const raw = route.params.bno
+  const params = route.params as { bno: string }
+
+  const bno = Number(params.bno)
+  const detailApiUrl = `api/v1/board/${bno}`
   const response = await axios.get<CommonResponse<BoardDetail>>(detailApiUrl)
   // TODO 니가 결과값에 맞춰서 바꾸어라
   // 그런데 내가 지금 페이지 네이션 관련해서 다루고 있으니 일단은 남겨라
@@ -81,6 +85,7 @@ const onWriteComment = () => {
   }
   showCommentForm.value = !showCommentForm.value
 }
+
 
 // **수정 중인 댓글 ID** 및 **임시 컨텐츠**
 const editingCommentId = ref<number | null>(null)
@@ -155,12 +160,12 @@ async function saveEdit(comment: Comment) {
             </div>
             <div
               class="header-actions"
-              v-if="auth.userInfo?.role==='admin'||auth.isLoggined && auth.userInfo.name === boardData.author"
+              v-if="auth.isLoggined && auth.userInfo.name === boardData.author"
             >
               <v-btn small text @click="onRowClick">수정</v-btn>
               <v-btn small text color="error" @click="openWithdrawModal">삭제</v-btn>
             </div>
-          </div>  
+          </div>
 
           <v-divider class="mb-6" />
 
@@ -226,7 +231,7 @@ async function saveEdit(comment: Comment) {
         </div>
 
         <!-- 댓글 쓰기 버튼 & 폼 -->
-        <v-row justify="center" class="mt-6">
+        <v-row justify="center" class="mt-6" v-if="auth.userInfo?.role==='admin'">
           <v-btn color="primary" @click="onWriteComment">댓글쓰기</v-btn>
         </v-row>
         <RegistComment

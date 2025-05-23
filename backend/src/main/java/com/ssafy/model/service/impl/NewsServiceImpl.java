@@ -28,8 +28,17 @@ public class NewsServiceImpl implements NewsService {
 		} 
 		
 		return list;
+	}
+
+	@Override
+	public List<News> selectBySidoCode(int sidoCode) {
+		List<News> list = newsDao.selectBySidoCode(sidoCode);
 		
+		if(list ==null) {
+			throw new RecordNotFoundException("조회된 뉴스 정보가 없습니다.");
+		} 
 		
+		return list;
 	}
 
 }

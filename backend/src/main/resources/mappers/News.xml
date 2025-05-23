@@ -5,36 +5,44 @@
 
 <mapper namespace="com.ssafy.model.dao.NewsDao">
 
-  <resultMap id="NewsResult" type="com.ssafy.model.dto.domain.News">
-    <id     property="id"            column="id"/>
-    <result property="title"         column="title"/>
-    <result property="publishAt"   column="publish_at"/>
-    <result property="sidoCode"      column="url_sido_code"/>
-    <result property="summary"       column="summary"/>
-    <result property="url"           column="url"/>
-  </resultMap>
-	
-  <select id="selectAll" resultMap="NewsResult">
-  	SELECT * FROM news
-  
-  </select>
+	<resultMap id="NewsResult"
+		type="com.ssafy.model.dto.domain.News">
+		<id property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="publishAt" column="publish_at" />
+		<result property="sidoCode" column="url_sido_code" />
+		<result property="summary" column="summary" />
+		<result property="url" column="url" />
+	</resultMap>
+
+	<select id="selectAll" resultMap="NewsResult">
+		SELECT * FROM news
+
+	</select>
 
 
-  <select id="selectByUrl" parameterType="String" resultMap="NewsResult">
-    SELECT * FROM news WHERE url = #{url}
-  </select>
+	<select id="selectByUrl" parameterType="String"
+		resultMap="NewsResult">
+		SELECT * FROM news WHERE url = #{url}
+	</select>
 
-  <insert id="insert"
-          useGeneratedKeys="true" keyProperty="id">
-    INSERT INTO news
-      (title, publish_at, url_sido_code, summary, url)
-    VALUES
-      (#{title}, #{publishAt}, #{sidoCode}, #{summary}, #{url})
-  </insert>
-  
-  
-  
-  
+	<!-- 뉴스 정도 sidoCode로 가져오기 -->
+	<select id="selectBySidoCode" resultMap="NewsResult">
+		select *
+		from news
+		where url_sido_code = #{sidoCode}
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO news
+		(title, publish_at, url_sido_code, summary, url)
+		VALUES
+		(#{title}, #{publishAt}, #{sidoCode}, #{summary}, #{url})
+	</insert>
+
+
+
+
 
 </mapper>
 

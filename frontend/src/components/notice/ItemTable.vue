@@ -34,6 +34,7 @@
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
+/** 테이블에 들어갈 아이템 타입 정의 */
 export interface BoardSummary {
   bno: number
   title: string
@@ -42,7 +43,6 @@ export interface BoardSummary {
   views: number
   boardType: string
 }
-
 // 부모로부터 받는 props
 const props = defineProps<{
   items: BoardSummary[]
@@ -51,7 +51,7 @@ const props = defineProps<{
   loading: boolean
 }>()
 
-// 자식이 emit 할 이벤트
+/// 자식이 emit 할 이벤트
 const emit = defineEmits<{
   (e: 'update:currentPage', v: number): void
   (e: 'write'): void
@@ -78,7 +78,7 @@ function onPageChange(v: number) {
 
 // row 클릭 시 상세 페이지로 이동
 function onRowClick(item: BoardSummary) {
-  router.push(`/board/${item.bno}`)
+  router.push(`/notice/${item.bno}`)
 }
 </script>
 

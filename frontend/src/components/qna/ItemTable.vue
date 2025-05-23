@@ -7,10 +7,23 @@
     hide-default-footer
     class="elevation-1"
   >
-    <template #item="{ item, props }">
-      <tr v-bind="props" @click="onRowClick(item)" class="row">
-        <td>{{ item.bno }}</td>
-        <td>{{ item.title }}</td>
+    <template #item="{ item, index, props: rowProps }">
+      <tr
+        v-bind="rowProps"
+        class="row"                      
+        @click="item.visibility === 'PUBLIC' && onRowClick(item)"
+      >
+        <!-- 글번호(기존 로직) -->
+        <td>
+          {{ (currentPageInternal - 1) * itemsPerPage + index + 1 }}
+        </td>
+        <!-- 제목: PRIVATE 면 대체 문구 출력 -->
+        <td>
+          {{ item.visibility === 'PRIVATE'
+            ? '비공개 글입니다.'
+            : item.title
+          }}
+        </td>
         <td>{{ item.author }}</td>
         <td>{{ item.createdDate }}</td>
         <td>{{ item.views }}</td>
@@ -33,7 +46,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuth } from '@/hooks/useAuth'
+const userInfo = useAuth()
 
+/** 테이블에 들어갈 아이템 타입 정의 */
 export interface BoardSummary {
   bno: number
   title: string
@@ -41,17 +57,22 @@ export interface BoardSummary {
   createdDate: string
   views: number
   boardType: string
+  visibility: 'PUBLIC' | 'PRIVATE'
 }
-
 // 부모로부터 받는 props
 const props = defineProps<{
   items: BoardSummary[]
   pages: number
+  totalItems: number       // 추가
+  
   currentPage: number
   loading: boolean
 }>()
+console.log('child props:', props)
 
-// 자식이 emit 할 이벤트
+const listSize = props.totalItems
+console.log(listSize)
+/// 자식이 emit 할 이벤트
 const emit = defineEmits<{
   (e: 'update:currentPage', v: number): void
   (e: 'write'): void
@@ -78,7 +99,7 @@ function onPageChange(v: number) {
 
 // row 클릭 시 상세 페이지로 이동
 function onRowClick(item: BoardSummary) {
-  router.push(`/board/${item.bno}`)
+  router.push(`/qna/${item.bno}`)
 }
 </script>
 
@@ -92,4 +113,5 @@ function onRowClick(item: BoardSummary) {
   justify-content: flex-end;
   margin-top: 16px;
 }
+
 </style>

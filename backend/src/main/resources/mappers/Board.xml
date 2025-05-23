@@ -49,6 +49,22 @@
 	</resultMap>
 
 
+	<!-- boardType으로만 검색 -->
+	<select id="getBoardType" resultMap="boardMap">
+		select *
+		from boards
+		where board_type=#{boardType}
+	</select>
+	
+	<!-- 인기글 가져오기 조회수로 판단-->
+	<select id="getBoardViews" resultMap="boardMap">
+		select * from boards
+		where board_type=#{boardType}
+		order by views DESC
+		limit 5
+	</select>
+
+
 	<insert id="add"
 		parameterType="com.ssafy.model.dto.domain.Board"
 		useGeneratedKeys="true" keyProperty="bno" keyColumn="bno">

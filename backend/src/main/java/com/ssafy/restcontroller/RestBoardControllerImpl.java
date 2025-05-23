@@ -27,13 +27,31 @@ public class RestBoardControllerImpl implements ResponseEntityHelper, RestBoardC
 		PageInfo<Board> board = bService.getAllBoards(currentPage);
 		return handleResponse(board, "OK", HttpStatus.OK);
 	}
+	
+	@Override
+	public ResponseEntity<?> boardList(Integer currentPage, String boardType) {
+		PageInfo<Board> pageInfo;
+        if (boardType != null && !boardType.isEmpty()) {
+            // boardType으로 필터링
+            pageInfo = bService.getByBoardType(boardType, currentPage);
+        } else {
+            // 전체 게시글
+            pageInfo = bService.getAllBoards(currentPage);
+        }
+        return new ResponseEntity<>(pageInfo, HttpStatus.OK);
+	}
 
 	@Override
 	public ResponseEntity<?> detail(Integer bno) {
 		Board board = bService.getBoardDetail(bno);
 		return handleResponse(board, "OK", HttpStatus.OK);
 	}
-
+	
+    @Override
+    public ResponseEntity<List<Board>> boardViews(String boardType) {
+        List<Board> list = bService.getBoardViews(boardType);
+        return ResponseEntity.ok(list);
+    }
 
 	@Override
 	public ResponseEntity<?> register(Board board, CustomUserDetails userDetails) {
@@ -99,6 +117,18 @@ public class RestBoardControllerImpl implements ResponseEntityHelper, RestBoardC
 		// NO_CONTENT로 응답
 		return handleResponse("OK", HttpStatus.NO_CONTENT);
 	}
+
+	@Override
+    public ResponseEntity<?> deleteComment(Integer bno, Integer cno, CustomUserDetails userDetails) {
+		Member member = userDetails.getMember();
+		Comment existing = bService.getCommentCno(cno);
+		if (existing.getMno() != member.getMno()) {
+			return handleResponse("FORBIDDEN", HttpStatus.FORBIDDEN);
+		}
+        bService.removeComment(cno);
+        return handleResponse("OK", HttpStatus.NO_CONTENT);
+    }
+
 
 
 }
