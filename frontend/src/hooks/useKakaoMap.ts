@@ -14,7 +14,7 @@ export enum ContentType {
   ACCOMMODATION = 'ACCOMMODATION',
   SHOPPING = 'SHOPPING',
   RESTAURANT = 'RESTAURANT',
-  UNDEFINE = 'UNDEFINE'
+  UNDEFINE = 'UNDEFINE',
 }
 
 export const DEFAULT_KAKAO_MAP_PROPS: KakaoMapProps = {
@@ -53,6 +53,18 @@ export type KakaoMapMarkerPropsWithInfo = KakaoMapMarkerProps & {
   info: { contentId: string }
 }
 
+/**
+ * @return{
+ * markerProps - 띄우는 마커 정보
+    markerMeta - 띄우는 마커들의 메타 데이터
+    kakaoMapProps - 현재 추적중인 맵 데이터
+    currentContent - 누른 마커의 정보
+    lastSearchContentType - 마지막에 컨텐츠들을 조회한 타입
+    locationSearch - 위치 기반 검색 함수
+    contentSearch - 현재 좌표 기준 컨텐츠 조회 함수
+    contentDetailSearch - 컨텐츠id 기반 상세정보 조회 함수
+ * }
+ */
 export const useKakaoMap = defineStore('kakaoMap', () => {
   const toast = useToast()
 
@@ -63,10 +75,15 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
     pageNo: 0,
     totalCount: 0,
     end: true,
-  }  as KakaoDocumentMeta)
+  } as KakaoDocumentMeta)
   const lastSearchContentType = ref<ContentType>(ContentType.UNDEFINE)
   const currentContent = reactive<FullDocument>({} as FullDocument)
 
+  /**
+   * 검색어로 보고있는 화면을 옮김
+   * @param query 검색어
+   * @param pageNo 페이지 넘버 (신경 x)
+   */
   const locationSearch = async (query: string, pageNo: number = 1) => {
     await axios
       .get<CommonResponse<KakaoDocument<Document>>>(
@@ -82,6 +99,12 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
       })
   }
 
+  /**
+   * 현재 보고 있는 좌표 기준 컨텐츠 타입 호출
+   * 호출하면서 마지막으로 호출한 컨텐츠 타입 저장
+   * @param contentType 컨텐츠 타입
+   * @param pageNo 페이지
+   */
   const contentSearch = async (contentType: ContentType, pageNo: number = 1) => {
     await axios
       .get<CommonResponse<KakaoDocument<FullDocument>>>(
@@ -91,7 +114,8 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
         if (response.data.data.meta.numOfRows) {
           const document: FullDocument[] = response.data.data.documents
           Object.assign(markerMeta, response.data.data.meta)
-          lastSearchContentType.value = document.length ?  ContentCodeResolver(document[0].contentsTypeId) : ContentType.UNDEFINE
+          lastSearchContentType.value =
+            document.length ? ContentCodeResolver(document[0].contentsTypeId) : ContentType.UNDEFINE
           markerProps.value = []
           document.forEach((ele) => {
             markerProps.value.push({
@@ -117,6 +141,10 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
       })
   }
 
+  /**
+   * 컨텐츠 ID 기반 상세 정보 조회
+   * @param contentId
+   */
   const contentDetailSearch = async (contentId: string) => {
     await axios
       .get<CommonResponse<KakaoDocument<FullDocument>>>(`/api/v1/map/contents/${contentId}`)
@@ -141,6 +169,9 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
   }
 })
 
+/**
+ * 컨텐츠 Type code로 마커 이미지 불러오는 함수
+ */
 const ContentTypeImageResolver = (code: string, type: string = 'png'): string => {
   switch (code) {
     case '12':
@@ -165,6 +196,11 @@ const ContentTypeImageResolver = (code: string, type: string = 'png'): string =>
   }
 }
 
+/**
+ * 컨텐츠 타입 코드로 실제 컨텐츠 타입 불러오는 함수
+ * @param code
+ * @returns
+ */
 const ContentCodeResolver = (code: string) => {
   switch (code) {
     case '12':
@@ -189,6 +225,11 @@ const ContentCodeResolver = (code: string) => {
   }
 }
 
+/**
+ * 맵 레벨에 따른 반경 비율 구하는 함수
+ * @param level
+ * @returns
+ */
 const mapLevelIntoRadius = (level: number) => {
   const MULTIFLY = 10
   switch (level) {

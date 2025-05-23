@@ -3,6 +3,7 @@
   <KakaoMapWrapper />
   <DetailSidebar />
   <ResultNavigationBar />
+  <TripPlanSideBar />
 </template>
 
 <script setup lang="ts">
