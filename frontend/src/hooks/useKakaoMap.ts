@@ -1,5 +1,5 @@
 import { CommonResponse } from '@/service/common'
-import axios from 'axios'
+import axios, {  isAxiosError } from 'axios'
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
 import { useToast } from 'vue-toastification'
@@ -53,6 +53,12 @@ export type KakaoMapMarkerPropsWithInfo = KakaoMapMarkerProps & {
   info: { contentId: string }
 }
 
+export type Plan = {
+  title: string
+  pno: number
+  schedules: FullDocument[]
+}
+
 /**
  * @return{
  * markerProps - 띄우는 마커 정보
@@ -78,7 +84,11 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
   } as KakaoDocumentMeta)
   const lastSearchContentType = ref<ContentType>(ContentType.UNDEFINE)
   const currentContent = reactive<FullDocument>({} as FullDocument)
-
+  const currentPlan = ref<Plan>({
+    title: '',
+    pno: 0,
+    schedules: []
+  })
   /**
    * 검색어로 보고있는 화면을 옮김
    * @param query 검색어
@@ -157,7 +167,34 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
       })
   }
 
+  const appendSchedule = () => {
+    console.log({ ...currentContent })
+    currentPlan.value.schedules.push({ ...currentContent })
+  }
+
+  const savePlan = async () => {
+    try {
+      if (currentPlan.value.pno === 0) {
+        await axios.post('/api/v1/plans', currentPlan.value) // TODO 백엔드 API 수정 필요 WHY ? 저장 한 이후 pno를 받아와야함. 받아온 이후 현재 계획에 pno 적용하기! 
+      } else {
+        await axios.put(`/api/v1/plans/${currentPlan.value.pno}`, currentPlan.value)
+      }
+      toast.info("여행 계획이 성공적으로 저장이 되었습니다.")
+    } catch (err) {
+      if(isAxiosError(err) && err.response?.status === 401) {
+        toast.info("로그인 하고 이용하시오")
+      } else {
+        toast.warning("저장 하는 도중에 에러가 발생했습니다. 문의해주세요")
+      }
+    }
+  }
+  
+  const removeSchedule = (index: number) => {
+  currentPlan.value.schedules.splice(index, 1)
+}
+
   return {
+    currentPlan,
     markerProps,
     markerMeta,
     kakaoMapProps,
@@ -166,6 +203,9 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
     locationSearch,
     contentSearch,
     contentDetailSearch,
+    appendSchedule,
+    savePlan,
+    removeSchedule
   }
 })
 
