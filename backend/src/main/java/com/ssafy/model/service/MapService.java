@@ -31,15 +31,15 @@ public interface MapService {
    */
   Mono<Document> searchAddress(String query, Integer pageNo);
 
-  default Mono<Document> searchContent(String mapX, String mapY, ContentTypeId contentTypeId){
+  default Mono<Document> searchContent(String mapX, String mapY, String contentTypeId){
     return  searchContent(mapX,mapY,contentTypeId,1,"20000");
   }
 
-  default Mono<Document> searchContent(String mapX, String mapY, ContentTypeId contentTypeId, Integer pageNo){
+  default Mono<Document> searchContent(String mapX, String mapY, String contentTypeId, Integer pageNo){
     return  searchContent(mapX,mapY,contentTypeId,pageNo,"20000");
   }
 
-  Mono<Document> searchContent(String mapX, String mapY, ContentTypeId contentTypeId, Integer pageNo, String radius);
+  Mono<Document> searchContent(String mapX, String mapY, String contentTypeId, Integer pageNo, String radius);
 
   Mono<Document> searchContentDetail(String contentId);
 }
