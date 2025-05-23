@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { defineProps, computed } from 'vue'
-import type { Board } from '../../hooks/boardService'
+import type { Board } from '@/hooks/boardService'
 
 const props = defineProps<{ item: Board }>()
 

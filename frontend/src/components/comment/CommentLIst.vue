@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
-import CommentItem from './CommentItem.vue'
+import CommentItem from '@/components/comment/CommentItem.vue'
 
 type Comment = {
   cno: number;

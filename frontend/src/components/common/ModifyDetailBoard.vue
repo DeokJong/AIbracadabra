@@ -49,7 +49,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { onMounted, reactive } from 'vue'
 import axios from 'axios'
 import { CommonResponse } from '@/service/common'
-import { BoardSummary } from '../board/ItemTable.vue'
+import { BoardSummary } from '@/components/board/ItemTable.vue'
 
 type Comment = {
   cno: number

@@ -39,8 +39,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue'
-import type { Board } from '../../hooks/boardService'
-import { fetchPopularBoards } from '../../hooks/boardService'
+import type { Board } from '@/hooks/boardService'
+import { fetchPopularBoards } from '@/hooks/boardService'
 
 const props = defineProps<{
   title: string
