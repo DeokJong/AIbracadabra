@@ -59,6 +59,52 @@ export type Plan = {
   schedules: FullDocument[]
 }
 
+// 
+export type ChatMessage = {
+  sender: 'user' | 'bot'
+  content: string
+}
+export function useChatbot() {
+  const inputText = ref<string>('')
+  const messages = ref<ChatMessage[]>([])
+
+  // 메시지 전송 함수
+  async function sendMessage() {
+    const text = inputText.value.trim()
+    if (!text) return
+
+    // 대화 내용을 담는 maessages 배열에 사용자 메시지 추가
+    messages.value.push({ sender: 'user', content: text })
+
+    try {
+      // 서버에 사용자의 inputText을 보냄
+      const res = await axios.post<{
+        reply: string
+      }>('/api/chat', {
+        message: text,
+        history: messages.value
+      })
+
+      // 서버에서 온 응답을 배열에 담음
+      messages.value.push({ sender: 'bot', content: res.data.reply })
+    } catch (error) {
+      console.error(error)
+      messages.value.push({
+        sender: 'bot',
+        content: '⚠️ 서버 요청 중 오류가 발생했습니다.'
+      })
+    } finally {
+      // 사용자의 입력창을 초기화 하기
+      inputText.value = ''
+    }
+  }
+  return {
+    inputText,
+    messages,
+    sendMessage
+  }
+}
+
 /**
  * @return{
  * markerProps - 띄우는 마커 정보
@@ -207,7 +253,8 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
     contentDetailSearch,
     appendSchedule,
     savePlan,
-    removeSchedule
+    removeSchedule,
+    
   }
 })
 

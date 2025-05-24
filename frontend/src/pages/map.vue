@@ -1,6 +1,7 @@
 <template>
   <MapSearchBar />
   <KakaoMapWrapper />
+  <ChatBot/>
   <DetailSidebar />
   <ResultNavigationBar />
   <ScheduleSidebar />
@@ -12,6 +13,7 @@ import MapSearchBar from '@/components/map/MapSearchBar.vue'
 import DetailSidebar from '@/components/map/DetailSidebar.vue'
 import ResultNavigationBar from '@/components/map/ResultNavigationBar.vue'
 import ScheduleSidebar from '@/components/map/ScheduleSidebar.vue'
+import ChatBot from '@/components/map/ChatBot.vue'
 </script>
 
 <route lang="yaml">
