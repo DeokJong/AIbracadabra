@@ -175,7 +175,9 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
   const savePlan = async () => {
     try {
       if (currentPlan.value.pno === 0) {
-        await axios.post('/api/v1/plans', currentPlan.value) // TODO 백엔드 API 수정 필요 WHY ? 저장 한 이후 pno를 받아와야함. 받아온 이후 현재 계획에 pno 적용하기! 
+        const response = await axios.post('/api/v1/plans', currentPlan.value) // TODO 백엔드 API 수정 필요 WHY ? 저장 한 이후 pno를 받아와야함. 받아온 이후 현재 계획에 pno 적용하기! 
+        currentPlan.value.pno = response.data.data.pno
+        console.log(currentPlan.value.pno)
       } else {
         await axios.put(`/api/v1/plans/${currentPlan.value.pno}`, currentPlan.value)
       }
