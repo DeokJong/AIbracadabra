@@ -29,7 +29,7 @@ const debouncedUpdate = debounce((map: kakao.maps.Map) => {
   kakaoMapProps.value.lng = center.getLng()
   kakaoMapProps.value.lat = center.getLat()
   kakaoMapProps.value.level = map.getLevel()
-}, 1000)
+}, 1500)
 
 function onLoad(map: kakao.maps.Map) {
   mapRef.value = map

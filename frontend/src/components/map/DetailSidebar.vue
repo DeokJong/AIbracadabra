@@ -40,7 +40,7 @@
             </v-list-item>
           </v-list>
           <v-divider />
-          <v-btn block color="info">담기</v-btn>
+          <v-btn block color="info" @click="appendSchedule">담기</v-btn>
         </v-card>
 
       </div>
@@ -64,6 +64,7 @@ const drawer = ref(false)
 
 // currentContent 데이터
 const kakaoMap = useKakaoMap()
+const { appendSchedule } = kakaoMap
 const { currentContent } = storeToRefs(kakaoMap)
 
 // currentContent.contentId가 설정될 때 자동으로 열기
