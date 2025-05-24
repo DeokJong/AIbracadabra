@@ -23,7 +23,8 @@ public class RestPlanControllerImpl implements ResponseEntityHelper, RestPlanCon
 	}
 
 	@Override
-	public ResponseEntity<?> updatePlan(Integer pno, Plan plan) {
+	public ResponseEntity<?> updatePlan(CustomUserDetails userDetails,Integer pno, Plan plan) {
+		plan.setMno(userDetails.getMember().getMno());
 		plan.setPno(pno);
 		planService.update(plan);
 		return handleResponse("UPDATE PLAN", HttpStatus.NO_CONTENT);

@@ -34,6 +34,7 @@ public interface RestPlanController {
 	@Operation(summary = "여행 계획 수정", description = "지정된 PNO의 여행 계획 정보를 업데이트합니다.")
 	@PutMapping("/{pno}")
 	ResponseEntity<?> updatePlan(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable("pno") Integer pno,
 		@RequestBody Plan plan
 	);
