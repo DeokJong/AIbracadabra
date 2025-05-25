@@ -1,11 +1,8 @@
 package com.ssafy.model.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-import com.ssafy.exception.RecordInsertException;
 import com.ssafy.exception.RecordNotFoundException;
-import com.ssafy.model.dao.BucketListDao;
 import com.ssafy.model.dto.domain.BucketList;
 import com.ssafy.model.service.impl.BucketListServiceImpl;
 
@@ -14,7 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
@@ -111,7 +107,6 @@ class TestBucketListService {
     @Test
     @DisplayName("getByMember(): 멤버의 전체 BucketList를 반환함")
     void getByMember_ReturnsList() {
-        List<BucketList> list = List.of(sample);
 
         List<BucketList> result = bucketListService.getByMember(testMno);
 

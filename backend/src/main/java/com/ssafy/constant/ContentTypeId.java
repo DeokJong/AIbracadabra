@@ -1,11 +1,7 @@
 package com.ssafy.constant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
-
-import java.util.Arrays;
-import java.util.Optional;
 
 @Getter
 public enum ContentTypeId {
