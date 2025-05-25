@@ -1,4 +1,7 @@
+// src/hooks/useChatBot.ts
+import { useAuth } from '@/hooks/useAuth'
 import { usePlan, type Plan } from '@/hooks/usePlan'
+import router from '@/router'
 import { CommonResponse } from '@/service/common'
 import axios from 'axios'
 import { ref } from 'vue'
@@ -15,14 +18,20 @@ export type ChatMessage = {
 }
 
 const useChatbot = () => {
+  const auth = useAuth()
   const toast = useToast()
   const inputText = ref<string>('')
   const isChatLoading = ref<boolean>(false)
   const chatHistory = ref<ChatMessage[]>([])
 
-  const { currentPlan } = usePlan()
+  const planStore = usePlan()
 
   const clearChatHistory = async () => {
+    if (!auth.isLoggined) {
+      toast.info('로그인이 필요합니다.')
+      router.push('/login')
+      return
+    }
     axios
       .post('/api/v1/chat/cleanChatMemory')
       .then(() => {
@@ -34,6 +43,10 @@ const useChatbot = () => {
   }
 
   const setupChatHistory = async () => {
+    if (!auth.isLoggined) {
+      return
+    }
+
     axios
       .get<CommonResponse<ChatMessage[]>>('/api/v1/chat/chatHistory')
       .then((res) => {
@@ -58,6 +71,11 @@ const useChatbot = () => {
 
   // 메시지 전송 함수
   async function sendMessage() {
+    if (!auth.isLoggined) {
+      toast.info('로그인이 필요합니다.')
+      router.push('/login')
+      return
+    }
     const text = inputText.value.trim()
     if (!text) return
 
@@ -87,12 +105,11 @@ const useChatbot = () => {
       // 4) 실제 응답으로 대체
       chatHistory.value[placeholderIndex].text = data.data.message
 
-      const recommendPlan =data.data.recommendPlan
-      if(recommendPlan) {
-        currentPlan.title = recommendPlan.title
-        currentPlan.schedules = recommendPlan.schedules
+      const recommendPlan = data.data.recommendPlan
+      if (recommendPlan.schedules.length) {
+        recommendPlan.pno=0
+        planStore.setPlan(recommendPlan)
       }
-
     } catch (error) {
       chatHistory.value[placeholderIndex].text = '⚠️ 서버 요청 중 오류가 발생했습니다.'
     } finally {

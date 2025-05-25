@@ -1,6 +1,5 @@
 <template>
   <v-list-item class="schedule-item">
-    <v-list-item-content>
       <div class="schedule-title">
         <span>{{ item.title }}</span>
         <v-icon
@@ -10,7 +9,6 @@
         >mdi-close</v-icon>
       </div>
       <div class="schedule-address">{{ item.address }}</div>
-    </v-list-item-content>
   </v-list-item>
 </template>
 
@@ -65,11 +63,11 @@ function removeItem() {
 }
 
 .schedule-title span {
-  flex: 1;              
+  flex: 1;
   margin-right: 8px;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
   text-overflow: ellipsis;
 

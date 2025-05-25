@@ -29,7 +29,7 @@
     <div class="messages">
       <div v-for="(msg, idx) in chatHistory" :key="idx" :class="['message', msg.messageType]">
         <span v-if="msg.messageType === 'USER'">
-          🧑 {{ auth.userInfo.name }}님: {{ msg.text }}
+           {{ msg.text }} :
         </span>
         <span v-else>🤖 에브라: {{ msg.text }}</span>
       </div>
@@ -37,8 +37,8 @@
 
     <!-- 입력 영역 -->
     <div class="input-area">
-      <input v-model="inputText" @keyup.enter="onSubmit" placeholder="메시지를 입력하세요" :disabled="isChatLoading" />
-      <button @click="onSubmit" :disabled="isChatLoading">전송</button>
+      <input v-model="inputText" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요" :disabled="isChatLoading" />
+      <button @click="sendMessage" :disabled="isChatLoading">전송</button>
     </div>
   </div>
 
@@ -56,14 +56,7 @@
 
 <script setup lang="ts">
 import { reactive, ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
 import useChatbot from '@/hooks/useChatBot'
-import { useAuth } from '@/hooks/useAuth'
-import { useToast } from 'vue-toastification'
-
-const auth = useAuth()
-const router = useRouter()
-const toast = useToast()
 
 const {
   inputText,
@@ -118,16 +111,6 @@ onUnmounted(() => {
   window.removeEventListener('mousemove', onMouseMove)
   window.removeEventListener('mouseup', onMouseUp)
 })
-
-// 전송 처리
-function onSubmit() {
-  if (!auth.isLoggined) {
-    toast.info('로그인이 필요합니다.')
-    router.push('/login')
-    return
-  }
-  sendMessage()
-}
 
 // 스타일 바인딩 (reactive pos 반영)
 const chatbotStyle = computed(() => ({
