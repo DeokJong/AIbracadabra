@@ -7,7 +7,7 @@
     <div class="icon-bar">
       <div class="drag-handle">💬 드래그해서 이동</div>
       <div class="icon-actions">
-        <v-tooltip text="채팅 기록 삭제" location="top" style="z-index: 3000;">
+        <v-tooltip text="채팅 기록 삭제" location="top" style="z-index: 1000;">
           <template #activator="{ props }">
             <v-icon v-bind="props" @click="clearChatHistory" class="clickable-icon">
               mdi-delete
@@ -15,7 +15,7 @@
           </template>
         </v-tooltip>
 
-        <v-tooltip text="창 닫기" location="top" style="z-index: 3000;">
+        <v-tooltip text="창 닫기" location="top" style="z-index: 1000;">
           <template #activator="{ props }">
             <v-icon v-bind="props" @click="visible = false" class="clickable-icon">
               mdi-close
@@ -133,7 +133,7 @@ function onSubmit() {
 const chatbotStyle = computed(() => ({
   top: pos.y + 'px',
   left: pos.x + 'px',
-  zIndex: 3000
+  zIndex: 1000
 }))
 </script>
 

@@ -27,16 +27,12 @@
           </v-card-title>
           <v-list dense>
             <v-list-item>
-              <v-list-item-content>
                 <v-list-item-title>주소</v-list-item-title>
                 <div style="color: gray">{{ currentContent.address }}</div>
-              </v-list-item-content>
             </v-list-item>
             <v-list-item>
-              <v-list-item-content>
                 <v-list-item-title>상세 설명</v-list-item-title>
                 <div style="color: gray">{{ currentContent.overview }}</div>
-              </v-list-item-content>
             </v-list-item>
           </v-list>
           <v-divider />
