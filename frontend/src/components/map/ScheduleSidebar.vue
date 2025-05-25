@@ -40,6 +40,9 @@
 
           <v-text-field v-model="currentPlan.title" label="일정 제목" class="mt-4" />
           <v-divider class="my-2" />
+          <v-btn block color="info" class="mt-2" @click="setupMarker">
+            보기
+          </v-btn>
           <v-btn block color="success" class="mt-2" @click="savePlan">
             저장
           </v-btn>
@@ -58,10 +61,14 @@ import draggable from 'vuedraggable'
 import ScheduleItem from '@/components/map/ScheduleItem.vue'
 import { storeToRefs } from 'pinia'
 import { Plan, usePlan } from '@/hooks/usePlan'
+import { ContentTypeImageResolver, useKakaoMap } from '@/hooks/useKakaoMap'
 
 const plan = usePlan()
 const { savePlan, removePlan, removeSchedule } = plan
 const { currentPlan, myPlans } = storeToRefs(plan)
+
+const kakaoMap = useKakaoMap()
+const { markerProps, kakaoMapProps } = storeToRefs(kakaoMap)
 
 const drawer = ref(false)
 const currentPage = ref(1)
@@ -142,11 +149,35 @@ async function removeAndInitPage() {
 function addNewPlan() {
   const newPlan: Plan = {
     title: '새 일정',
-    pno:   0,
+    pno: 0,
     schedules: []
   }
   myPlans.value.push(newPlan)
   currentPage.value = myPlans.value.length
+}
+
+function setupMarker() {
+  markerProps.value = []
+  if (currentPlan.value.schedules.length) {
+    const data = currentPlan.value.schedules[0]
+    kakaoMapProps.value.lng = data.mapX
+    kakaoMapProps.value.lat = data.mapY
+  }
+  currentPlan.value.schedules.forEach((ele) => {
+    markerProps.value.push({
+      lng: ele.mapX,
+      lat: ele.mapY,
+      image: {
+        imageSrc: `/marker/${ContentTypeImageResolver(ele.contentsTypeId)}`,
+        imageHeight: 32,
+        imageWidth: 32,
+      },
+      clickable: true,
+      info: {
+        contentId: ele.contentId,
+      },
+    })
+  })
 }
 
 

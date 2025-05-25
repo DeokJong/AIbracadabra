@@ -1,12 +1,13 @@
 // src/hooks/usePlan.ts
-import { defineStore } from 'pinia'
-import type { FullDocument } from '@/hooks/useKakaoMap'
+import { defineStore, storeToRefs } from 'pinia'
+import { ContentTypeImageResolver, useKakaoMap, type FullDocument } from '@/hooks/useKakaoMap'
 import axios from 'axios'
 import { isAxiosError } from 'axios'
 import { useToast } from 'vue-toastification'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { CommonResponse } from '@/service/common'
 import { startsWith } from 'lodash-es'
+import { useKakao } from 'vue3-kakao-maps'
 
 export type Plan = {
   title: string
@@ -16,32 +17,54 @@ export type Plan = {
 
 export const usePlan = defineStore('plan', () => {
   const toast = useToast()
+  const kakaoMap = useKakaoMap()
 
+  const { markerProps } = storeToRefs(kakaoMap)
   const myPlans = ref<Plan[]>([])
 
   const currentPlan = ref<Plan>({
     title: '',
     pno: 0,
-    schedules: []
+    schedules: [],
   })
 
-  async function setupMyPlans () {
+  watch(
+    () => currentPlan.value.schedules,
+    (itmes) => {
+      itmes.forEach((ele) => {
+        markerProps.value.push({
+          lng: ele.mapX,
+          lat: ele.mapY,
+          image: {
+            imageSrc: `/marker/${ContentTypeImageResolver(ele.contentsTypeId)}`,
+            imageHeight: 32,
+            imageWidth: 32,
+          },
+          clickable: true,
+          info: {
+            contentId: ele.contentId,
+          },
+        })
+      })
+    }
+  )
+
+  async function setupMyPlans() {
     try {
       const res = await axios.get<CommonResponse<Plan[]>>('/api/v1/plans/myplan')
       myPlans.value = res.data.data
     } catch (err) {
       if (isAxiosError(err)) {
         if (err.response?.status === 401) {
-          toast.info("로그인이 필요합니다")
+          toast.info('로그인이 필요합니다')
         } else if (startsWith(String(err.response?.status), '5')) {
-          toast.warning("계획을 갖고오는 도중 문제가 발생했습니다.")
+          toast.warning('계획을 갖고오는 도중 문제가 발생했습니다.')
         }
       } else {
-        toast.error("계획을 갖고 오는 도중 알 수 없는 문제가 생겼습니다.")
+        toast.error('계획을 갖고 오는 도중 알 수 없는 문제가 생겼습니다.')
       }
     }
   }
-
 
   function setPlan(plan: Plan) {
     currentPlan.value = plan
@@ -56,19 +79,19 @@ export const usePlan = defineStore('plan', () => {
   }
 
   async function removePlan() {
-    if(!currentPlan.value.pno) {
-    toast.warning("아직 저장하지 않은 계획입니다.")
+    if (!currentPlan.value.pno) {
+      toast.warning('아직 저장하지 않은 계획입니다.')
     } else {
       await axios.delete(`/api/v1/plans/${currentPlan.value.pno}`)
-      toast.info("여행 계획이 제거 되었습니다!")
+      toast.info('여행 계획이 제거 되었습니다!')
       await setupMyPlans()
     }
   }
 
   async function savePlan() {
-    if(!currentPlan.value.title) {
-      toast.warning("일정 제목은 필수 입니다!")
-      return ;
+    if (!currentPlan.value.title) {
+      toast.warning('일정 제목은 필수 입니다!')
+      return
     }
     try {
       if (currentPlan.value.pno === 0) {
@@ -100,6 +123,6 @@ export const usePlan = defineStore('plan', () => {
     savePlan,
     removeSchedule,
     setupMyPlans,
-    removePlan
+    removePlan,
   }
 })

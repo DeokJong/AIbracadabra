@@ -87,6 +87,7 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
   } as KakaoDocumentMeta)
   const lastSearchContentParams = ref<SearchContentParams>({} as SearchContentParams)
   const currentContent = reactive<FullDocument>({} as FullDocument)
+
   /**
    * 검색어로 보고있는 화면을 옮김
    * @param query 검색어
@@ -180,6 +181,10 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
       })
   }
 
+    function setCurrentContent(item: FullDocument) {
+    Object.assign(currentContent, item)
+  }
+
   return {
     markerProps,
     markerMeta,
@@ -189,14 +194,15 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
     traceMapProps,
     locationSearch,
     contentSearch,
-    contentDetailSearch
+    contentDetailSearch,
+    setCurrentContent
   }
 })
 
 /**
  * 컨텐츠 Type code로 마커 이미지 불러오는 함수
  */
-const ContentTypeImageResolver = (code: string, type: string = 'png'): string => {
+export const ContentTypeImageResolver = (code: string, type: string = 'png'): string => {
   switch (code) {
     case '12':
       return `${ContentType.TOURIST_SPOT}.${type}`
@@ -225,7 +231,7 @@ const ContentTypeImageResolver = (code: string, type: string = 'png'): string =>
  * @param code
  * @returns
  */
-const ContentCodeResolver = (code: string) => {
+export const ContentCodeResolver = (code: string) => {
   switch (code) {
     case '12':
       return ContentType.TOURIST_SPOT

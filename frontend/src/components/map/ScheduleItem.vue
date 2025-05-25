@@ -1,20 +1,24 @@
 <template>
   <v-list-item class="schedule-item">
-      <div class="schedule-title">
-        <span>{{ item.title }}</span>
-        <v-icon
-          small
-          class="title-remove"
-          @click.stop="removeItem"
-        >mdi-close</v-icon>
-      </div>
-      <div class="schedule-address">{{ item.address }}</div>
+    <div class="schedule-title">
+      <!-- 클릭 시 setContent 호출 -->
+      <span class="clickable" @click.stop="clickItem">{{ item.title }}</span>
+      <v-icon
+        small
+        class="title-remove"
+        @click.stop="removeItem"
+      >mdi-close</v-icon>
+    </div>
+    <div class="schedule-address">{{ item.address }}</div>
   </v-list-item>
 </template>
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
-import type { FullDocument } from '@/hooks/useKakaoMap'
+import { type FullDocument, useKakaoMap } from '@/hooks/useKakaoMap'
+
+// 카카오맵 스토어에서 currentContent 가져오기
+const { kakaoMapProps, setCurrentContent } = useKakaoMap()
 
 const props = defineProps<{
   item: FullDocument
@@ -29,6 +33,12 @@ function removeItem() {
   emit('remove', props.index)
 }
 
+// 제목 클릭 시 currentContent 교체
+function clickItem() {
+  setCurrentContent(props.item)
+  kakaoMapProps.lat = props.item.mapY
+  kakaoMapProps.lng = props.item.mapX
+}
 </script>
 
 <style scoped>
