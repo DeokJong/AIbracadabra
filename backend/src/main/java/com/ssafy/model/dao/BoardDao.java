@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.ssafy.model.dto.domain.Board;
+import com.ssafy.model.dto.domain.BoardImage;
 import com.ssafy.model.dto.domain.Comment;
 
 @Mapper
@@ -53,4 +54,13 @@ public interface BoardDao {
 	// 댓글 하나 선택하기
 	Comment getCommentCno(int cno);
 
+	
+    /** 이미지 메타 저장 */
+    int insertImage(BoardImage image);
+
+    /** 게시글별 이미지 ID 조회 */
+    List<Integer> selectImageIdsByBno(int bno);
+
+    /** 단일 이미지 메타 조회 */
+    BoardImage selectImageMetaById(long imgNo);
 }

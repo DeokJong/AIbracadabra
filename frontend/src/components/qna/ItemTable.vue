@@ -13,10 +13,7 @@
         class="row"                      
         @click="item.visibility === 'PUBLIC' && onRowClick(item)"
       >
-        <!-- 글번호(기존 로직) -->
-        <td>
-          {{ (currentPageInternal - 1) * itemsPerPage + index + 1 }}
-        </td>
+
         <!-- 제목: PRIVATE 면 대체 문구 출력 -->
         <td>
           {{ item.visibility === 'PRIVATE'
@@ -52,6 +49,7 @@ const userInfo = useAuth()
 /** 테이블에 들어갈 아이템 타입 정의 */
 export interface BoardSummary {
   bno: number
+  mno: number
   title: string
   author: string
   createdDate: string
@@ -81,7 +79,6 @@ const emit = defineEmits<{
 const router = useRouter()
 const itemsPerPage = 20
 const headers = [
-  { title: '글번호', value: 'bno' },
   { title: '제목',   value: 'title' },
   { title: '작성자', value: 'author' },
   { title: '작성일', value: 'createdDate' },

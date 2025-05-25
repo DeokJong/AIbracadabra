@@ -12,9 +12,9 @@
       <!-- 글 제목 -->
       <a
         class="title"
-        :href="`/board/${current.bno}`"
-        target="_blank"
-        rel="noopener noreferrer"
+        :href="`/${boardType}/${current.bno}`"
+        target="_self"
+        rel="noopener"
       >
         {{ current.title }}
       </a>
@@ -174,4 +174,5 @@ watch(() => props.boardType, load)
   padding: 1rem 0;
   font-style: italic;
 }
+
 </style>

@@ -6,13 +6,25 @@ import com.ssafy.model.dto.domain.Comment;
 import com.ssafy.model.dto.domain.Member;
 import com.ssafy.model.service.BoardService;
 import com.ssafy.security.dto.CustomUserDetails;
+
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
+import java.io.IOException;
+import java.net.URLConnection;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -53,14 +65,19 @@ public class RestBoardControllerImpl implements ResponseEntityHelper, RestBoardC
         return ResponseEntity.ok(list);
     }
 
-	@Override
-	public ResponseEntity<?> register(Board board, CustomUserDetails userDetails) {
-		Member member = userDetails.getMember();
-		board.setMno(member.getMno());
-		board.setAuthor(member.getName());
-		bService.add(board);
-		return handleResponse("CREATED", HttpStatus.CREATED);
-	}
+    @Override
+    public ResponseEntity<?> register(Board board,
+                                      CustomUserDetails userDetails) {
+        Member member = userDetails.getMember();
+        board.setMno(member.getMno());
+        board.setAuthor(member.getName());
+
+        // bService.add 를 Long 리턴하도록 바꿔주세요.
+        int newBno = bService.add(board);
+
+        // { status:"SUCCESS", data: { bno:123 } } 형태로 반환
+        return handleSuccess(Map.of("bno", newBno), HttpStatus.CREATED);
+    }
 
 
 	@Override
@@ -129,6 +146,49 @@ public class RestBoardControllerImpl implements ResponseEntityHelper, RestBoardC
         return handleResponse("OK", HttpStatus.NO_CONTENT);
     }
 
+	@Override
+    public ResponseEntity<Map<String, Integer>> uploadImage(
+            @PathVariable("bno") int bno,
+            @RequestParam("file") MultipartFile file,
+            CustomUserDetails user) {
 
+        Member member = user.getMember();
+        Board board = bService.getBoardBno(bno);
+        if (board.getMno()!=member.getMno()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        Long imgNo = bService.storeImage(file, bno);
+        // 인터페이스 리턴 타입에 맞춰 Map<String,Integer> 사용
+        return ResponseEntity.ok(Map.of("imgNo", imgNo.intValue()));
+    }
+	@GetMapping("/images/{imgNo}")
+	@Override
+    public ResponseEntity<Resource> serveImage(
+            @PathVariable Long imgNo,
+            CustomUserDetails user) {
+        try {
+            // 1) 리소스(파일) 로드 & 권한 체크
+            Resource img = bService.loadImageAsResource(imgNo);
+
+            // 2) 파일명으로부터 MIME 타입 추측
+            String filename = img.getFilename(); // UrlResource 의 경우 실제 저장된 UUID+확장자
+            String contentType = URLConnection.guessContentTypeFromName(filename);
+            if (contentType == null) {
+                // 못찾으면 바이너리 스트림으로
+                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+            }
+
+            // 3) 헤더 설정하고 리턴
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(img);
+
+        } catch (AccessDeniedException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (IOException ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }

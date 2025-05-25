@@ -10,12 +10,7 @@ export interface Board {
   views: number
 }
 
-/**
- * boardType 에 따라 인기 글 5개 가져오기
- * - board   : 일반 게시판
- * - notice  : 공지사항
- * - qna     : Q&A
- */
+// 인기글 5개 조회 (기존)
 export async function fetchPopularBoards(
   boardType: 'board' | 'notice' | 'qna'
 ): Promise<Board[]> {
@@ -23,4 +18,24 @@ export async function fetchPopularBoards(
     `/api/v1/board/views/${encodeURIComponent(boardType)}`
   )
   return res.data
+}
+
+/**
+ * 게시글 이미지 업로드
+ * @param bno  게시글 번호
+ * @param file 첨부할 이미지 파일
+ * @returns     업로드된 이미지의 imgNo
+ */
+export async function uploadBoardImage(
+  bno: number,
+  file: File
+): Promise<number> {
+  const form = new FormData()
+  form.append('file', file)
+  const res = await axios.post<{ imgNo: number }>(
+    `/api/v1/board/${bno}/images`,
+    form,
+    { headers: { 'Content-Type': 'multipart/form-data' } }
+  )
+  return res.data.imgNo
 }

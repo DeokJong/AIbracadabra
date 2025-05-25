@@ -41,6 +41,7 @@ public class FilterChainConfig {
 			.requestMatchers(PUT, "/api/v1/notice/**").hasRole("ADMIN")
 			.requestMatchers(DELETE, "/api/v1/notice/**").hasRole("ADMIN")
 			.requestMatchers(GET, "/api/v1/notice/**").permitAll()
+	      .requestMatchers(GET, "/api/v1/board/images/**").permitAll()
 
 			// ==== 회원 ====
 			.requestMatchers(GET, "/api/v1/member/me").hasRole("USER")
