@@ -195,4 +195,48 @@ public interface RestBoardController {
     ResponseEntity<Resource> serveImage(
         @PathVariable Long imgNo,
         @AuthenticationPrincipal CustomUserDetails user);
+    
+    
+    @Operation(
+            summary = "회원별 게시글 조회",
+            description = "쿼리 파라미터 mno에 해당하는 회원의 게시글을 현재 페이지 단위로 조회합니다."
+        )
+        @ApiResponses({
+            @ApiResponse(
+                responseCode = "200",
+                description = "조회 성공",
+                content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = Board.class))
+                )
+            ),
+            @ApiResponse(responseCode = "404", description = "해당 회원의 게시글이 존재하지 않습니다.")
+        })
+        @GetMapping("member")
+        ResponseEntity<?> boardList(
+            @RequestParam(defaultValue = "1") Integer currentPage,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+        );
+    
+    @Operation(
+    		summary = "회원별 댓글 조회",
+    		description =  "쿼리 파라미터 mno에 해당하는 회원의 댓글을 현재 페이지 단위로 조회합니다."
+    		
+		)
+	    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "조회 성공",
+                    content = @Content(
+                        mediaType = "application/json",
+                        array = @ArraySchema(schema = @Schema(implementation = Board.class))
+                    )
+                ),
+                @ApiResponse(responseCode = "404", description = "해당 회원의 댓글이 존재하지 않습니다.")
+            })
+    		@GetMapping("comment")
+		    ResponseEntity<?> commentList(
+		            @RequestParam(defaultValue = "1") Integer currentPage,
+		            @AuthenticationPrincipal CustomUserDetails userDetails
+		        );
 }

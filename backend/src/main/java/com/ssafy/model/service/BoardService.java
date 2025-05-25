@@ -18,6 +18,10 @@ public interface BoardService {
     PageInfo<Board> getByTitle(String title, Integer currentPage);
 
     PageInfo<Board> getAllBoards(Integer currentPage);
+    
+    PageInfo<Board> getBoardMno(Integer mno, Integer currentPage);
+    
+    PageInfo<Comment> getCommentAll(Integer mno, Integer currentPage);
 
     Board set(Board board);
 

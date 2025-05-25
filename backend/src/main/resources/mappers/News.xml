@@ -17,6 +17,7 @@
 
 	<select id="selectAll" resultMap="NewsResult">
 		SELECT * FROM news
+		order by publish-at DESC
 
 	</select>
 

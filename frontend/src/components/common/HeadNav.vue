@@ -57,4 +57,7 @@ const { logout } = useAuth();
   height: 40px;
   /* 필요에 따라 width:auto; */
 }
+.mypage :hover{
+    color: #83bcea;
+}
 </style>

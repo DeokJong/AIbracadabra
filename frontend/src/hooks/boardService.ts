@@ -4,6 +4,7 @@ import axios from 'axios'
 export interface Board {
   bno: number
   title: string
+  mmo: number
   content: string
   author: string
   createdDate: string

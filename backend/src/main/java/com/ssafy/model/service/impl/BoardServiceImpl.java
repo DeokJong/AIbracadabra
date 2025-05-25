@@ -91,6 +91,23 @@ public class BoardServiceImpl implements BoardService {
 			return new PageInfo<>(page);
 		}	
 	}
+	
+	@Override
+	public PageInfo<Board> getBoardMno(Integer mno, Integer currentPage) {
+		try(Page<Board> page = PageHelper.startPage(currentPage, 10, "created_date DESC")){
+			boardDao.getBoardMno(mno);
+			return new PageInfo<>(page);
+		}
+	}
+	@Override
+	public PageInfo<Comment> getCommentAll(Integer mno, Integer currentPage) {
+		try(Page<Comment> page = PageHelper.startPage(currentPage,10,"created_date DESC")){
+			boardDao.getCommentAll(mno);
+			return new PageInfo<>(page);
+		}
+	}
+
+
 
 	@Override
 	public List<Board> getBoardViews(String boardType) {
@@ -331,6 +348,8 @@ public class BoardServiceImpl implements BoardService {
     public List<Integer> getImageIdsByBno(int bno) {
         return boardImageDao.selectImageIdsByBno(bno);
     }
+
+
 
 
 

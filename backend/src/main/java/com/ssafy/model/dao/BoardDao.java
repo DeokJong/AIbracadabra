@@ -21,7 +21,7 @@ public interface BoardDao {
 
 	// 게시판 전체 조회
 	Page<Board> getAllBoards();
-
+	
 	// 게시판 글 수정
 	int set(Board board);
 
@@ -36,7 +36,14 @@ public interface BoardDao {
 	
 	// view로 가져오기
 	List<Board> getBoardViews(String boardType);
+	
+	// mno로 가져오기
+	Page<Board> getBoardMno(int mno);
+	
+	// mno로 댓글 전체 가져오기
+	Page<Board> getCommentAll(int mno);
 
+	
 	// 게시판 글 삭제
 	int remove(int bno);
 
@@ -53,6 +60,10 @@ public interface BoardDao {
 	
 	// 댓글 하나 선택하기
 	Comment getCommentCno(int cno);
+	
+	
+	
+	
 
 	
     /** 이미지 메타 저장 */
