@@ -1,4 +1,4 @@
-<!-- src/components/map/kakaoMap.vue -->
+<!-- src/components/map/KakaoMap.vue -->
 <template>
   <KakaoMap v-bind="kakaoMapProps" :draggable="true" @onLoadKakaoMap="onLoad" width="100%" height="100%">
     <KakaoMapMarker v-for="marker in markerProps" :key="marker.lat + marker.lng" v-bind="marker"
@@ -11,9 +11,8 @@ import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps'
 import { useKakaoMap } from '@/hooks/useKakaoMap'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref, watch } from 'vue'
-import debounce from 'lodash-es/debounce'
 
-const { kakaoMapProps, markerProps, currentContent } = storeToRefs(useKakaoMap())
+const { kakaoMapProps, traceMapProps, markerProps, currentContent } = storeToRefs(useKakaoMap())
 const { locationSearch, contentDetailSearch } = useKakaoMap()
 
 // 초기 위치 검색
@@ -23,18 +22,19 @@ onMounted(() => {
 
 const mapRef = ref<kakao.maps.Map>()
 
-// 지도가 idle 상태가 될 때마다 center/level 업데이트 (디바운스 적용)
-const debouncedUpdate = debounce((map: kakao.maps.Map) => {
-  const center = map.getCenter()
-  kakaoMapProps.value.lng = center.getLng()
-  kakaoMapProps.value.lat = center.getLat()
-  kakaoMapProps.value.level = map.getLevel()
-}, 1500)
-
 function onLoad(map: kakao.maps.Map) {
   mapRef.value = map
   kakao.maps.event.addListener(map, 'idle', () => {
-    debouncedUpdate(map)
+    const center = map.getCenter()
+    const newLng = center.getLng(), newLat = center.getLat()
+  // 변화량이 작은 소숫점 오차 범위(예: 0.000001) 안이면 무시
+  if (Math.abs(traceMapProps.value.lng - newLng) < 1e-6 &&
+      Math.abs(traceMapProps.value.lat - newLat) < 1e-6) {
+    return
+  }
+  traceMapProps.value.lng = newLng
+  traceMapProps.value.lat = newLat
+  traceMapProps.value.level = map.getLevel()
   })
 }
 

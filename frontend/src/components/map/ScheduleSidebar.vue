@@ -50,6 +50,7 @@ import { ref, watch, computed } from 'vue'
 import { useKakaoMap } from '@/hooks/useKakaoMap'
 import ScheduleItem from '@/components/map/ScheduleItem.vue'
 import { storeToRefs } from 'pinia'
+import { usePlan } from '@/hooks/usePlan'
 
 // width Prop (Number or String)
 const props = defineProps({
@@ -57,8 +58,8 @@ const props = defineProps({
 })
 const { width } = props
 
-const { savePlan, removeSchedule } = useKakaoMap()
-const { currentPlan } = storeToRefs(useKakaoMap())
+const { savePlan, removeSchedule } = usePlan()
+const { currentPlan } = storeToRefs(usePlan())
 const planList = computed(() => currentPlan.value.schedules)
 
 function onRemove(idx: number) {
@@ -111,7 +112,7 @@ const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
   width: 16px;
   height: 64px;
   background: white;
-  border-radius: 8px 0 0 8px;  
+  border-radius: 8px 0 0 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
