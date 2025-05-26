@@ -11,7 +11,7 @@
       <tr
         v-bind="rowProps"
         class="row"                      
-        @click="item.visibility === 'PUBLIC' && onRowClick(item)"
+        @click="(item.visibility === 'PUBLIC' || item.mno===userInfo.mno) && onRowClick(item)"
       >
 
         <!-- 제목: PRIVATE 면 대체 문구 출력 -->
@@ -35,7 +35,7 @@
     class="mt-4"
   />
 
-  <div class="button-wrap">
+  <div class="button-wrap" v-if="userInfo.role === 'ADMIN'">
     <v-btn color="primary" @click="$emit('write')">글쓰기</v-btn>
   </div>
 </template>
@@ -44,7 +44,7 @@
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/hooks/useAuth'
-const userInfo = useAuth()
+const userInfo = useAuth().userInfo
 
 /** 테이블에 들어갈 아이템 타입 정의 */
 export interface BoardSummary {

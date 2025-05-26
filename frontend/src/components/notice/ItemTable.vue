@@ -8,7 +8,7 @@
     class="elevation-1"
   >
     <template #item="{ item, props }">   <!-- TODO 이부분 글쓴이와 같은지 확인하기-->
-      <tr v-bind="props" @click="item.visibility === 'PUBLIC' &&  onRowClick(item)" class="row">
+      <tr v-bind="props" @click="(item.visibility === 'PUBLIC' || item.mno===userInfo.mno) &&  onRowClick(item)" class="row">
         <td>
           {{ item.visibility === 'PRIVATE'
             ? '비공개 글입니다.'
@@ -30,7 +30,7 @@
     class="mt-4"
   />
 
-  <div class="button-wrap">
+  <div class="button-wrap" v-if="userInfo.role === 'ADMIN'">
     <v-btn color="primary" @click="$emit('write')">글쓰기</v-btn>
   </div>
 </template>
@@ -41,7 +41,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '@/hooks/useAuth'
 import BoardItem from '../board/BoardItem.vue'
 
-const userInfo = useAuth()
+const userInfo = useAuth().userInfo
 
 /** 테이블에 들어갈 아이템 타입 정의 */
 export interface BoardSummary {
