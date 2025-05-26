@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.model.dao.HotPlaceDao">
+
+    <!-- 결과 매핑: join한 image.storage_path → imageUrl -->
+    <resultMap id="HotPlaceResult" type="com.ssafy.model.dto.domain.HotPlace">
+        <id property="hmo" column="hmo"/>
+        <result property="mno" column="mno"/>
+        <result property="ino" column="ino"/>
+        <result property="overview" column="overview"/>
+        <result property="title" column="title"/>
+        <result property="mapX" column="map_x"/>
+        <result property="mapY" column="map_y"/>
+        <result property="imageUrl" column="storage_path"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 1) 주변 조회: bounding-box + Haversine 공식, LEFT JOIN image -->
+	<select id="findByCoordinates"
+	        resultMap="HotPlaceResult"
+	        parameterType="map"><![CDATA[
+	  SELECT
+	    hp.hmo,
+	    hp.mno,
+	    hp.ino,
+	    hp.overview,
+	    hp.title,
+	    hp.map_x,
+	    hp.map_y,
+	    img.storage_path AS storage_path,
+	    hp.created_at,
+	    hp.updated_at
+	  FROM hot_place hp
+	  LEFT JOIN image img ON hp.ino = img.ino
+	  WHERE
+	    -- 반경(meter) 내에 있는 데이터만 남김
+	    ST_Distance_Sphere(
+	      POINT(hp.map_x, hp.map_y),
+	      POINT(#{mapX}, #{mapY})
+	    ) <= #{meter}
+	  ORDER BY
+	    -- 거리 오름차순 정렬
+	    ST_Distance_Sphere(
+	      POINT(hp.map_x, hp.map_y),
+	      POINT(#{mapX}, #{mapY})
+	    )
+	]]>
+	</select>
+
+
+    <!-- 2) 상세 조회: LEFT JOIN으로 imageUrl 포함 -->
+    <select id="findById"
+            parameterType="int"
+            resultMap="HotPlaceResult">
+        SELECT
+        hp.hmo,
+        hp.mno,
+        hp.ino,
+        hp.overview,
+        hp.title,
+        hp.map_x,
+        hp.map_y,
+        img.storage_path AS storage_path,
+        hp.created_at,
+        hp.updated_at
+        FROM hot_place hp
+        LEFT JOIN image img
+        ON hp.ino = img.ino
+        WHERE hp.hmo = #{pno}
+    </select>
+
+    <!-- 3) 신규 등록 -->
+    <insert id="save"
+            parameterType="com.ssafy.model.dto.domain.HotPlace"
+            useGeneratedKeys="true"
+            keyProperty="hmo">
+        INSERT INTO hot_place
+        (mno, ino, overview, title, map_x, map_y)
+        VALUES
+        (#{mno}, #{ino}, #{overview}, #{title}, #{mapX}, #{mapY})
+    </insert>
+
+    <!-- 4) 업데이트 -->
+    <update id="update"
+            parameterType="com.ssafy.model.dto.domain.HotPlace">
+        UPDATE hot_place
+        SET
+        mno = #{mno},
+        ino = #{ino},
+        overview = #{overview},
+        title = #{title},
+        map_x = #{mapX},
+        map_y = #{mapY}
+        WHERE hmo = #{hmo}
+    </update>
+
+    <!-- 5) 삭제 -->
+    <delete id="delete"
+            parameterType="int">
+        DELETE FROM hot_place
+        WHERE hmo = #{pno}
+    </delete>
+
+</mapper>
