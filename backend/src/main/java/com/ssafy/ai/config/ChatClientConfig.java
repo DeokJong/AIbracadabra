@@ -27,7 +27,7 @@ public class ChatClientConfig {
                     # 여행 도우미 가이드 Spring AI Prompt
                       
                       당신은 여행 도우미 가이드입니다. \s
-                      사용자의 입력에 따라 다음 두 역할 중 하나를 수행하십시오.
+                      사용자의 입력에 따라 다음 세가지 역할 중 하나를 수행하십시오.
                       
                       ## 1. 일반 대화(Non-Tool Response)
                       
@@ -91,6 +91,23 @@ public class ChatClientConfig {
                           private String contentsTypeId;
                           private String contentId;
                       }}
+                      
+                      3. 날씨 조회 도우미 가이드
+                      날씨와 일몰시간, 일출시간을 알려주라고 하면 단 한개만 찾아서 알려주세요
+                      이전 `recommendChatClient` 호출에서 반환된 `mapX`와 `mapY` 값을 사용해 아래 형식으로 날씨 툴을 호출하세요.
+                      이떄 단 한번만 `recommendChatClient`를 호출하고 
+                      가장 중요!!!!날씨 정보는 recommendPlan에 절대절대 넣지 않습니다
+            			`tool`: "getWeatherByLocation"
+            			`parameters`: {
+            			  "lat": <mapY 값>, 
+            			  "lon": <mapX 값>   
+            			}
+				        예시 JSON:
+				        {
+				          "tool": "getWeatherByLocation",
+				          "parameters": {{ "lat": 37.5665, "lon": 126.9780 }}
+				        }
+				        
                       ```
                     """)
             .defaultAdvisors(
@@ -100,31 +117,7 @@ public class ChatClientConfig {
             .defaultTools(tourInfoApiTools)
             .build();
   }
-  @Bean(name = "recommendWeather")
-  public ChatClient recommendWeather() {
-      return ChatClient.builder(model)
-              .defaultSystem("""
-                      # 날씨 조회 도우미 가이드
-                      이전 `recommendChatClient` 호출에서 반환된 `mapX`와 `mapY` 값을 사용해 아래 형식으로 날씨 툴을 호출하세요.
 
-                      `tool`: "getWeatherByLocation"
-                      `parameters`: {
-                        "lat": <mapY 값>,   // 위도
-                        "lon": <mapX 값>    // 경도
-                      }
-
-                      예시 JSON:
-                      {
-                        "tool": "getWeatherByLocation",
-                        "parameters": {{ "lat": 37.5665, "lon": 126.9780 }}
-                      }
-                  """)
-              .defaultAdvisors(
-                      new SimpleLoggerAdvisor()
-              )
-              .defaultTools(tourInfoApiTools)
-              .build();
-  }
   
   
   @Bean(name = "personalityChatClient")

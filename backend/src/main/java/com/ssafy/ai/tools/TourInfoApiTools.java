@@ -112,12 +112,13 @@ public class TourInfoApiTools {
 	        """
 	    )
   public WeatherInfo getWeatherByLocation(
-	        @ToolParam(description = "위도 (latitude)") double lat,
-	        @ToolParam(description = "경도 (longitude)") double lon
+	        @ToolParam(description = "위도 (latitude)") String lat,
+	        @ToolParam(description = "경도 (longitude)") String lon
 	    ) {
 	        log.debug("==> Parameters: lat={}, lon={}", lat, lon);
+
 	        String url = String.format(
-	            "%s?lat=%f&lon=%f&appid=%s&units=%s&lang=%s",
+	            "%s?lat=%s&lon=%s&appid=%s&units=%s&lang=%s",
 	            weatherUrl, lat, lon, weatherApiKey, weatherUnits, weatherLang
 	        );
 	        OpenWeatherResponse resp = restTemplate.getForObject(url, OpenWeatherResponse.class);
