@@ -28,6 +28,8 @@
           prepend-icon="mdi-camera"
         />
         <v-btn type="submit" color="primary" block>등록하기</v-btn>
+        <br/>
+        <v-btn color="error" block @click="props.onClose?.()">닫기</v-btn>
       </v-form>
     </v-card>
     <div class="popup-tail" />
