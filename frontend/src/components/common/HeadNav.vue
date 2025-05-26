@@ -6,17 +6,70 @@
       :class="{ 'narrow-container': isNarrow }"
     >
       <v-row align="center" no-gutters>
-        <!-- 로고 -->
+        <!-- 새로운 SVG 로고 -->
         <v-col cols="auto">
           <router-link to="/" class="logo-container">
-            <img src="@/assets/logo2.png" alt="로고" class="logo" />
+            <!-- 인라인 SVG 로고 -->
+            <div class="logo-svg-wrapper">
+              <svg width="45" height="45" viewBox="0 0 100 100" class="tour-logo">
+                <!-- 배경 원 -->
+                <circle cx="50" cy="50" r="48" fill="url(#primaryGradient)" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+                
+                <!-- 나침반 외곽 링 -->
+                <circle cx="50" cy="50" r="35" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+                
+                <!-- 나침반 방향 표시 -->
+                <g transform="translate(50,50)">
+                  <!-- 북쪽 화살표 (메인) -->
+                  <path d="M0,-30 L6,-24 L2,-20 L0,-22 L-2,-20 L-6,-24 Z" fill="white" opacity="0.95"/>
+                  <!-- 동쪽 표시 -->
+                  <circle cx="25" cy="0" r="2" fill="rgba(255,255,255,0.7)"/>
+                  <!-- 남쪽 표시 -->
+                  <circle cx="0" cy="25" r="2" fill="rgba(255,255,255,0.7)"/>
+                  <!-- 서쪽 표시 -->
+                  <circle cx="-25" cy="0" r="2" fill="rgba(255,255,255,0.7)"/>
+                </g>
+                
+                <!-- 중앙 지구본 -->
+                <circle cx="50" cy="50" r="16" fill="rgba(255,255,255,0.95)"/>
+                <circle cx="50" cy="50" r="14" fill="url(#earthGradient)"/>
+                
+                <!-- 지구본 경위도선 -->
+                <g transform="translate(50,50)" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" fill="none">
+                  <!-- 적도 -->
+                  <line x1="-14" y1="0" x2="14" y2="0"/>
+                  <!-- 본초자오선 -->
+                  <line x1="0" y1="-14" x2="0" y2="14"/>
+                  <!-- 타원형 경도선들 -->
+                  <ellipse rx="14" ry="7" opacity="0.7"/>
+                  <ellipse rx="7" ry="14" opacity="0.7"/>
+                </g>
+                
+                <!-- 중앙 포인트 -->
+                <circle cx="50" cy="50" r="3" fill="white" opacity="0.9"/>
+                
+                <!-- 그라디언트 정의 -->
+                <defs>
+                  <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#667eea;stop-opacity:1" />
+                  </linearGradient>
+                  <radialGradient id="earthGradient" cx="30%" cy="30%">
+                    <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+                    <stop offset="70%" style="stop-color:#00f2fe;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#667eea;stop-opacity:0.8" />
+                  </radialGradient>
+                </defs>
+              </svg>
+            </div>
             <span class="logo-text">TourGuide</span>
           </router-link>
         </v-col>
 
         <v-spacer />
 
-        <!-- 네비게이션 버튼들 -->
+        <!-- 기존 네비게이션 코드 그대로 유지... -->
         <v-col cols="auto" class="d-none d-md-flex align-center">
           <nav class="nav-menu">
             <router-link to="/map" class="nav-item">
@@ -140,25 +193,49 @@ const maxWidthValue = computed(() => {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
+/* 새로운 로고 스타일 */
 .logo-container {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
   color: white;
+  transition: all 0.3s ease;
 }
 
-.logo {
-  height: 45px;
-  filter: brightness(0) invert(1);
+.logo-container:hover {
+  transform: translateY(-2px);
+}
+
+.logo-svg-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tour-logo {
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  transition: all 0.4s ease;
+}
+
+.logo-container:hover .tour-logo {
+  transform: rotate(10deg) scale(1.05);
+  filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4));
 }
 
 .logo-text {
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: -0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
 }
 
+.logo-container:hover .logo-text {
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* 기존 스타일들 유지 */
 .nav-menu {
   display: flex;
   align-items: center;
@@ -339,6 +416,11 @@ const maxWidthValue = computed(() => {
 @media (max-width: 768px) {
   .logo-text {
     display: none;
+  }
+  
+  .tour-logo {
+    width: 35px;
+    height: 35px;
   }
 }
 </style>
