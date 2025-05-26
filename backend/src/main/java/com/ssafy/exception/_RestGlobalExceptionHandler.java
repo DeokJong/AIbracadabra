@@ -14,7 +14,7 @@ public class _RestGlobalExceptionHandler implements ResponseEntityHelper {
 		return handleFail(ex, HttpStatus.UNAUTHORIZED);
 	}
 
-	@ExceptionHandler(MismatchException.class)
+	@ExceptionHandler({MismatchException.class, IllegalArgumentException.class})
 	public ResponseEntity<?> handleBadRequest(MismatchException ex) {
 		return handleFail(ex, HttpStatus.BAD_REQUEST);
 	}

@@ -9,6 +9,7 @@
       <v-btn class="nav-btn" color="pink" @click="contentSearch(ContentType.SHOPPING)">쇼핑</v-btn>
       <v-btn class="nav-btn" color="teal" @click="contentSearch(ContentType.TOURIST_SPOT)">여행명소</v-btn>
       <v-btn class="nav-btn" color="blue-grey" @click="contentSearch(ContentType.TRAVEL_COURSE)">여행코스</v-btn>
+      <v-btn class="nav-btn" color="#ff00ff" @click="fetchHotPlaces">인기코스</v-btn>
     </div>
   </div>
 
@@ -46,9 +47,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useKakaoMap, ContentType } from '@/hooks/useKakaoMap'
+import useHotPlace from '@/hooks/useHotPlace'
 
 const { locationSearch, contentSearch } = useKakaoMap()
-
+const { fetchHotPlaces } = useHotPlace()
 const searchKeyword = ref('')
 
 async function onSearch() {
