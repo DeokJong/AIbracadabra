@@ -1,42 +1,35 @@
 <template>
   <div>
-    <v-btn
-      icon
-      class="toggle-btn elevation-6"
-      :style="{ left: drawer ? width + 'px' : '0px' }"
-      @click="drawer = !drawer"
-    >
+    <v-btn icon class="toggle-btn elevation-6" :style="{ left: drawer ? width + 'px' : '0px' }"
+      @click="drawer = !drawer">
       <v-icon>{{ drawer ? 'mdi-chevron-left' : 'mdi-chevron-right' }}</v-icon>
     </v-btn>
 
-    <div
-      class="sidebar elevation-6"
-      :class="{ open: drawer }"
-      :style="{ width: width + 'px' }"
-    >
+    <div class="sidebar elevation-6" :class="{ open: drawer }" :style="{ width: width + 'px' }">
       <div class="sidebar-content">
         <v-card v-if="currentContent.contentId" style="top: 60px;">
-          <v-img
-            v-if="currentContent.firstImage"
-            :src="currentContent.firstImage"
-            aspect-ratio="16/9"
-            class="mb-4"
-          />
+          <v-img v-if="currentContent.firstImage" :src="currentContent.firstImage" aspect-ratio="16/9" class="mb-4" />
           <v-card-title class="mb-2">
             {{ currentContent.title }}
           </v-card-title>
           <v-list dense>
             <v-list-item>
-                <v-list-item-title>주소</v-list-item-title>
-                <div style="color: gray">{{ currentContent.address }}</div>
+              <v-list-item-title>주소</v-list-item-title>
+              <div style="color: gray">{{ currentContent.address }}</div>
             </v-list-item>
             <v-list-item>
-                <v-list-item-title>상세 설명</v-list-item-title>
-                <div style="color: gray">{{ currentContent.overview }}</div>
+              <v-list-item-title>상세 설명</v-list-item-title>
+              <div style="color: gray">{{ currentContent.overview }}</div>
+            </v-list-item>
+            <v-list-item>
+              <v-btn block color="info" @click="doAppend">담기</v-btn>
+            </v-list-item>
+
+            <v-list-item>
+              <v-btn v-if="currentContent.contentsTypeId === '40' && currentContent.mno === userInfo.mno" block
+                color="error" @click="removeHotPlace(Number(currentContent.contentId.replace('hotplace_','')))">핫 플레이스 취소</v-btn>
             </v-list-item>
           </v-list>
-          <v-divider />
-          <v-btn block color="info" @click="doAppend">담기</v-btn>
         </v-card>
 
       </div>
@@ -49,8 +42,10 @@ import { ref, watch } from 'vue'
 import { useKakaoMap } from '@/hooks/useKakaoMap'
 import { storeToRefs } from 'pinia'
 import { usePlan } from '@/hooks/usePlan'
+import { useAuth } from '@/hooks/useAuth'
+import useHotPlace from '@/hooks/useHotPlace'
 
-// 사이드바 너비(px)
+
 const props = defineProps({
   width: { type: [Number, String], default: 300 },
 })
@@ -59,8 +54,11 @@ const { width } = props
 // 열림/닫힘 상태
 const drawer = ref(false)
 
+const auth = useAuth()
+const { userInfo } = storeToRefs(auth)
 const { appendSchedule } = usePlan()
 const { currentContent } = storeToRefs(useKakaoMap())
+const { removeHotPlace } = useHotPlace()
 
 const doAppend = () => {
   appendSchedule(currentContent.value)
@@ -111,5 +109,4 @@ watch(
   justify-content: center;
   z-index: 999;
 }
-
 </style>

@@ -11,21 +11,23 @@ import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps'
 import { useKakaoMap } from '@/hooks/useKakaoMap'
 import { storeToRefs } from 'pinia'
 import { createApp, onMounted, ref, watch } from 'vue'
-import HotplacePopup from '@/components/map/HotplacePopup.vue'
 import { vuetify } from '@/plugin/vuetify'
+import HotPlacePopup from "@/components/map/HotPlacePopup.vue"
+import useHotPlace from '@/hooks/useHotPlace'
+
 
 const { kakaoMapProps, traceMapProps, markerProps, currentContent } = storeToRefs(useKakaoMap())
 const { locationSearch, contentDetailSearch } = useKakaoMap()
 
+
 // 초기 위치 검색
 onMounted(() => {
   locationSearch('서울 특별시')
+  useHotPlace()
 })
 
 const mapRef = ref<kakao.maps.Map>()
 const customOverlay = ref<kakao.maps.CustomOverlay | null>(null);
-
-
 
 function onLoad(map: kakao.maps.Map) {
   mapRef.value = map
@@ -53,7 +55,13 @@ kakao.maps.event.addListener(map, 'rightclick', function(mouseEvent: kakao.maps.
   container.id = 'hotplace-popup'
 
   // Vue 앱 마운트
-  const popupApp = createApp(HotplacePopup)
+  const popupApp = createApp(HotPlacePopup, {
+    lat: latlng.getLat(),
+    lng: latlng.getLng(),
+    onClose: () => {
+      customOverlay.value?.setMap(null)
+    }
+  })
   popupApp.use(vuetify)
   popupApp.mount(container)
 

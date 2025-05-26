@@ -1,14 +1,34 @@
+<!-- src/components/map/HotPlacePopup.vue -->
 <template>
   <div class="popup-wrapper">
-    <v-card
-      class="pa-3 popup-card"
-    >
-      <v-card-text class="text-center">
-        <span style="font-weight: bold;">여기 핫플로 등록할래?</span>
-      </v-card-text>
-      <v-card-actions class="justify-center">
-        <v-btn small color="primary" @click="goToRegister">등록하기</v-btn>
-      </v-card-actions>
+    <v-card class="pa-3 popup-card">
+      <v-form @submit.prevent="submitForm" ref="formRef">
+        <v-text-field
+          v-model="form.hotPlace.title"
+          label="제목"
+          dense
+          outlined
+          required
+          :rules="[(v) => !!v || '제목 필수입니다.']"
+        />
+        <v-textarea
+          v-model="form.hotPlace.overview"
+          label="설명"
+          dense
+          outlined
+          required
+          :rules="[(v) => !!v || '설명은 필수입니다.']"
+        />
+        <v-file-input
+          v-model="form.imageFile"
+          label="이미지 업로드"
+          dense
+          outlined
+          accept="image/*"
+          prepend-icon="mdi-camera"
+        />
+        <v-btn type="submit" color="primary" block>등록하기</v-btn>
+      </v-form>
     </v-card>
     <div class="popup-tail" />
   </div>
@@ -16,8 +36,34 @@
 
 
 <script setup lang="ts">
-const goToRegister = () => {
-};
+import useHotPlace, { HotPlace } from '@/hooks/useHotPlace'
+import { ref } from 'vue';
+
+const hotPlace = useHotPlace()
+
+const props = defineProps<{
+  lat: number
+  lng: number
+  onClose?: () => void
+}>()
+
+const submitForm = async () => {
+  form.value.hotPlace.mapX = props.lng
+  form.value.hotPlace.mapY = props.lat
+
+  if (!form.value.hotPlace.title || !form.value.hotPlace.overview) {
+    return
+  }
+
+  const ok = await hotPlace.registerHotPlace(form.value.hotPlace, form.value.imageFile)
+  if (ok) props.onClose?.()
+}
+
+const formRef = ref()
+const form = ref<{hotPlace: HotPlace, imageFile?: File}>({
+  hotPlace : {} as HotPlace
+})
+
 </script>
 
 <style scoped>
