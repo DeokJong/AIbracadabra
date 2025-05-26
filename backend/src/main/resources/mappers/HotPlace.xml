@@ -68,7 +68,7 @@
         FROM hot_place hp
         LEFT JOIN image img
         ON hp.ino = img.ino
-        WHERE hp.hno = #{pno}
+        WHERE hp.hno = #{hno}
     </select>
 
     <!-- 3) 신규 등록 -->
@@ -100,7 +100,7 @@
     <delete id="delete"
             parameterType="int">
         DELETE FROM hot_place
-        WHERE hno = #{pno} AND mno = #{mno}
+        WHERE hno = #{hno} AND mno = #{mno}
     </delete>
 
 </mapper>
