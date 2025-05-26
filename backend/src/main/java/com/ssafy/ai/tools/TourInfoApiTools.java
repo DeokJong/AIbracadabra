@@ -1,13 +1,20 @@
 package com.ssafy.ai.tools;
+import org.springframework.web.client.RestTemplate;
 
+import com.ssafy.model.dto.client.OpenWeatherResponse;
+import com.ssafy.model.dto.client.WeatherInfo;
 import com.ssafy.model.dto.domain.Document;
 import com.ssafy.model.service.MapService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,6 +23,17 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class TourInfoApiTools {
   private final MapService mapService;
+  private final RestTemplate restTemplate;
+  
+  @Value("${weather.openweathermap.url}")
+  private String weatherUrl;
+  @Value("${weather.openweathermap.api-key}")
+  private String weatherApiKey;
+  @Value("${weather.openweathermap.units}")
+  private String weatherUnits;
+  @Value("${weather.openweathermap.lang}")
+  private String weatherLang;
+
 
   @Tool(
           description = """
@@ -77,6 +95,49 @@ public class TourInfoApiTools {
     log.debug("<== Total: {}", result.size());
     return result;
   }
+  
+  @Tool(
+	        name = "getWeatherByLocation",
+	        description = """
+	            위도(lat)와 경도(lon)에 해당하는 위치의 현재 날씨 정보를 조회합니다.
+
+	            출력값:
+	              WeatherInfo 객체
+	              WeatherInfo : {{
+	                temp: 현재 온도
+	                desc: 날씨 설명
+	                sunrise: 일출 시간 (서울 LocalTime)
+	                sunset: 일몰 시간 (서울 LocalTime)
+	              }}
+	        """
+	    )
+  public WeatherInfo getWeatherByLocation(
+	        @ToolParam(description = "위도 (latitude)") String lat,
+	        @ToolParam(description = "경도 (longitude)") String lon
+	    ) {
+	        log.debug("==> Parameters: lat={}, lon={}", lat, lon);
+
+	        String url = String.format(
+	            "%s?lat=%s&lon=%s&appid=%s&units=%s&lang=%s",
+	            weatherUrl, lat, lon, weatherApiKey, weatherUnits, weatherLang
+	        );
+	        OpenWeatherResponse resp = restTemplate.getForObject(url, OpenWeatherResponse.class);
+
+	        double temp = resp.getMain().getTemp();
+	        String desc = resp.getWeather().isEmpty() ? "" : resp.getWeather().get(0).getDescription();
+
+	        ZoneId seoul = ZoneId.of("Asia/Seoul");
+	        LocalTime sunrise = LocalTime.ofInstant(
+	            Instant.ofEpochSecond(resp.getSys().getSunrise()), seoul);
+	        LocalTime sunset = LocalTime.ofInstant(
+	            Instant.ofEpochSecond(resp.getSys().getSunset()), seoul);
+
+	        WeatherInfo info = new WeatherInfo(temp, desc, sunrise, sunset);
+	        log.debug("<== Weather: {}", info);
+	        return info;
+	    }
+  
+  
 
   public record Coordinates(String mapX, String mapY, String addressName) {
   }

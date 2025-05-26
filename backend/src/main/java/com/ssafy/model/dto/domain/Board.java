@@ -22,7 +22,7 @@ public class Board {
   private int bno;
   
   /** 작성자 회원번호: 내부 로직에서만 사용 */
-  @JsonIgnore
+  @JsonProperty(access = Access.READ_ONLY)
   private int mno;
 
   /** 게시판 타입 (board, notice, qna) */
