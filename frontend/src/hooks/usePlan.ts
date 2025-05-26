@@ -7,7 +7,6 @@ import { useToast } from 'vue-toastification'
 import { ref, watch } from 'vue'
 import { CommonResponse } from '@/service/common'
 import { startsWith } from 'lodash-es'
-import { useKakao } from 'vue3-kakao-maps'
 
 export type Plan = {
   title: string

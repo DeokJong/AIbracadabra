@@ -4,9 +4,6 @@ import axios, { isAxiosError } from 'axios'
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
 import { useToast } from 'vue-toastification'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
 export interface UserInfo {
   mno: number
   name: string
@@ -62,7 +59,7 @@ export const useAuth = defineStore(
         userInfo.email = data.email
         userInfo.role = data.role
         isLoggined.value = true
-      } catch (err) {
+      } catch {
         isLoggined.value = false
         Object.assign(userInfo, GUEST_USER)
       }

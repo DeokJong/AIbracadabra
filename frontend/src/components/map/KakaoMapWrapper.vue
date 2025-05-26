@@ -10,17 +10,24 @@
 import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps'
 import { useKakaoMap } from '@/hooks/useKakaoMap'
 import { storeToRefs } from 'pinia'
-import { onMounted, ref, watch } from 'vue'
+import { createApp, onMounted, ref, watch } from 'vue'
+import { vuetify } from '@/plugin/vuetify'
+import HotPlacePopup from "@/components/map/HotPlacePopup.vue"
+import useHotPlace from '@/hooks/useHotPlace'
+
 
 const { kakaoMapProps, traceMapProps, markerProps, currentContent } = storeToRefs(useKakaoMap())
 const { locationSearch, contentDetailSearch } = useKakaoMap()
 
+
 // 초기 위치 검색
 onMounted(() => {
   locationSearch('서울 특별시')
+  useHotPlace()
 })
 
 const mapRef = ref<kakao.maps.Map>()
+const customOverlay = ref<kakao.maps.CustomOverlay | null>(null);
 
 function onLoad(map: kakao.maps.Map) {
   mapRef.value = map
@@ -36,6 +43,36 @@ function onLoad(map: kakao.maps.Map) {
   traceMapProps.value.lat = newLat
   traceMapProps.value.level = map.getLevel()
   })
+
+kakao.maps.event.addListener(map, 'rightclick', function(mouseEvent: kakao.maps.event.MouseEvent) {
+  const latlng = mouseEvent.latLng;
+
+  // 기존 오버레이 제거
+  customOverlay.value?.setMap(null)
+
+  // Vue 컴포넌트 마운트용 div 생성
+  const container = document.createElement('div')
+  container.id = 'hotplace-popup'
+
+  // Vue 앱 마운트
+  const popupApp = createApp(HotPlacePopup, {
+    lat: latlng.getLat(),
+    lng: latlng.getLng(),
+    onClose: () => {
+      customOverlay.value?.setMap(null)
+    }
+  })
+  popupApp.use(vuetify)
+  popupApp.mount(container)
+
+  // 오버레이 생성 및 등록
+  customOverlay.value = new kakao.maps.CustomOverlay({
+    content: container,
+    map: map,
+    position: latlng,
+    yAnchor: 1,
+  })
+})
 }
 
 /** 마커가 로드된 시점에 호출됩니다. */
@@ -54,5 +91,19 @@ watch(currentContent.value, () => {
 </script>
 
 <style scoped>
-/* 필요하다면 스타일 추가 */
+.customoverlay {
+  position: relative;
+  bottom: 40px;
+  border-radius: 6px;
+  background: white;
+  padding: 6px 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap;
+}
+.customoverlay .title {
+  font-weight: bold;
+}
+
 </style>
