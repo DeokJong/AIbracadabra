@@ -14,6 +14,8 @@ import DetailSidebar from '@/components/map/DetailSidebar.vue'
 import ResultNavigationBar from '@/components/map/ResultNavigationBar.vue'
 import ScheduleSidebar from '@/components/map/ScheduleSidebar.vue'
 import ChatBot from '@/components/map/ChatBot.vue'
+const props = defineProps<{isNarrow: Boolean}> ()
+
 </script>
 
 <route lang="yaml">

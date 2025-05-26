@@ -7,16 +7,28 @@
 -->
 
 <template>
-  <HeadNav />
+  <div class="narrow-container">
+    <HeadNav :isNarrow="ture"/>
+  </div>
     <v-main>
-      <v-container class="py-10">
+      <v-container class="py-10 narrow-container">
         <router-view />
       </v-container>
     </v-main>
-
+  <div class="narrow-container">
+    <Footer />
+  </div>
 </template>
 
 <script setup>
+import Footer from '@/components/common/Footer.vue';
 import HeadNav from '@/components/common/HeadNav.vue'
 
 </script>
+<style scoped>
+.narrow-container {
+  width: 100%;
+  max-width: 1200px;   
+  margin: 0 auto;      /* 좌우 중앙 정렬 */
+}
+</style>
