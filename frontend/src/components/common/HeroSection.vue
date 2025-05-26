@@ -1,7 +1,14 @@
 <template>
   <section class="hero">
-    <!-- 정적 JPG 배경 -->
-    <!-- <img src="/hero-image.jpg" alt="여행지 전경" class="hero-bg" /> -->
+    <img
+      v-for="(src, idx) in images"
+      :key="idx"
+      :src="src"
+      class="hero-bg"
+      :class="{ active: idx === currentIndex }"
+      alt="여행 배경"
+    />
+
 
     <div class="hero-overlay">
       <h1 class="hero-title">나만의 AI 여행 비서와 함께 여행을 시작하세요</h1>
@@ -14,29 +21,37 @@
 </template>
 
 <script setup>
-// 특별한 로직은 없고, 라우터 이동만 처리
+import { useHeroCarousel } from '@/hooks/useHeroCarousel'
+
+// interval만 넘기거나, 아무 것도 안 넘겨도 OK
+const { images, currentIndex } = useHeroCarousel(3000)
 </script>
+
 
 <style scoped>
 .hero {
   position: relative;
   width: 100%;
-  height: 70vh;         /* 화면 높이의 70% */
+  height: 70vh;
   overflow: hidden;
 }
 .hero-bg {
   position: absolute;
-  top: 50%; left: 50%;
-  width: auto; height: 100%;
-  min-width: 100%; min-height: 100%;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
   transform: translate(-50%, -50%);
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
   z-index: 1;
 }
-
-/* 반투명 그라데이션 오버레이 */
+.hero-bg.active {
+  opacity: 1;
+}
 .hero::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(
@@ -46,7 +61,6 @@
   );
   z-index: 2;
 }
-
 .hero-overlay {
   position: relative;
   z-index: 3;
