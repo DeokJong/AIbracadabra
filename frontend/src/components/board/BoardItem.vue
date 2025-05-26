@@ -1,16 +1,38 @@
 <template>
-  <div class="board-item">
-    <a
-      class="title"
-      :href="`/board/${item.bno}`"
-    >
-      {{ item.title }}
-    </a>
-    <p class="summary">{{ item.content }}</p>
-    <div class="info">
-      <span class="author">{{ item.author }}</span>
-      <span class="date">{{ formattedDate }}</span>
-    </div>
+  <div class="board-card">
+    <router-link :to="`/board/${item.bno}`" class="card-link">
+      <!-- 이미지 영역 -->
+      <div class="card-image">
+        <img 
+          v-if="item.imageUrls && item.imageUrls.length > 0"
+          :src="`/api/v1/board/images/${item.imageUrls}`"
+          :alt="item.title"
+          class="thumbnail"
+        />
+        <div v-else class="no-image">
+          <i class="fas fa-file-text"></i>
+        </div>
+      </div>
+      
+      <!-- 콘텐츠 영역 -->
+      <div class="card-content">
+        <h3 class="card-title">{{ item.title }}</h3>
+        <p class="card-summary">{{ truncatedContent }}</p>
+        
+        <div class="card-footer">
+          <div class="author-info">
+            <div class="avatar">{{ item.author.charAt(0) }}</div>
+            <span class="author-name">{{ item.author }}</span>
+          </div>
+          <div class="meta-info">
+            <span class="date">{{ formattedDate }}</span>
+            <span class="views" v-if="item.views">
+              <i class="fas fa-eye"></i> {{ item.views }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </router-link>
   </div>
 </template>
 
@@ -24,34 +46,147 @@ const formattedDate = computed(() => {
   const d = new Date(props.item.createdDate)
   return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`
 })
+
+const truncatedContent = computed(() => {
+  if (!props.item.content) return ''
+  return props.item.content.length > 100 
+    ? props.item.content.substring(0, 100) + '...'
+    : props.item.content
+})
 </script>
 
 <style scoped>
-.board-item {
-  border-bottom: 1px solid #eee;
-  padding: 0.75rem 0;
+.board-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
 }
-.title {
-  font-weight: bold;
-  color: #3498db;
+
+.board-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.card-link {
   text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
 }
-.title:hover {
-  text-decoration: underline;
+
+.card-image {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: #f8f9fa;
 }
-.summary {
-  margin: 0.4rem 0;
-  color: #555;
-  font-size: 0.9rem;
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.board-card:hover .thumbnail {
+  transform: scale(1.05);
+}
+
+.no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 2rem;
+}
+
+.card-content {
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 200px);
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 0.8rem 0;
+  line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.info {
+
+.card-summary {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-footer {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.author-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.meta-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+}
+
+.date {
   font-size: 0.8rem;
   color: #999;
+}
+
+.views {
+  font-size: 0.75rem;
+  color: #999;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 </style>
