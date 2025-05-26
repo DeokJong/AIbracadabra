@@ -16,12 +16,7 @@
 
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
-
 const goToRegister = () => {
-  router.push('/hotplace/register');  // 원하는 경로로 수정 가능
 };
 </script>
 
