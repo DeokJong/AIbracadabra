@@ -148,21 +148,21 @@ CREATE TABLE `image` (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE `hot_place` (
-    `hmo` INT NOT NULL AUTO_INCREMENT,
-    `mno` INT NOT NULL,
-    `ino` INT,
-    `overview` TEXT NULL,
-    `title` VARCHAR(255) NOT NULL,
-    `map_x` DECIMAL(9, 6) NOT NULL,
-    `map_y` DECIMAL(9, 6) NOT NULL,
-    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (`hmo`),
-    INDEX `idx_hp_mno` (`mno`),
-    INDEX `idx_hp_imo` (`ino`),
-    CONSTRAINT `fk_hp_member` FOREIGN KEY (`mno`) REFERENCES `members` (`mno`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `fk_hp_image` FOREIGN KEY (`ino`) REFERENCES `image` (`ino`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+    `hno` int NOT NULL AUTO_INCREMENT,
+    `mno` int NOT NULL,
+    `ino` int DEFAULT NULL,
+    `overview` text COLLATE utf8mb4_unicode_ci,
+    `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+    `map_x` decimal(13, 10) NOT NULL,
+    `map_y` decimal(13, 10) NOT NULL,
+    `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`hno`),
+    KEY `idx_hp_mno` (`mno`),
+    KEY `idx_hp_imo` (`ino`),
+    CONSTRAINT `fk_hp_image` FOREIGN KEY (`ino`) REFERENCES `image` (`ino`) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT `fk_hp_member` FOREIGN KEY (`mno`) REFERENCES `members` (`mno`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 13 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci
 
 --
 
