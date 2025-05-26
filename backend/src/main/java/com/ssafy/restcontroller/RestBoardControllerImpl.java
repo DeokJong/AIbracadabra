@@ -190,5 +190,23 @@ public class RestBoardControllerImpl implements ResponseEntityHelper, RestBoardC
             return ResponseEntity.notFound().build();
         }
     }
+	
+    @Override
+    public ResponseEntity<?> boardList(Integer currentPage,
+    		CustomUserDetails user) {
+    	Member member  = user.getMember();
+    	
+        PageInfo<Board> pageInfo = bService.getBoardMno(member.getMno(), currentPage);
+        return new ResponseEntity<>(pageInfo, HttpStatus.OK);
+    }
+
+	@Override
+	public ResponseEntity<?> commentList(Integer currentPage, CustomUserDetails userDetails) {
+		Member member = userDetails.getMember();
+		
+		PageInfo<Comment> pageInfo = bService.getCommentAll(member.getMno(), currentPage);
+        return new ResponseEntity<>(pageInfo, HttpStatus.OK);
+	}
+
 
 }

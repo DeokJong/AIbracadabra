@@ -53,8 +53,21 @@
 		<result column="updated_date" property="updatedDate" />
 	
 	</resultMap>
+	
+	<!-- 전체 댓글 가져오기 -->
+	<select id="getCommentAll" resultMap="commentMap">
+		select *
+		from comments
+		where mno=#{mno}
+	</select>
 
-
+	<!-- mmo로 게시물 가져오기 -->
+	<select id="getBoardMno" resultMap="boardMap">
+		select *
+		from boards
+		where mno = #{mno}
+	
+	</select>
 	<!-- boardType으로만 검색 -->
 	<select id="getBoardType" resultMap="boardMap">
 		select *

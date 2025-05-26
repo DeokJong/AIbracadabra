@@ -27,6 +27,7 @@ const table = reactive({
   page:  Number(route.query.currentPage) || 1,
   pages: 0,
   loading: false,
+  itemsPerPage: 20
 })
 
 async function fetchData(newPage = table.page) {

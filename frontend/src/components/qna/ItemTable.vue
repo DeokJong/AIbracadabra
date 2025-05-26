@@ -61,15 +61,13 @@ export interface BoardSummary {
 const props = defineProps<{
   items: BoardSummary[]
   pages: number
-  totalItems: number       // 추가
   
   currentPage: number
   loading: boolean
 }>()
 console.log('child props:', props)
 
-const listSize = props.totalItems
-console.log(listSize)
+
 /// 자식이 emit 할 이벤트
 const emit = defineEmits<{
   (e: 'update:currentPage', v: number): void
