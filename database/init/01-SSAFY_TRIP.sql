@@ -27,6 +27,7 @@ DROP TABLE IF EXISTS `sidos`;
 DROP TABLE IF EXISTS `contenttypes`;
 
 DROP TABLE IF EXISTS `boards`;
+DROP TABLE IF EXISTS `board_images`;
 DROP TABLE IF EXISTS `comments`;
 DROP TABLE IF EXISTS `members`;
 DROP TABLE IF EXISTS `news`;
@@ -129,6 +130,21 @@ CREATE TABLE `plan` (
     KEY `idx_mno` (`mno`),
     CONSTRAINT `fk_plan_member` FOREIGN KEY (`mno`) REFERENCES `members` (`mno`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '여행 계획 저장 테이블';
+
+
+CREATE TABLE board_images (
+  img_no       BIGINT AUTO_INCREMENT PRIMARY KEY,
+  bno          INT NOT NULL,               -- UNSIGNED 제거
+  filename     VARCHAR(255) NOT NULL,
+  content_type VARCHAR(100) NOT NULL,
+  size         BIGINT NOT NULL,
+  storage_path VARCHAR(512) NOT NULL,
+  uploaded_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (bno)
+    REFERENCES boards(bno)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 
 --

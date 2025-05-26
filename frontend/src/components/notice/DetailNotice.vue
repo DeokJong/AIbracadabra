@@ -197,10 +197,6 @@ async function saveEdit(comment: Comment) {
             :key="comment.cno"
             class="comment-bubble mb-4"
           >
-            <v-avatar size="32" class="mr-2">
-              <span>{{ comment.author.charAt(0) }}</span>
-            </v-avatar>
-
             <div class="bubble-body">
               <!-- 보기 모드 -->
               <div v-if="editingCommentId !== comment.cno">

@@ -4,7 +4,12 @@ import com.github.pagehelper.PageInfo;
 import com.ssafy.model.dto.domain.Board;
 import com.ssafy.model.dto.domain.Comment;
 
+import java.io.FileNotFoundException;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
+
+import org.springframework.core.io.Resource;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface BoardService {
 
@@ -13,6 +18,10 @@ public interface BoardService {
     PageInfo<Board> getByTitle(String title, Integer currentPage);
 
     PageInfo<Board> getAllBoards(Integer currentPage);
+    
+    PageInfo<Board> getBoardMno(Integer mno, Integer currentPage);
+    
+    PageInfo<Comment> getCommentAll(Integer mno, Integer currentPage);
 
     Board set(Board board);
 
@@ -35,5 +44,16 @@ public interface BoardService {
     void setComment(Comment comment);
 
     Comment getCommentCno(int cno);
+    
+    /** 이미지 저장 후 imgNo 반환 */
+    Long storeImage(MultipartFile file, int bno);
+
+    /** 권한 검사 후 Resource 반환 
+     * @throws AccessDeniedException 
+     * @throws FileNotFoundException */
+    Resource loadImageAsResource(Long imgNo) throws AccessDeniedException, FileNotFoundException;
+
+    /** 게시글 상세에 뿌릴 이미지 ID 리스트 */
+    List<Integer> getImageIdsByBno(int bno);
 
 }

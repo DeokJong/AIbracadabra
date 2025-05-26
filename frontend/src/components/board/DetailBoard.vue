@@ -23,6 +23,8 @@ type BoardDetail = BoardSummary & {
   updatedDate: string
   visibility: string
   comments: Comment[]
+  imageUrls: number[]
+
 }
 
 type Comment = {
@@ -151,7 +153,7 @@ async function saveEdit(comment: Comment) {
               <span class="dot">·</span>
               <span>{{ boardData.createdDate }}</span>
               <span class="dot">·</span>
-              <span>조회 {{ boardData.views / 2 }}</span>
+              <span>조회 {{ boardData.views }}</span>
             </div>
             <div
               class="header-actions"
@@ -165,6 +167,25 @@ async function saveEdit(comment: Comment) {
           <v-divider class="mb-6" />
 
           <!-- 본문 -->
+        <div v-if="boardData.imageUrls?.length" class="image-gallery mb-8">
+          <v-row>
+            <v-col
+              v-for="imgNo in boardData.imageUrls"
+              :key="imgNo"
+              cols="12" sm="6" md="4"
+              class="pb-4"
+            >
+              <img
+                :src="`/api/v1/board/images/${imgNo}`"
+                alt="Board Image"
+                class="uploaded-image"
+              />
+            </v-col>
+          </v-row>
+        </div>
+
+
+
           <div class="content mb-8">
             {{ boardData.content }}
           </div>
@@ -277,6 +298,14 @@ async function saveEdit(comment: Comment) {
   line-height: 1.7;
   color: #333;
 }
+/* 이미지 */
+.uploaded-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
 
 /* 댓글 섹션 */
 .comments-wrap .comments-header {

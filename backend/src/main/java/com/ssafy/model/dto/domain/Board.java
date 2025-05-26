@@ -1,5 +1,6 @@
 package com.ssafy.model.dto.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -54,6 +55,9 @@ public class Board {
   
   @JsonProperty(access = Access.READ_ONLY)
   private List<Comment> comments;
+  
+  private List<Long> imageUrls;
+
 
   
 

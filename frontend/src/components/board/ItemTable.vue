@@ -8,10 +8,13 @@
     class="elevation-1"
   >
     <template #item="{ item, props }">
-      <tr v-bind="props" @click="onRowClick(item)" class="row">
-        <td>{{ item.bno }}</td>
-        <td>{{ item.title }}</td>
-        <td>{{ item.author }}</td>
+      <tr v-bind="props" @click="item.visibility === 'PUBLIC' &&  onRowClick(item)" class="row">
+        <td>
+          {{ item.visibility === 'PRIVATE'
+            ? '비공개 글입니다.'
+            : item.title
+          }}
+        </td>        <td>{{ item.author }}</td>
         <td>{{ item.createdDate }}</td>
         <td>{{ item.views }}</td>
       </tr>
@@ -36,11 +39,14 @@ import { useRouter } from 'vue-router'
 
 export interface BoardSummary {
   bno: number
+  mno: number
   title: string
   author: string
   createdDate: string
   views: number
   boardType: string
+  visibility: 'PUBLIC' | 'PRIVATE'
+
 }
 
 // 부모로부터 받는 props
@@ -60,7 +66,6 @@ const emit = defineEmits<{
 const router = useRouter()
 const itemsPerPage = 20
 const headers = [
-  { title: '글번호', value: 'bno' },
   { title: '제목',   value: 'title' },
   { title: '작성자', value: 'author' },
   { title: '작성일', value: 'createdDate' },

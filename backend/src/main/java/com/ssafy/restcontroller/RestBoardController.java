@@ -12,10 +12,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Board", description = "게시판 API")
 public interface RestBoardController {
@@ -176,4 +179,64 @@ public interface RestBoardController {
         @PathVariable("cno") Integer cno,
         @AuthenticationPrincipal CustomUserDetails userDetails
     );
+	
+	
+    @Operation(summary = "이미지 업로드", description = "특정 게시글에 이미지 첨부")
+    @ApiResponse(responseCode = "200", description = "업로드 성공")
+    @PostMapping("/{bno}/images")
+    ResponseEntity<Map<String, Integer>> uploadImage(
+        @PathVariable int bno,
+        @RequestParam("file") MultipartFile file,
+        @AuthenticationPrincipal CustomUserDetails user);
+
+    @Operation(summary = "이미지 조회", description = "권한 검사 후 이미지 반환")
+    @ApiResponse(responseCode = "200", description = "조회 성공")
+    @GetMapping("/images/{imgNo}")
+    ResponseEntity<Resource> serveImage(
+        @PathVariable Long imgNo,
+        @AuthenticationPrincipal CustomUserDetails user);
+    
+    
+    @Operation(
+            summary = "회원별 게시글 조회",
+            description = "쿼리 파라미터 mno에 해당하는 회원의 게시글을 현재 페이지 단위로 조회합니다."
+        )
+        @ApiResponses({
+            @ApiResponse(
+                responseCode = "200",
+                description = "조회 성공",
+                content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = Board.class))
+                )
+            ),
+            @ApiResponse(responseCode = "404", description = "해당 회원의 게시글이 존재하지 않습니다.")
+        })
+        @GetMapping("member")
+        ResponseEntity<?> boardList(
+            @RequestParam(defaultValue = "1") Integer currentPage,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+        );
+    
+    @Operation(
+    		summary = "회원별 댓글 조회",
+    		description =  "쿼리 파라미터 mno에 해당하는 회원의 댓글을 현재 페이지 단위로 조회합니다."
+    		
+		)
+	    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "조회 성공",
+                    content = @Content(
+                        mediaType = "application/json",
+                        array = @ArraySchema(schema = @Schema(implementation = Board.class))
+                    )
+                ),
+                @ApiResponse(responseCode = "404", description = "해당 회원의 댓글이 존재하지 않습니다.")
+            })
+    		@GetMapping("comment")
+		    ResponseEntity<?> commentList(
+		            @RequestParam(defaultValue = "1") Integer currentPage,
+		            @AuthenticationPrincipal CustomUserDetails userDetails
+		        );
 }

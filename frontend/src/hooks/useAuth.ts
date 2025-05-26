@@ -4,7 +4,9 @@ import axios, { isAxiosError } from 'axios'
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
 import { useToast } from 'vue-toastification'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 export interface UserInfo {
   mno: number
   name: string

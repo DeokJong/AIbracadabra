@@ -7,10 +7,15 @@
     hide-default-footer
     class="elevation-1"
   >
-    <template #item="{ item, props }">
-      <tr v-bind="props" @click="onRowClick(item)" class="row">
-        <td>{{ item.bno }}</td>
-        <td>{{ item.title }}</td>
+    <template #item="{ item, props }">   <!-- TODO 이부분 글쓴이와 같은지 확인하기-->
+      <tr v-bind="props" @click="item.visibility === 'PUBLIC' &&  onRowClick(item)" class="row">
+        <td>
+          {{ item.visibility === 'PRIVATE'
+            ? '비공개 글입니다.'
+            : item.title
+          }}
+        </td>
+
         <td>{{ item.author }}</td>
         <td>{{ item.createdDate }}</td>
         <td>{{ item.views }}</td>
@@ -33,15 +38,22 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuth } from '@/hooks/useAuth'
+import BoardItem from '../board/BoardItem.vue'
+
+const userInfo = useAuth()
 
 /** 테이블에 들어갈 아이템 타입 정의 */
 export interface BoardSummary {
   bno: number
+  mno:number
   title: string
   author: string
   createdDate: string
   views: number
   boardType: string
+  visibility: 'PUBLIC' | 'PRIVATE'
+
 }
 // 부모로부터 받는 props
 const props = defineProps<{
@@ -60,7 +72,6 @@ const emit = defineEmits<{
 const router = useRouter()
 const itemsPerPage = 20
 const headers = [
-  { title: '글번호', value: 'bno' },
   { title: '제목',   value: 'title' },
   { title: '작성자', value: 'author' },
   { title: '작성일', value: 'createdDate' },
@@ -78,6 +89,8 @@ function onPageChange(v: number) {
 
 // row 클릭 시 상세 페이지로 이동
 function onRowClick(item: BoardSummary) {
+  const a = props.items[0].mno
+  console.log(a)
   router.push(`/notice/${item.bno}`)
 }
 </script>

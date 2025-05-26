@@ -6,28 +6,58 @@ import com.github.pagehelper.PageInfo;
 import com.ssafy.exception.RecordInsertException;
 import com.ssafy.exception.RecordNotFoundException;
 import com.ssafy.model.dao.BoardDao;
+import com.ssafy.model.dao.BoardImageDao;
 import com.ssafy.model.dto.domain.Board;
+import com.ssafy.model.dto.domain.BoardImage;
 import com.ssafy.model.dto.domain.Comment;
 import com.ssafy.model.service.BoardService;
+
+import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.UUID;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class BoardServiceImpl implements BoardService {
 
 	static final int d = 256;
 	static final int q = 101;
 	private static final Integer DEFAULT_PAGE_SIZE = 20;
 	private final BoardDao boardDao;
+    private static final Logger logger = LoggerFactory.getLogger(BoardServiceImpl.class);
+
+	@Value("${upload.path}")
+    private String uploadDir;
+
+    private static final List<String> ALLOWED = 
+        List.of(".jpg",".jpeg",".png",".gif",".webp",".bmp");
+    
+    private final BoardImageDao boardImageDao;    // 위 XML 매퍼
+
 
 	@Override
 	public int add(Board board) {
@@ -36,7 +66,7 @@ public class BoardServiceImpl implements BoardService {
 		if (result == 0) {
 			throw new RecordInsertException("게시판 생성 실패");
 		}
-		return result;
+		return board.getBno();
 	}
 
 	@Override
@@ -61,6 +91,23 @@ public class BoardServiceImpl implements BoardService {
 			return new PageInfo<>(page);
 		}	
 	}
+	
+	@Override
+	public PageInfo<Board> getBoardMno(Integer mno, Integer currentPage) {
+		try(Page<Board> page = PageHelper.startPage(currentPage, 10, "created_date DESC")){
+			boardDao.getBoardMno(mno);
+			return new PageInfo<>(page);
+		}
+	}
+	@Override
+	public PageInfo<Comment> getCommentAll(Integer mno, Integer currentPage) {
+		try(Page<Comment> page = PageHelper.startPage(currentPage,10,"created_date DESC")){
+			boardDao.getCommentAll(mno);
+			return new PageInfo<>(page);
+		}
+	}
+
+
 
 	@Override
 	public List<Board> getBoardViews(String boardType) {
@@ -241,6 +288,67 @@ public class BoardServiceImpl implements BoardService {
 			return Integer.compare(o.cost, this.cost);
 		}
 	}
+	@Override
+    @Transactional
+    public Long storeImage(MultipartFile file, int bno) {
+        // 1) MIME & 확장자 검사
+        if (file.getContentType() == null || !file.getContentType().startsWith("image/")) {
+            throw new IllegalArgumentException("이미지 파일만 업로드 가능합니다.");
+        }
+        String orig = file.getOriginalFilename();
+        String ext  = orig.substring(orig.lastIndexOf('.')).toLowerCase();
+        if (!ALLOWED.contains(ext)) {
+            throw new IllegalArgumentException("허용되지 않는 확장자입니다: " + ext);
+        }
+        // 2) 파일 저장
+        String uuid = UUID.randomUUID().toString() + ext;
+        Path target = Paths.get(uploadDir, uuid);
+        try {
+            Files.createDirectories(target.getParent());
+            file.transferTo(target.toFile());
+        } catch (IOException e) {
+            logger.error("파일 저장 경로: {}", target, e);
+
+            throw new RuntimeException("파일 저장 실패", e);
+        }
+        // 3) 메타 DB 저장
+        BoardImage meta = new BoardImage();
+        meta.setBno(bno);
+        meta.setFilename(orig);
+        meta.setContentType(file.getContentType());
+        meta.setSize(file.getSize());
+        meta.setStoragePath(target.toString());
+        boardImageDao.insertImage(meta);
+        return meta.getImgNo();
+    }
+
+    @Override
+    public Resource loadImageAsResource(Long imgNo) throws AccessDeniedException, FileNotFoundException {
+        BoardImage meta = boardImageDao.selectImageMetaById(imgNo);
+        Board board = boardDao.getBoardBno(meta.getBno());
+        boolean canView = "PUBLIC".equals(board.getVisibility());
+        if (!canView) {
+            throw new AccessDeniedException("열람 권한이 없습니다.");
+        }
+        Path file = Paths.get(meta.getStoragePath());
+        Resource res = null;
+		try {
+			res = new UrlResource(file.toUri());
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        if (!res.exists() || !res.isReadable()) {
+            throw new FileNotFoundException("이미지를 찾을 수 없습니다.");
+        }
+        return res;
+    }
+
+    @Override
+    public List<Integer> getImageIdsByBno(int bno) {
+        return boardImageDao.selectImageIdsByBno(bno);
+    }
+
 
 
 
