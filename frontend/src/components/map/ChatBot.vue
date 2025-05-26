@@ -26,7 +26,7 @@
     </div>
 
     <!-- 메시지 리스트 -->
-    <div class="messages">
+    <div ref="messageContainer" class="messages">
       <div v-for="(msg, idx) in chatHistory" :key="idx" :class="['message', msg.messageType]">
         <span v-if="msg.messageType === 'USER'">
            {{ msg.text }} :
@@ -55,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed, onMounted, onUnmounted } from 'vue'
+import { reactive, ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import useChatbot from '@/hooks/useChatBot'
 
 const {
@@ -66,6 +66,16 @@ const {
   clearChatHistory,
   setupChatHistory
 } = useChatbot()
+
+const messageContainer = ref<HTMLElement | null>(null)
+
+watch(chatHistory.value, () => {
+  nextTick(() => {
+    if (messageContainer.value) {
+      messageContainer.value.scrollTop = messageContainer.value.scrollHeight
+    }
+  })
+})
 
 // 드래그용 상태
 const pos = reactive({

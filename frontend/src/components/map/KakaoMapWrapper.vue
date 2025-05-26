@@ -13,18 +13,9 @@ import { storeToRefs } from 'pinia'
 import { createApp, onMounted, ref, watch } from 'vue'
 import { vuetify } from '@/plugin/vuetify'
 import HotPlacePopup from "@/components/map/HotPlacePopup.vue"
-import useHotPlace from '@/hooks/useHotPlace'
-
 
 const { kakaoMapProps, traceMapProps, markerProps, currentContent } = storeToRefs(useKakaoMap())
-const { locationSearch, contentDetailSearch } = useKakaoMap()
-
-
-// 초기 위치 검색
-onMounted(() => {
-  locationSearch('서울 특별시')
-  useHotPlace()
-})
+const { contentDetailSearch } = useKakaoMap()
 
 const mapRef = ref<kakao.maps.Map>()
 const customOverlay = ref<kakao.maps.CustomOverlay | null>(null);
