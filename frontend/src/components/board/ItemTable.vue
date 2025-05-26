@@ -8,13 +8,14 @@
     class="elevation-1"
   >
     <template #item="{ item, props }">
-      <tr v-bind="props" @click="item.visibility === 'PUBLIC' &&  onRowClick(item)" class="row">
+      <tr v-bind="props" @click="(item.visibility === 'PUBLIC' || item.mno===userInfo.mno) &&  onRowClick(item)" class="row">
         <td>
           {{ item.visibility === 'PRIVATE'
             ? '비공개 글입니다.'
             : item.title
           }}
-        </td>        <td>{{ item.author }}</td>
+        </td>        
+        <td>{{ item.author}}</td>
         <td>{{ item.createdDate }}</td>
         <td>{{ item.views }}</td>
       </tr>
@@ -34,8 +35,12 @@
 </template>
 
 <script setup lang="ts">
+import { useAuth } from '@/hooks/useAuth'
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+
+const userInfo = useAuth().userInfo
+
 
 export interface BoardSummary {
   bno: number
