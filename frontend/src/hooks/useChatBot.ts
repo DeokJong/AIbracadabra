@@ -106,11 +106,11 @@ const useChatbot = () => {
       chatHistory.value[placeholderIndex].text = data.data.message
 
       const recommendPlan = data.data.recommendPlan
-      if (recommendPlan.schedules.length) {
+      if (recommendPlan != null &&recommendPlan.schedules.length) {
         recommendPlan.pno=0
         planStore.setPlan(recommendPlan)
       }
-    } catch (error) {
+    } catch {
       chatHistory.value[placeholderIndex].text = '⚠️ 서버 요청 중 오류가 발생했습니다.'
     } finally {
       isChatLoading.value = false

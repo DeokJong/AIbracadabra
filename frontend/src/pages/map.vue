@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import KakaoMapWrapper from '@/components/map/KakaoMap.vue'
+import KakaoMapWrapper from '@/components/map/KakaoMapWrapper.vue'
 import MapSearchBar from '@/components/map/MapSearchBar.vue'
 import DetailSidebar from '@/components/map/DetailSidebar.vue'
 import ResultNavigationBar from '@/components/map/ResultNavigationBar.vue'

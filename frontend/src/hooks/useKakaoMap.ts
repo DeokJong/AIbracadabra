@@ -1,5 +1,5 @@
 import { CommonResponse } from '@/service/common'
-import axios, { isAxiosError } from 'axios'
+import axios from 'axios'
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
 import { useToast } from 'vue-toastification'
