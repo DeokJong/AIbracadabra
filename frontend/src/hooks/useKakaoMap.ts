@@ -35,6 +35,10 @@ export type FullDocument = Document & {
   contentsTypeId: string
   contentId: string
   overview: string
+  temperature: string
+  description: string
+  sunrise: string
+  sunset: string
 }
 
 export type KakaoDocumentMeta = {
