@@ -29,10 +29,15 @@ import { storeToRefs } from 'pinia'
 
 const kakaoMap = useKakaoMap()
 const { contentSearch } = kakaoMap
-const { markerMeta, lastSearchContentType  } = storeToRefs(kakaoMap)
+const { markerMeta, lastSearchContentParams  } = storeToRefs(kakaoMap)
 
 function goPage(page: number) {
-  contentSearch(lastSearchContentType.value, page )
+  contentSearch(lastSearchContentParams.value.contentType,
+    lastSearchContentParams.value.lng,
+    lastSearchContentParams.value.lat,
+    lastSearchContentParams.value.level,
+    page
+  )
 }
 </script>
 

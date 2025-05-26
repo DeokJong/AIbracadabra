@@ -1,6 +1,5 @@
 package com.ssafy.restcontroller;
 
-import com.ssafy.model.dao.PlanDao;
 import com.ssafy.model.dto.domain.Plan;
 import com.ssafy.model.service.PlanService;
 import com.ssafy.security.dto.CustomUserDetails;

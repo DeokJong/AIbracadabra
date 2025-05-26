@@ -1,23 +1,14 @@
 package com.ssafy.model.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
 import java.util.List;
 
-import com.ssafy.exception.RecordNotFoundException;
-import com.ssafy.model.dao.NewsDao;
 import com.ssafy.model.dto.domain.News;
-import com.ssafy.model.service.impl.NewsServiceImpl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,8 +23,6 @@ class TestNewsService {
 
     @Autowired
     private NewsService newsService;
-
-    private News sampleNews;
 
     @BeforeEach
     void setup() {

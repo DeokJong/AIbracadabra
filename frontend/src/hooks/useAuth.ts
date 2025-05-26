@@ -61,9 +61,6 @@ export const useAuth = defineStore(
         userInfo.role = data.role
         isLoggined.value = true
       } catch (err) {
-        if (isAxiosError(err) && err.response?.status === 401) {
-          console.log(err.response?.data)
-        }
         isLoggined.value = false
         Object.assign(userInfo, GUEST_USER)
       }
@@ -102,6 +99,8 @@ export const useAuth = defineStore(
         } else {
           toast.warning('로그아웃 중 에러')
         }
+      } finally {
+        window.location.reload()
       }
     }
 

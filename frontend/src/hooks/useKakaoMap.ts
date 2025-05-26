@@ -1,5 +1,5 @@
 import { CommonResponse } from '@/service/common'
-import axios, {  isAxiosError } from 'axios'
+import axios, { isAxiosError } from 'axios'
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
 import { useToast } from 'vue-toastification'
@@ -53,56 +53,12 @@ export type KakaoMapMarkerPropsWithInfo = KakaoMapMarkerProps & {
   info: { contentId: string }
 }
 
-export type Plan = {
-  title: string
-  pno: number
-  schedules: FullDocument[]
-}
-
-// 
-export type ChatMessage = {
-  sender: 'user' | 'bot'
-  content: string
-}
-export function useChatbot() {
-  const inputText = ref<string>('')
-  const messages = ref<ChatMessage[]>([])
-
-  // 메시지 전송 함수
-  async function sendMessage() {
-    const text = inputText.value.trim()
-    if (!text) return
-
-    // 대화 내용을 담는 maessages 배열에 사용자 메시지 추가
-    messages.value.push({ sender: 'user', content: text })
-
-    try {
-      // 서버에 사용자의 inputText을 보냄
-      const res = await axios.post<{
-        reply: string
-      }>('/api/chat', {
-        message: text,
-        history: messages.value
-      })
-
-      // 서버에서 온 응답을 배열에 담음
-      messages.value.push({ sender: 'bot', content: res.data.reply })
-    } catch (error) {
-      console.error(error)
-      messages.value.push({
-        sender: 'bot',
-        content: '⚠️ 서버 요청 중 오류가 발생했습니다.'
-      })
-    } finally {
-      // 사용자의 입력창을 초기화 하기
-      inputText.value = ''
-    }
-  }
-  return {
-    inputText,
-    messages,
-    sendMessage
-  }
+export type SearchContentParams = {
+  contentType: ContentType
+  lng: number
+  lat: number
+  pageNo: number
+  level: number
 }
 
 /**
@@ -120,7 +76,8 @@ export function useChatbot() {
 export const useKakaoMap = defineStore('kakaoMap', () => {
   const toast = useToast()
 
-  const kakaoMapProps = ref<KakaoMapProps>(DEFAULT_KAKAO_MAP_PROPS)
+  const kakaoMapProps = ref<KakaoMapProps>({ ...DEFAULT_KAKAO_MAP_PROPS })
+  const traceMapProps = ref<KakaoMapProps>({ ...DEFAULT_KAKAO_MAP_PROPS })
   const markerProps = ref<KakaoMapMarkerPropsWithInfo[]>([])
   const markerMeta = reactive<KakaoDocumentMeta>({
     numOfRows: 0,
@@ -128,13 +85,9 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
     totalCount: 0,
     end: true,
   } as KakaoDocumentMeta)
-  const lastSearchContentType = ref<ContentType>(ContentType.UNDEFINE)
+  const lastSearchContentParams = ref<SearchContentParams>({} as SearchContentParams)
   const currentContent = reactive<FullDocument>({} as FullDocument)
-  const currentPlan = ref<Plan>({
-    title: '',
-    pno: 0,
-    schedules: []
-  })
+
   /**
    * 검색어로 보고있는 화면을 옮김
    * @param query 검색어
@@ -161,17 +114,32 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
    * @param contentType 컨텐츠 타입
    * @param pageNo 페이지
    */
-  const contentSearch = async (contentType: ContentType, pageNo: number = 1) => {
+  const contentSearch = async (
+    contentType: ContentType,
+    mapX: number = traceMapProps.value.lng,
+    mapY: number = traceMapProps.value.lat,
+    level: number = traceMapProps.value.level ?? 3,
+    pageNo: number = 1
+  ) => {
     await axios
       .get<CommonResponse<KakaoDocument<FullDocument>>>(
-        `/api/v1/map/contents?mapX=${kakaoMapProps.value.lng}&mapY=${kakaoMapProps.value.lat}&contentTypeId=${contentType}&pageNo=${pageNo}&radius=${mapLevelIntoRadius(kakaoMapProps.value.level ? kakaoMapProps.value.level : 1000)}`
+        `/api/v1/map/contents?mapX=${mapX}&mapY=${mapY}&contentTypeId=${contentType}&pageNo=${pageNo}&radius=${mapLevelIntoRadius(level)}`
       )
       .then((response) => {
         if (response.data.data.meta.numOfRows) {
           const document: FullDocument[] = response.data.data.documents
           Object.assign(markerMeta, response.data.data.meta)
-          lastSearchContentType.value =
+
+          // 이전 검색 기록 저장
+          lastSearchContentParams.value.contentType =
             document.length ? ContentCodeResolver(document[0].contentsTypeId) : ContentType.UNDEFINE
+          lastSearchContentParams.value.lat =
+            lastSearchContentParams.value.lat ?? traceMapProps.value.lat
+          lastSearchContentParams.value.lng =
+            lastSearchContentParams.value.lng ?? traceMapProps.value.lng
+          lastSearchContentParams.value.level =
+            lastSearchContentParams.value.level ?? traceMapProps.value.level
+
           markerProps.value = []
           document.forEach((ele) => {
             markerProps.value.push({
@@ -213,55 +181,28 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
       })
   }
 
-  const appendSchedule = () => {
-    console.log({ ...currentContent })
-    currentPlan.value.schedules.push({ ...currentContent })
+    function setCurrentContent(item: FullDocument) {
+    Object.assign(currentContent, item)
   }
-
-  const savePlan = async () => {
-    try {
-      if (currentPlan.value.pno === 0) {
-        const response = await axios.post('/api/v1/plans', currentPlan.value) // TODO 백엔드 API 수정 필요 WHY ? 저장 한 이후 pno를 받아와야함. 받아온 이후 현재 계획에 pno 적용하기! 
-        currentPlan.value.pno = response.data.data.pno
-        console.log(currentPlan.value.pno)
-      } else {
-        await axios.put(`/api/v1/plans/${currentPlan.value.pno}`, currentPlan.value)
-      }
-      toast.info("여행 계획이 성공적으로 저장이 되었습니다.")
-    } catch (err) {
-      if(isAxiosError(err) && err.response?.status === 401) {
-        toast.info("로그인 하고 이용하시오")
-      } else {
-        toast.warning("저장 하는 도중에 에러가 발생했습니다. 문의해주세요")
-      }
-    }
-  }
-  
-  const removeSchedule = (index: number) => {
-  currentPlan.value.schedules.splice(index, 1)
-}
 
   return {
-    currentPlan,
     markerProps,
     markerMeta,
     kakaoMapProps,
     currentContent,
-    lastSearchContentType,
+    lastSearchContentParams,
+    traceMapProps,
     locationSearch,
     contentSearch,
     contentDetailSearch,
-    appendSchedule,
-    savePlan,
-    removeSchedule,
-    
+    setCurrentContent
   }
 })
 
 /**
  * 컨텐츠 Type code로 마커 이미지 불러오는 함수
  */
-const ContentTypeImageResolver = (code: string, type: string = 'png'): string => {
+export const ContentTypeImageResolver = (code: string, type: string = 'png'): string => {
   switch (code) {
     case '12':
       return `${ContentType.TOURIST_SPOT}.${type}`
@@ -290,7 +231,7 @@ const ContentTypeImageResolver = (code: string, type: string = 'png'): string =>
  * @param code
  * @returns
  */
-const ContentCodeResolver = (code: string) => {
+export const ContentCodeResolver = (code: string) => {
   switch (code) {
     case '12':
       return ContentType.TOURIST_SPOT

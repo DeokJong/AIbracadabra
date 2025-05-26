@@ -27,20 +27,16 @@
           </v-card-title>
           <v-list dense>
             <v-list-item>
-              <v-list-item-content>
                 <v-list-item-title>주소</v-list-item-title>
                 <div style="color: gray">{{ currentContent.address }}</div>
-              </v-list-item-content>
             </v-list-item>
             <v-list-item>
-              <v-list-item-content>
                 <v-list-item-title>상세 설명</v-list-item-title>
                 <div style="color: gray">{{ currentContent.overview }}</div>
-              </v-list-item-content>
             </v-list-item>
           </v-list>
           <v-divider />
-          <v-btn block color="info" @click="appendSchedule">담기</v-btn>
+          <v-btn block color="info" @click="doAppend">담기</v-btn>
         </v-card>
 
       </div>
@@ -52,6 +48,7 @@
 import { ref, watch } from 'vue'
 import { useKakaoMap } from '@/hooks/useKakaoMap'
 import { storeToRefs } from 'pinia'
+import { usePlan } from '@/hooks/usePlan'
 
 // 사이드바 너비(px)
 const props = defineProps({
@@ -62,10 +59,12 @@ const { width } = props
 // 열림/닫힘 상태
 const drawer = ref(false)
 
-// currentContent 데이터
-const kakaoMap = useKakaoMap()
-const { appendSchedule } = kakaoMap
-const { currentContent } = storeToRefs(kakaoMap)
+const { appendSchedule } = usePlan()
+const { currentContent } = storeToRefs(useKakaoMap())
+
+const doAppend = () => {
+  appendSchedule(currentContent.value)
+}
 
 // currentContent.contentId가 설정될 때 자동으로 열기
 watch(
