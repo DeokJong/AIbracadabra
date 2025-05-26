@@ -69,13 +69,16 @@ const {
 
 const messageContainer = ref<HTMLElement | null>(null)
 
-watch(chatHistory.value, () => {
+watch(chatHistory, () => {
   nextTick(() => {
     if (messageContainer.value) {
-      messageContainer.value.scrollTop = messageContainer.value.scrollHeight
+      messageContainer.value.scrollTo({
+        top: messageContainer.value.scrollHeight,
+        behavior: 'smooth'
+      })
     }
   })
-})
+}, { deep: true })
 
 // 드래그용 상태
 const pos = reactive({
