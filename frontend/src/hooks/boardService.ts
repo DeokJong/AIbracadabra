@@ -9,6 +9,28 @@ export interface Board {
   author: string
   createdDate: string
   views: number
+  imageUrls: []
+}
+
+export enum PostVisibility {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE', 
+}
+
+export interface BoardPost {
+  bno: number
+  title: string
+  content: string
+  author: string
+  createdDate: string
+  views?: number
+  likes?: number
+  imageUrls?: string[]
+}
+
+export interface PostNavigation {
+  prev?: { bno: number; title: string }
+  next?: { bno: number; title: string }
 }
 
 // 인기글 5개 조회 (기존)

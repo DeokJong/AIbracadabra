@@ -9,8 +9,7 @@ import WithdrawModal from '@/components/modal/QnaDeleteModal.vue'
 import { useModal } from '@/hooks/useModal'
 import CommentDeleteModal from '@/components/modal/CommentDeleteModal.vue'
 import { useToast } from 'vue-toastification'
-import  RegistComment from '@/components/comment/RegistComment.vue'
-
+import RegistComment from '@/components/comment/RegistComment.vue'
 
 const auth = useAuth()
 const router = useRouter()
@@ -37,14 +36,10 @@ type Comment = {
 const boardData = reactive<BoardDetail>({} as BoardDetail)
 
 onMounted(async () => {
-    // const raw = route.params.bno
   const params = route.params as { bno: string }
-
   const bno = Number(params.bno)
   const detailApiUrl = `api/v1/board/${bno}`
   const response = await axios.get<CommonResponse<BoardDetail>>(detailApiUrl)
-  // TODO 니가 결과값에 맞춰서 바꾸어라
-  // 그런데 내가 지금 페이지 네이션 관련해서 다루고 있으니 일단은 남겨라
   console.log(response.data.data)
   Object.assign(boardData, response.data.data)
 })
@@ -55,26 +50,23 @@ const openWithdrawModal = async () => {
   } catch {
   }
 }
+
 const onDeleteComment = async (comment: Comment) => {
   try {
-    // 1) 모달 띄우고
     await addModal(CommentDeleteModal)
-    // 2) 확인되면 삭제 API 호출
     await axios.delete(`/api/v1/board/${boardData.bno}/comment/${comment.cno}`)
-    // 3) 로컬 배열에서 즉시 제거
     const idx = boardData.comments.findIndex(c => c.cno === comment.cno)
     if (idx !== -1) boardData.comments.splice(idx, 1)
   } catch {
-    // 취소했거나 에러
   }
 }
 
 const onRowClick = () => {
-
   router.push({ 
     path: `/${boardData.boardType}/${boardData.bno}/edit`
   })
 }
+
 const showCommentForm = ref(false)
 
 const onWriteComment = () => {
@@ -86,8 +78,6 @@ const onWriteComment = () => {
   showCommentForm.value = !showCommentForm.value
 }
 
-
-// **수정 중인 댓글 ID** 및 **임시 컨텐츠**
 const editingCommentId = ref<number | null>(null)
 const editingContent = ref<string>('')
 
@@ -100,18 +90,17 @@ function cancelEdit() {
   editingCommentId.value = null
   editingContent.value = ''
 }
-async function onCommentSubmit(content: string) {
-    console.log('🐣 onCommentSubmit!', content)
 
+async function onCommentSubmit(content: string) {
+  console.log('🐣 onCommentSubmit!', content)
   try {
     const res = await axios.post<CommonResponse<Comment>>(
       `/api/v1/board/${boardData.bno}/comment`,
       { content }
     )
     const newComment = res.data.data
-    // 삭제 로직처럼 splice 로 추가
     boardData.comments.splice(boardData.comments.length, 0, newComment)
-      window.location.reload()
+    window.location.reload()
   } catch {
     useToast().error('댓글 등록에 실패했습니다.')
   } finally {
@@ -125,7 +114,6 @@ async function saveEdit(comment: Comment) {
       `/api/v1/board/${boardData.bno}/comment/${comment.cno}`,
       { content: editingContent.value }
     )
-    // 로컬 데이터 업데이트
     const idx = boardData.comments.findIndex(c => c.cno === comment.cno)
     if (idx !== -1) {
       boardData.comments[idx].content = editingContent.value
@@ -138,180 +126,548 @@ async function saveEdit(comment: Comment) {
     cancelEdit()
   }
 }
-
-
 </script>
 
 <template>
-  <v-container class="board-detail-modern py-6">
+  <v-container class="qna-detail-modern py-6">
     <v-row justify="center">
-      <v-col cols="12" md="8">
-        <!-- 타입 컬러 바 + 헤더 -->
-        <div class="type-bar" :class="boardData.boardType"></div>
-        <v-sheet elevation="3" class="pa-6 board-sheet">
-          <div class="header-wrap mb-4">
-            <div class="title">{{ boardData.title }}</div>
-            <div class="meta">
-              <span>{{ boardData.author }}</span>
-              <span class="dot">·</span>
-              <span>{{ boardData.createdDate }}</span>
-              <span class="dot">·</span>
-              <span>조회 {{ boardData.views / 2 }}</span>
+      <v-col cols="12" lg="10" xl="8">
+        <!-- 상단 네비게이션 -->
+        <div class="breadcrumb-nav mb-4">
+          <v-btn 
+            variant="text" 
+            prepend-icon="mdi-arrow-left"
+            class="back-btn"
+            @click="router.push('/qna')"
+          >
+            Q&A 목록으로
+          </v-btn>
+        </div>
+
+        <!-- 메인 QNA 카드 -->
+        <v-card class="main-qna-card" elevation="2">
+          <!-- 타입 컬러 바 -->
+          <div class="type-indicator qna"></div>
+          
+          <!-- 헤더 섹션 -->
+          <v-card-text class="qna-header">
+            <div class="title-section">
+              <div class="qna-badge">
+                <v-icon size="20">mdi-help-circle</v-icon>
+                Q&A
+              </div>
+              <h1 class="qna-title">{{ boardData.title }}</h1>
+              <div class="qna-meta">
+                <v-avatar size="36" class="author-avatar">
+                  <span>{{ boardData.author?.charAt(0) || 'U' }}</span>
+                </v-avatar>
+                <div class="meta-info">
+                  <span class="author-name">{{ boardData.author }}</span>
+                  <div class="meta-details">
+                    <span class="date">{{ boardData.createdDate }}</span>
+                    <span class="divider">•</span>
+                    <span class="views">조회 {{ Math.floor((boardData.views || 0) / 2) }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div
-              class="header-actions"
+            
+            <!-- 액션 버튼들 -->
+            <div 
+              class="action-buttons"
               v-if="auth.isLoggined && auth.userInfo.name === boardData.author"
             >
-              <v-btn small text @click="onRowClick">수정</v-btn>
-              <v-btn small text color="error" @click="openWithdrawModal">삭제</v-btn>
+              <v-btn
+                variant="outlined"
+                color="primary"
+                size="small"
+                prepend-icon="mdi-pencil"
+                @click="onRowClick"
+              >
+                수정
+              </v-btn>
+              <v-btn
+                variant="outlined"
+                color="error"
+                size="small"
+                prepend-icon="mdi-delete"
+                @click="openWithdrawModal"
+              >
+                삭제
+              </v-btn>
+            </div>
+          </v-card-text>
+
+          <v-divider></v-divider>
+
+          <!-- 본문 내용 -->
+          <v-card-text class="qna-content">
+            <div class="content-body">
+              {{ boardData.content }}
+            </div>
+          </v-card-text>
+        </v-card>
+
+        <!-- 답변 섹션 -->
+        <div class="answers-section">
+          <div v-if="boardData.comments?.length !== undefined">
+            <div class="answers-header">
+              <h3 class="answers-title">
+                <v-icon class="mr-2" color="orange">mdi-comment-text-multiple</v-icon>
+                답변 {{ boardData.comments.length }}개
+              </h3>
+            </div>
+
+            <div class="answers-list">
+              <v-card
+                v-for="comment in boardData.comments"
+                :key="comment.cno"
+                class="answer-card"
+                variant="outlined"
+              >
+                <v-card-text class="answer-content">
+                  <div class="answer-header">
+                    <div class="answer-badge">
+                      <v-icon size="16">mdi-comment-text</v-icon>
+                      답변
+                    </div>
+                    <v-avatar size="32" class="answer-avatar">
+                      <span>{{ comment.author.charAt(0) }}</span>
+                    </v-avatar>
+                    <div class="answer-meta">
+                      <span class="answer-author">{{ comment.author }}</span>
+                      <span class="answer-date">{{ comment.createdDate }}</span>
+                    </div>
+                    
+                    <!-- 답변 액션 버튼 -->
+                    <div
+                      class="answer-actions"
+                      v-if="auth.isLoggined && auth.userInfo.name === comment.author && editingCommentId !== comment.cno"
+                    >
+                      <v-btn
+                        variant="text"
+                        size="small"
+                        icon="mdi-pencil"
+                        @click="startEdit(comment)"
+                      ></v-btn>
+                      <v-btn
+                        variant="text"
+                        size="small"
+                        color="error"
+                        icon="mdi-delete"
+                        @click="onDeleteComment(comment)"
+                      ></v-btn>
+                    </div>
+                  </div>
+
+                  <!-- 답변 내용 보기/수정 모드 -->
+                  <div v-if="editingCommentId !== comment.cno" class="answer-body">
+                    {{ comment.content }}
+                  </div>
+
+                  <div v-else class="answer-edit">
+                    <v-textarea
+                      v-model="editingContent"
+                      rows="4"
+                      variant="outlined"
+                      hide-details
+                      placeholder="답변을 수정해주세요..."
+                    ></v-textarea>
+                    <div class="edit-actions">
+                      <v-btn
+                        variant="text"
+                        size="small"
+                        @click="cancelEdit"
+                      >
+                        취소
+                      </v-btn>
+                      <v-btn
+                        variant="flat"
+                        size="small"
+                        color="primary"
+                        @click="saveEdit(comment)"
+                      >
+                        저장
+                      </v-btn>
+                    </div>
+                  </div>
+                </v-card-text>
+              </v-card>
             </div>
           </div>
 
-          <v-divider class="mb-6" />
-
-          <!-- 본문 -->
-          <div class="content mb-8">
-            {{ boardData.content }}
-          </div>
-        </v-sheet>
-
-        <v-divider class="mb-4" />
-
-        <!-- 댓글 리스트 -->
-        <div v-if="boardData.comments?.length !== undefined">
-          <div class="comments-header mb-2">
-            댓글 ({{ boardData.comments.length }})
-          </div>
-
-          <div
-            v-for="comment in boardData.comments"
-            :key="comment.cno"
-            class="comment-bubble mb-4"
-          >
-            <v-avatar size="32" class="mr-2">
-              <span>{{ comment.author.charAt(0) }}</span>
-            </v-avatar>
-
-            <div class="bubble-body">
-              <!-- 보기 모드 -->
-              <div v-if="editingCommentId !== comment.cno">
-                <div class="bubble-meta">
-                  {{ comment.author }} · {{ comment.createdDate }}
-                </div>
-                <div class="bubble-content mb-2">
-                  {{ comment.content }}
-                </div>
-                <div
-                  class="comment-actions"
-                  v-if="auth.isLoggined && auth.userInfo.name === comment.author"
-                >
-                  <v-btn small text @click="startEdit(comment)">수정</v-btn>
-                  <v-btn small text color="error" @click="onDeleteComment(comment)">
-                    삭제
-                  </v-btn>
-                </div>
-              </div>
-
-              <!-- 편집 모드 -->
-              <div v-else>
-                <v-textarea
-                  v-model="editingContent"
-                  rows="4"
-                  outlined
-                />
-                <v-row class="mt-2" justify="end">
-                  <v-btn text @click="cancelEdit">취소</v-btn>
-                  <v-btn color="primary" class="ml-2" @click="saveEdit(comment)">
-                    저장
-                  </v-btn>
-                </v-row>
-              </div>
+          <!-- 답변 작성 버튼 및 폼 (관리자만) -->
+          <div class="answer-write-section" v-if="auth.userInfo?.role==='admin'">
+            <v-btn
+              color="orange"
+              variant="flat"
+              prepend-icon="mdi-comment-plus"
+              block
+              class="write-answer-btn"
+              @click="onWriteComment"
+            >
+              답변 작성하기
+            </v-btn>
+            
+            <div v-if="showCommentForm" class="answer-form-wrapper">
+              <RegistComment
+                :bno="boardData.bno"
+                @submitted="onCommentSubmit"
+                @cancelled="showCommentForm = false"
+              />
             </div>
           </div>
         </div>
-
-        <!-- 댓글 쓰기 버튼 & 폼 -->
-        <v-row justify="center" class="mt-6" v-if="auth.userInfo?.role==='admin'">
-          <v-btn color="primary" @click="onWriteComment">댓글쓰기</v-btn>
-        </v-row>
-        <RegistComment
-          v-if="showCommentForm"
-          :bno="boardData.bno"
-          @submitted="onCommentSubmit"
-          @cancelled="showCommentForm = false"
-        />
       </v-col>
     </v-row>
   </v-container>
 </template>
+
 <style scoped>
-.board-detail-modern {
-  max-width: 100%;
+/* 전체 컨테이너 */
+.qna-detail-modern {
+  background: #f8f9fa;
+  min-height: 100vh;
 }
 
-/* 게시판 타입별 컬러 바 */
-.type-bar {
-  height: 4px;
-  margin-bottom: -4px;
-}
-.type-bar.board { background: #4caf50; }
-.type-bar.notice { background: #2196f3; }
-.type-bar.qna   { background: #ff9800; }
-
-/* 본문 카드 */
-.board-sheet {
-  border-radius: 12px;
+/* 상단 네비게이션 */
+.breadcrumb-nav {
+  margin-bottom: 1.5rem;
 }
 
-/* 헤더 스타일 */
-.header-wrap .title {
-  font-size: 1.75rem;
-  font-weight: 700;
-}
-.header-wrap .meta {
-  color: #777;
-  font-size: 0.875rem;
-}
-.header-wrap .dot {
-  margin: 0 4px;
-}
-
-/* 본문 */
-.content {
-  white-space: pre-wrap;
-  line-height: 1.7;
-  color: #333;
-}
-
-/* 댓글 섹션 */
-.comments-wrap .comments-header {
-  font-size: 1.125rem;
+.back-btn {
+  color: #6c757d;
   font-weight: 500;
-  margin-bottom: 12px;
 }
 
-/* 댓글 버블 */
-.comment-bubble {
-  display: flex;
-  align-items: flex-start;
-}
-
-.bubble-body {
-  background: #f5f5f5;
+/* 메인 QNA 카드 */
+.main-qna-card {
   border-radius: 16px;
-  padding: 12px 16px;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* 타입 인디케이터 */
+.type-indicator {
+  height: 4px;
+  width: 100%;
+}
+.type-indicator.qna { 
+  background: linear-gradient(90deg, #ff9800, #ffb74d); 
+}
+
+/* QNA 헤더 섹션 */
+.qna-header {
+  padding: 2rem !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.title-section {
   flex: 1;
 }
 
-.bubble-meta {
-  font-size: 0.75rem;
-  color: #999;
-  margin-bottom: 4px;
+.qna-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #ff9800, #ffb74d);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
-.bubble-content {
-  font-size: 0.95rem;
-  color: #444;
+.qna-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+}
+
+.qna-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.author-avatar {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  color: white;
+  font-weight: 600;
+}
+
+.meta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.author-name {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.meta-details {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.divider {
+  color: #dee2e6;
+}
+
+/* 액션 버튼 */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* 본문 내용 */
+.qna-content {
+  padding: 2rem !important;
+  padding-top: 1rem !important;
+}
+
+.content-body {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #495057;
   white-space: pre-wrap;
+  min-height: 100px;
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border-left: 4px solid #ff9800;
+}
+
+/* 답변 섹션 */
+.answers-section {
+  margin-top: 2rem;
+}
+
+.answers-header {
+  margin-bottom: 1.5rem;
+}
+
+.answers-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.answers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.answer-card {
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  border-left: 4px solid #4caf50;
+}
+
+.answer-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.answer-content {
+  padding: 1.5rem !important;
+}
+
+.answer-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.answer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.answer-avatar {
+  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+  color: white;
+  font-weight: 600;
+}
+
+.answer-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.answer-author {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.answer-date {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.answer-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.answer-body {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #495057;
+  white-space: pre-wrap;
+  padding-left: 3rem;
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+.answer-edit {
+  margin-top: 0.5rem;
+}
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* 답변 작성 섹션 */
+.answer-write-section {
+  margin-top: 2rem;
+}
+
+.write-answer-btn {
+  border-radius: 12px;
+  padding: 1rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.answer-form-wrapper {
+  margin-top: 1rem;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .qna-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+
+  .action-buttons {
+    justify-content: flex-end;
+  }
+
+  .qna-title {
+    font-size: 1.5rem;
+  }
+
+  .answer-body {
+    padding-left: 0;
+    margin-top: 0.75rem;
+  }
+
+  .answer-edit {
+    margin-top: 0.75rem;
+  }
+
+  .answer-header {
+    flex-wrap: wrap;
+  }
+
+  .answer-actions {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .qna-content,
+  .qna-header {
+    padding: 1rem !important;
+  }
+
+  .answer-content {
+    padding: 1rem !important;
+  }
+
+  .meta-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .qna-badge,
+  .answer-badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+  }
+}
+
+/* 다크모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .qna-detail-modern {
+    background: #121212;
+  }
+  
+  .main-qna-card,
+  .answer-card {
+    background: #1e1e1e;
+  }
+  
+  .qna-title,
+  .author-name,
+  .answers-title,
+  .answer-author {
+    color: #ffffff;
+  }
+  
+  .content-body,
+  .answer-body {
+    color: #e0e0e0;
+    background: #2a2a2a;
+  }
+  
+  .meta-details,
+  .answer-date {
+    color: #9e9e9e;
+  }
 }
 </style>

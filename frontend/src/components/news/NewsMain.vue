@@ -1,7 +1,14 @@
 <template>
-  <div class="news-container">
-    <h2 class="news-title">최신 뉴스</h2>
-    <div class="news-list">
+  <div class="news-main-container">
+    <!-- <div class="news-header">
+      <h2 class="news-title">
+        <span class="title-icon">📰</span>
+        지역별 최신 뉴스
+      </h2>
+      <p class="news-subtitle">전국 각 지역의 생생한 소식을 만나보세요</p>
+    </div> -->
+    
+    <div class="news-grid">
       <RegionNews
         v-for="r in regions"
         :key="r.code"
@@ -29,22 +36,55 @@ const regions = [
 </script>
 
 <style scoped>
-.news-container {
-  background: #f8f9fa;
-  padding: 2rem;
-  border-radius: 12px;
+.news-main-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.news-header {
+  text-align: center;
+  margin-bottom: 3rem;
 }
 
 .news-title {
-  font-size: 1.8rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
 }
 
-.news-list {
+.title-icon {
+  font-size: 2.2rem;
+}
+
+.news-subtitle {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.news-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .news-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .news-title {
+    font-size: 1.6rem;
+  }
+  
+  .news-subtitle {
+    font-size: 1rem;
+  }
 }
 </style>
