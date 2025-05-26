@@ -1,7 +1,6 @@
 package com.ssafy.model.service.impl;
 
 import com.ssafy.model.client.KakaoClient;
-import com.ssafy.model.client.KakaoClientImpl;
 import com.ssafy.model.client.TourInfoClient;
 import com.ssafy.model.dto.client.AddressSearchResponse;
 import com.ssafy.model.dto.client.SearchResponse;

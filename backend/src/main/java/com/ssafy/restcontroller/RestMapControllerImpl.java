@@ -2,7 +2,6 @@ package com.ssafy.restcontroller;
 
 import com.ssafy.constant.ContentTypeId;
 import com.ssafy.model.service.MapService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

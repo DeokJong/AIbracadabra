@@ -16,7 +16,7 @@
     <v-card
       flat
       class="right-search-bar d-flex align-center pa-2 bg-white"
-      style="border-radius: 32px;"
+      style="border-radius: 32px; z-index: 999;"
       variant="outlined"
       >
       <!-- 검색 입력 -->
