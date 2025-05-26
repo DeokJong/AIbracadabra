@@ -25,7 +25,7 @@ public class HotPlaceServiceImpl implements HotPlaceService {
 
 	@Override
 	public void registHotPlace(HotPlace hotPlace, MultipartFile file) {
-		if (!file.isEmpty()) {
+		if (file != null && !file.isEmpty()) {
 			Image image = imageService.createImage(file);
 			hotPlace.setIno(image.getIno());
 		}
@@ -54,7 +54,7 @@ public class HotPlaceServiceImpl implements HotPlaceService {
 
 	@Override
 	public void update(HotPlace hotPlace, MultipartFile file) {
-		if (!file.isEmpty()) {
+		if (file != null && !file.isEmpty()) {
 			Image image = imageService.createImage(file);
 			hotPlace.setIno(image.getIno());
 		}
