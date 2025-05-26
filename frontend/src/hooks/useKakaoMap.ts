@@ -1,3 +1,4 @@
+import { FullHotPlace } from '@/hooks/useHotPlace'
 import { CommonResponse } from '@/service/common'
 import axios from 'axios'
 import { defineStore } from 'pinia'
@@ -14,6 +15,7 @@ export enum ContentType {
   ACCOMMODATION = 'ACCOMMODATION',
   SHOPPING = 'SHOPPING',
   RESTAURANT = 'RESTAURANT',
+  HOTPLACE = 'HOTPLACE', // 핫 플레이스
   UNDEFINE = 'UNDEFINE',
 }
 
@@ -35,6 +37,7 @@ export type FullDocument = Document & {
   contentsTypeId: string
   contentId: string
   overview: string
+  mno?: number
 }
 
 export type KakaoDocumentMeta = {
@@ -170,18 +173,41 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
    * @param contentId
    */
   const contentDetailSearch = async (contentId: string) => {
-    await axios
-      .get<CommonResponse<KakaoDocument<FullDocument>>>(`/api/v1/map/contents/${contentId}`)
-      .then((response) => {
-        const document: FullDocument = response.data.data.documents[0]
-        Object.assign(currentContent, document)
-      })
-      .catch(() => {
-        toast.warning('잘못된 입력입니다')
-      })
+    console.log('contentDetailSearch', contentId)
+    if (contentId.startsWith('hotplace_')) {
+      axios.get<CommonResponse<FullHotPlace>>(`/api/v1/hotPlace/${contentId.replace('hotplace_', '')}`)
+        .then((response) => {
+          const hotPlace: FullHotPlace = response.data.data
+          const document: FullDocument = {
+            mapX: hotPlace.mapX,
+            mapY: hotPlace.mapY,
+            address: "...",
+            title: hotPlace.title,
+            firstImage: hotPlace.imageUrl,
+            contentsTypeId: '40', // 핫 플레이스는 40으로 고정
+            contentId: `hotplace_${hotPlace.hno}`,
+            overview: hotPlace.overview,
+            mno : hotPlace.mno,
+          }
+          Object.assign(currentContent, document)
+        })
+        .catch(() => {
+          toast.warning('잘못된 입력입니다')
+        })
+    } else {
+      await axios
+        .get<CommonResponse<KakaoDocument<FullDocument>>>(`/api/v1/map/contents/${contentId}`)
+        .then((response) => {
+          const document: FullDocument = response.data.data.documents[0]
+          Object.assign(currentContent, document)
+        })
+        .catch(() => {
+          toast.warning('잘못된 입력입니다')
+        })
+    }
   }
 
-    function setCurrentContent(item: FullDocument) {
+  function setCurrentContent(item: FullDocument) {
     Object.assign(currentContent, item)
   }
 
@@ -195,7 +221,7 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
     locationSearch,
     contentSearch,
     contentDetailSearch,
-    setCurrentContent
+    setCurrentContent,
   }
 })
 
@@ -220,6 +246,8 @@ export const ContentTypeImageResolver = (code: string, type: string = 'png'): st
       return `${ContentType.SHOPPING}.${type}`
     case '39':
       return `${ContentType.RESTAURANT}.${type}`
+    case '40':
+      return `${ContentType.HOTPLACE}.${type}` // 핫 플레이스는 40으로 고정
     default:
       // 알 수 없는 코드일 경우 기본 이미지
       return `UNKNOWN.${type}`
@@ -249,6 +277,8 @@ export const ContentCodeResolver = (code: string) => {
       return ContentType.SHOPPING
     case '39':
       return ContentType.RESTAURANT
+    case '40':
+      return ContentType.HOTPLACE // 핫 플레이스는 40으로 고정
     default:
       // 알 수 없는 코드일 경우 기본 이미지
       return ContentType.UNDEFINE
