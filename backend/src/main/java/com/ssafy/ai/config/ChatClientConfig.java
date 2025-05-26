@@ -100,7 +100,33 @@ public class ChatClientConfig {
             .defaultTools(tourInfoApiTools)
             .build();
   }
+  @Bean(name = "recommendWeather")
+  public ChatClient recommendWeather() {
+      return ChatClient.builder(model)
+              .defaultSystem("""
+                      # 날씨 조회 도우미 가이드
+                      이전 `recommendChatClient` 호출에서 반환된 `mapX`와 `mapY` 값을 사용해 아래 형식으로 날씨 툴을 호출하세요.
 
+                      `tool`: "getWeatherByLocation"
+                      `parameters`: {
+                        "lat": <mapY 값>,   // 위도
+                        "lon": <mapX 값>    // 경도
+                      }
+
+                      예시 JSON:
+                      {
+                        "tool": "getWeatherByLocation",
+                        "parameters": {{ "lat": 37.5665, "lon": 126.9780 }}
+                      }
+                  """)
+              .defaultAdvisors(
+                      new SimpleLoggerAdvisor()
+              )
+              .defaultTools(tourInfoApiTools)
+              .build();
+  }
+  
+  
   @Bean(name = "personalityChatClient")
   public ChatClient personalityChatClient() {
     return ChatClient.builder(model)
