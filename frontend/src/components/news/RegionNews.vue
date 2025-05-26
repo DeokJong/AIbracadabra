@@ -1,31 +1,53 @@
 <template>
-  <div class="region-news">
-    <h2 class="region-title">{{ regionName }}</h2>
+  <div class="modern-region-news">
+    <div class="region-header">
+      <h3 class="region-title">
+        <span class="location-icon">📍</span>
+        {{ regionName }}
+      </h3>
+      <div class="news-controls" v-if="newsList.length > 1">
+        <button @click="prev" class="control-btn prev" :disabled="newsList.length <= 1">
+          <span>‹</span>
+        </button>
+        <span class="news-counter">{{ idx + 1 }}/{{ newsList.length }}</span>
+        <button @click="next" class="control-btn next" :disabled="newsList.length <= 1">
+          <span>›</span>
+        </button>
+      </div>
+    </div>
 
-    <div v-if="loading" class="loading">로딩 중...</div>
-    <div v-else-if="!currentItem" class="no-data">해당 지역의 뉴스가 없습니다.</div>
-
-    <div v-else class="card">
-      <!-- 본문 -->
-      <a
-        class="title"
-        :href="currentItem.url"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {{ currentItem.title }}
-      </a>
-      <p class="summary">{{ currentItem.summary }}</p>
-
-      <!-- 발행일 -->
-      <div class="footer">
-        <span class="date">{{ formattedDate }}</span>
+    <div class="news-content">
+      <div v-if="loading" class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>뉴스를 불러오는 중...</p>
+      </div>
+      
+      <div v-else-if="!currentItem" class="empty-state">
+        <div class="empty-icon">📰</div>
+        <p>해당 지역의 뉴스가 없습니다</p>
       </div>
 
-      <!-- 이전/다음 버튼 -->
-      <div class="controls">
-        <button @click="prev" class="nav-btn">◀ 이전</button>
-        <button @click="next" class="nav-btn">다음 ▶</button>
+      <div v-else class="news-item">
+        <a
+          class="item-title"
+          :href="currentItem.url"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {{ currentItem.title }}
+        </a>
+        
+        <p class="item-summary">{{ currentItem.summary }}</p>
+        
+        <div class="item-footer">
+          <div class="publish-info">
+            <span class="calendar-icon">📅</span>
+            <span class="publish-date">{{ formattedDate }}</span>
+          </div>
+          <div class="external-link">
+            <span class="link-icon">↗</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -44,7 +66,9 @@ const props = defineProps<{
 const newsList = ref<News[]>([])
 const loading = ref(true)
 const idx = ref(0)
+
 const currentItem = computed(() => newsList.value[idx.value])
+
 const formattedDate = computed(() => {
   if (!currentItem.value) return ''
   const d = new Date(currentItem.value.publishAt)
@@ -55,6 +79,7 @@ function next() {
   if (!newsList.value.length) return
   idx.value = (idx.value + 1) % newsList.value.length
 }
+
 function prev() {
   if (!newsList.value.length) return
   idx.value = (idx.value - 1 + newsList.value.length) % newsList.value.length
@@ -75,156 +100,200 @@ watch(() => props.sidoCode, load)
 </script>
 
 <style scoped>
-.region-news {
+.modern-region-news {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  height: 320px;
   display: flex;
   flex-direction: column;
 }
+
+.modern-region-news:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.region-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
 .region-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 1.1rem;
-  text-align: center;
-  margin-bottom: 0.5rem;
+  font-weight: 600;
+  margin: 0;
 }
 
-/* 카드 스타일 */
-.card {
+.location-icon {
+  font-size: 1.2rem;
+}
+
+.news-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.control-btn {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 1.2rem;
+}
+
+.control-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.news-counter {
+  font-size: 0.8rem;
+  min-width: 35px;
+  text-align: center;
+}
+
+.news-content {
+  flex: 1;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  border: 1px solid #ddd;       /* 카드 테두리 */
-  border-radius: 8px;
-  padding: 1rem;
-  background: #fff;
-  min-height: 180px;             /* 충분한 높이로 버튼 보장 */
-  transition: box-shadow 0.2s;
-}
-.card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* 제목/요약/날짜 */
-.title {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #333;
-  text-decoration: none;
+.loading-state,
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-icon {
+  font-size: 2.5rem;
   margin-bottom: 0.5rem;
+  opacity: 0.5;
 }
-.title:hover {
-  text-decoration: underline;
+
+.news-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
-.summary {
+
+.item-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  text-decoration: none;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.item-title:hover {
+  color: #667eea;
+}
+
+.item-summary {
   flex: 1;
   font-size: 0.9rem;
-  color: #555;
-  line-height: 1.4;
+  color: #6c757d;
+  line-height: 1.5;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin-bottom: 0.75rem;
-}
-.footer {
-  display: flex;
-  justify-content: flex-end;
-}
-.date {
-  font-size: 0.8rem;
-  color: #999;
+  margin-bottom: 1rem;
 }
 
-/* 이전/다음 컨트롤 */
-.controls {
+.item-footer {
   display: flex;
   justify-content: space-between;
-  margin-top: auto;              /* 카드 하단으로 고정 */
-}
-.nav-btn {
-  padding: 0.4rem 0.8rem;
-  background: transparent;       /* 투명 배경 */
-  color: #3498db;                /* 글자색 */
-  border: 1px solid #3498db;     /* 테두리 버튼 */
-  border-radius: 4px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-.nav-btn:hover {
-  background: #3498db;
-  color: #fff;
+  align-items: center;
+  margin-top: auto;
 }
 
-/* 로딩/데이터 없음 */
-.loading, .no-data {
-  text-align: center;
-  color: #666;
-  padding: 1rem 0;
-}
-.region-news .card {
-  /* 1) 고정 높이 부여 */
-  height: 260px;              /* 필요에 따라 조절하세요 */
+.publish-info {
   display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fff;
-
-  /* 2) hover 효과 */
-  transition: box-shadow 0.2s;
-}
-.region-news .card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  align-items: center;
+  gap: 0.3rem;
 }
 
-/* 제목 */
-.region-news .title {
-  font-size: 1rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: #333;
-  text-decoration: none;
-}
-.region-news .title:hover {
-  text-decoration: underline;
-}
-
-/* 요약: 3줄로 자르고 넘치는 부분 숨김 */
-.region-news .summary {
-  flex: 1;                   /* 남은 공간 전부 차지 */
+.calendar-icon {
   font-size: 0.9rem;
-  color: #555;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-bottom: 0.75rem;
 }
 
-/* 발행일 */
-.region-news .footer {
+.publish-date {
   font-size: 0.8rem;
   color: #999;
-  text-align: right;
 }
 
-/* 이전/다음 버튼 */
-.region-news .controls {
+.external-link {
+  background: #667eea;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
   display: flex;
-  justify-content: space-between;
-  margin-top: auto;          /* 항상 카드 맨 아래로 */
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
 }
-.region-news .nav-btn {
-  padding: 0.4rem 0.8rem;
-  background: transparent;
-  color: #3498db;
-  border: 1px solid #3498db;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-.region-news .nav-btn:hover {
-  background: #3498db;
-  color: #fff;
+
+@media (max-width: 768px) {
+  .modern-region-news {
+    height: auto;
+    min-height: 280px;
+  }
+  
+  .region-header {
+    padding: 1rem;
+  }
+  
+  .news-content {
+    padding: 1rem;
+  }
 }
 </style>

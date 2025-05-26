@@ -1,25 +1,39 @@
-<!-- src/components/news/NewsCard.vue -->
 <template>
-  <div class="news-card">
-    <!-- 상단 우측 전체 뉴스 보기 버튼 -->
-    <router-link to="/news" class="all-btn" title="전체 뉴스 보기">＋</router-link>
+  <div class="modern-news-card">
+    <!-- 카드 헤더 -->
+    <div class="card-header">
+      <div class="news-badge">
+        <span class="badge-icon">📰</span>
+        NEWS
+      </div>
+      <router-link to="/news" class="view-all-btn" title="전체 뉴스 보기">
+        <span class="btn-text">전체보기</span>
+        <span class="btn-icon">→</span>
+      </router-link>
+    </div>
 
-    <!-- 본문: 제목 + 요약 -->
-    <div class="body">
+    <!-- 카드 본문 -->
+    <div class="card-body">
       <a
-        class="title"
+        class="news-title"
         :href="item.url"
         target="_blank"
         rel="noopener noreferrer"
       >
         {{ item.title }}
       </a>
-      <p class="summary">{{ item.summary }}</p>
+      <p class="news-summary">{{ item.summary }}</p>
     </div>
 
-    <!-- 푸터: 왼쪽 기자 이름, 오른쪽 발행일 -->
-    <div class="footer">
-      <span class="date">{{ formattedDate }}</span>
+    <!-- 카드 푸터 -->
+    <div class="card-footer">
+      <div class="publish-info">
+        <span class="date-icon">📅</span>
+        <span class="publish-date">{{ formattedDate }}</span>
+      </div>
+      <div class="external-indicator">
+        <span class="external-icon">↗</span>
+      </div>
     </div>
   </div>
 </template>
@@ -30,7 +44,6 @@ import type { News } from '@/hooks/newsService'
 
 const props = defineProps<{ item: News }>()
 
-// 날짜 포맷팅
 const formattedDate = computed(() => {
   return new Date(props.item.publishAt)
     .toLocaleDateString('ko-KR', {
@@ -42,71 +55,142 @@ const formattedDate = computed(() => {
 </script>
 
 <style scoped>
-.news-card {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+.modern-news-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+  border: 1px solid #f0f0f0;
 }
 
-/* 전체 보기 버튼 */
-.all-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 28px;
-  height: 28px;
-  line-height: 28px;
-  text-align: center;
-  background: rgba(0,0,0,0.5);
-  color: #fff;
-  border-radius: 50%;
+.modern-news-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.news-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.badge-icon {
+  font-size: 1.1rem;
+}
+
+.view-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: white;
   text-decoration: none;
-}
-.all-btn:hover {
-  background: rgba(0,0,0,0.7);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
-/* 본문 */
-.body {
-  flex: 1;
-  padding: 1rem;
+.view-all-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(2px);
 }
-.title {
+
+.card-body {
+  padding: 1.5rem;
+  flex: 1;
+}
+
+.news-title {
   display: block;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #222;
-  margin-bottom: 0.5rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
   text-decoration: none;
-}
-.title:hover {
-  text-decoration: underline;
-}
-.summary {
-  font-size: 0.9rem;
-  color: #555;
   line-height: 1.4;
-  max-height: 4.2em;   /* 약 3줄까지 보이도록 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* 푸터 */
-.footer {
+.news-title:hover {
+  color: #667eea;
+}
+
+.news-summary {
+  font-size: 0.9rem;
+  color: #6c757d;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+
+.card-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #f0f0f0;
   display: flex;
   justify-content: space-between;
-  padding: 0.8rem 1rem;
-  border-top: 1px solid #f0f0f0;
-  font-size: 0.85rem;
-  color: #777;
+  align-items: center;
+  background: #fafafa;
 }
-.reporter {
-  /* 왼쪽 정렬은 기본 */
+
+.publish-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
-.date {
-  /* 오른쪽 정렬은 justify-content 덕분에 자동 */
+
+.date-icon {
+  font-size: 0.9rem;
+}
+
+.publish-date {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.external-indicator {
+  background: #667eea;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .card-header {
+    padding: 1rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .card-footer {
+    padding: 1rem;
+  }
 }
 </style>
