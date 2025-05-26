@@ -34,7 +34,13 @@ public class HotPlaceServiceImpl implements HotPlaceService {
 
 	@Override
 	public List<HotPlace> findByLocation(String mapX, String mapY, String meter) {
-		return hotPlaceDao.findByCoordinates(Double.parseDouble(mapX), Double.parseDouble(mapY),Integer.parseInt(meter));
+		List<HotPlace> result = hotPlaceDao.findByCoordinates(Double.parseDouble(mapX), Double.parseDouble(mapY), Integer.parseInt(meter));
+		for (HotPlace hotPlace : result) {
+			if (hotPlace.getIno() != null) {
+				hotPlace.setImageUrl("http://localhost:8080/api/v1/images/" + hotPlace.getIno());
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -47,13 +53,16 @@ public class HotPlaceServiceImpl implements HotPlaceService {
 	}
 
 	@Override
-	public void update(HotPlace hotPlace) {
-		// TODO Auto-generated method stub
-
+	public void update(HotPlace hotPlace, MultipartFile file) {
+		if (!file.isEmpty()) {
+			Image image = imageService.createImage(file);
+			hotPlace.setIno(image.getIno());
+		}
+		hotPlaceDao.update(hotPlace);
 	}
 
 	@Override
 	public void deleteByHno(Integer hno, Integer mno) {
-		hotPlaceDao.delete(hno);
+		hotPlaceDao.delete(hno,mno);
 	}
 }

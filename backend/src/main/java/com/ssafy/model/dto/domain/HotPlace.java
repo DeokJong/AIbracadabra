@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class HotPlace {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private Integer hmo;
-	@JsonIgnore
+	private Integer hno;
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Integer mno;
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Integer ino;

@@ -7,7 +7,7 @@
 
     <!-- 결과 매핑: join한 image.storage_path → imageUrl -->
     <resultMap id="HotPlaceResult" type="com.ssafy.model.dto.domain.HotPlace">
-        <id property="hmo" column="hmo"/>
+        <id property="hno" column="hno"/>
         <result property="mno" column="mno"/>
         <result property="ino" column="ino"/>
         <result property="overview" column="overview"/>
@@ -24,7 +24,7 @@
 	        resultMap="HotPlaceResult"
 	        parameterType="map"><![CDATA[
 	  SELECT
-	    hp.hmo,
+	    hp.hno,
 	    hp.mno,
 	    hp.ino,
 	    hp.overview,
@@ -37,13 +37,11 @@
 	  FROM hot_place hp
 	  LEFT JOIN image img ON hp.ino = img.ino
 	  WHERE
-	    -- 반경(meter) 내에 있는 데이터만 남김
 	    ST_Distance_Sphere(
 	      POINT(hp.map_x, hp.map_y),
 	      POINT(#{mapX}, #{mapY})
 	    ) <= #{meter}
 	  ORDER BY
-	    -- 거리 오름차순 정렬
 	    ST_Distance_Sphere(
 	      POINT(hp.map_x, hp.map_y),
 	      POINT(#{mapX}, #{mapY})
@@ -57,7 +55,7 @@
             parameterType="int"
             resultMap="HotPlaceResult">
         SELECT
-        hp.hmo,
+        hp.hno,
         hp.mno,
         hp.ino,
         hp.overview,
@@ -70,14 +68,14 @@
         FROM hot_place hp
         LEFT JOIN image img
         ON hp.ino = img.ino
-        WHERE hp.hmo = #{pno}
+        WHERE hp.hno = #{pno}
     </select>
 
     <!-- 3) 신규 등록 -->
     <insert id="save"
             parameterType="com.ssafy.model.dto.domain.HotPlace"
             useGeneratedKeys="true"
-            keyProperty="hmo">
+            keyProperty="hno">
         INSERT INTO hot_place
         (mno, ino, overview, title, map_x, map_y)
         VALUES
@@ -95,14 +93,14 @@
         title = #{title},
         map_x = #{mapX},
         map_y = #{mapY}
-        WHERE hmo = #{hmo}
+        WHERE hno = #{hno} AND mno = #{mno}
     </update>
 
     <!-- 5) 삭제 -->
     <delete id="delete"
             parameterType="int">
         DELETE FROM hot_place
-        WHERE hmo = #{pno}
+        WHERE hno = #{pno} AND mno = #{mno}
     </delete>
 
 </mapper>

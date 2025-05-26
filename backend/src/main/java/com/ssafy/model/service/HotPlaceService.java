@@ -13,8 +13,8 @@ public interface HotPlaceService {
 	List<HotPlace> findByLocation(String mapX, String mapY, String meter);
 	
 	HotPlace findByHno(Integer hno);
-	
-	void update(HotPlace hotPlace);
-	
+
+	void update(HotPlace hotPlace, MultipartFile file);
+
 	void deleteByHno(Integer hno, Integer mno);
 } 
