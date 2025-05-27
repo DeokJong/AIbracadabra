@@ -94,17 +94,18 @@ const useChatbot = () => {
       // 4) 실제 응답으로 대체
       chatHistory.value.push({
         messageType:"ASSISTANT",
-        text:data.data.message}) 
+        text:data.data.message})
 
       const recommendPlan = data.data.recommendPlan
       if (recommendPlan != null &&recommendPlan.schedules.length) {
+        console.log('추천 일정:', recommendPlan)
         recommendPlan.pno=0
         planStore.setPlan(recommendPlan)
       }
     } catch {
             chatHistory.value.push({
         messageType:"ASSISTANT",
-        text:'⚠️ 서버 요청 중 오류가 발생했습니다.'}) 
+        text:'⚠️ 서버 요청 중 오류가 발생했습니다.'})
     } finally {
       isChatLoading.value = false
     }

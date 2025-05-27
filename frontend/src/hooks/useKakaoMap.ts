@@ -177,8 +177,8 @@ export const useKakaoMap = defineStore('kakaoMap', () => {
    * @param contentId
    */
   const contentDetailSearch = async (contentId: string) => {
-    if (contentId.startsWith('hotplace_')) {
-      axios.get<CommonResponse<FullHotPlace>>(`/api/v1/hotPlace/${contentId.replace('hotplace_', '')}`)
+    if (contentId.startsWith('hotplace_') || contentId.startsWith('hno_')) {
+      axios.get<CommonResponse<FullHotPlace>>(`/api/v1/hotPlace/${contentId.replace('hotplace_', '').replace('hno_', '')}`)
         .then((response) => {
           const hotPlace: FullHotPlace = response.data.data
           const document: FullDocument = {
