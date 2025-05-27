@@ -287,7 +287,6 @@ watch(
   width: 48px;
   height: 90px;
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-left: none;
   border-radius: 0 20px 20px 0;
@@ -377,17 +376,15 @@ watch(
 }
 
 /* 나머지 기존 스타일들 동일 유지... */
-.sidebar-overlay {
+/* .sidebar-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(2px);
   z-index: 999;
   animation: fadeIn 0.3s ease-out;
-}
+} */
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -400,7 +397,6 @@ watch(
   left: 0;
   height: 100vh;
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
   border-right: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 
     4px 0 30px rgba(0, 0, 0, 0.1),
@@ -451,7 +447,6 @@ watch(
 
 .title-icon {
   font-size: 1.4rem;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .close-btn {
@@ -532,7 +527,6 @@ watch(
   align-items: center;
   gap: 0.5rem;
   background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 0.8rem;

@@ -257,6 +257,32 @@ export const ContentTypeImageResolver = (code: string, type: string = 'png'): st
   }
 }
 
+export const ContentTypeFabIconResolver = (code: string): string => {
+  switch (code) {
+    case '12':
+      return "mdi-map-marker-radius"
+    case '14':
+      return "mdi-theater"
+    case '15':
+      return "mdi-party-popper"
+    case '25':
+      return "mdi-map"
+    case '28':
+      return "mdi-ski"
+    case '32':
+      return "mdi-home"
+    case '38':
+      return "mdi-shopping"
+    case '39':
+      return "mdi-silverware-fork-knife"
+    case '40':
+      return "mdi-fire" // 핫 플레이스는 40으로 고정
+    default:
+      // 알 수 없는 코드일 경우 기본 이미지
+      return `UNKNOWN`
+  }
+}
+
 /**
  * 컨텐츠 타입 코드로 실제 컨텐츠 타입 불러오는 함수
  * @param code

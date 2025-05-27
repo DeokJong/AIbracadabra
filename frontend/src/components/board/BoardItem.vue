@@ -32,7 +32,7 @@
           <div class="meta-info">
             <span class="date">{{ formattedDate }}</span>
             <span class="views" v-if="item.views">
-              <i class="fas fa-eye"></i> {{ item.views }}
+              <i class="fas fa-eye"></i>조회수: {{ item.views }}
             </span>
           </div>
         </div>

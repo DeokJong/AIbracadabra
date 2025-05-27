@@ -63,7 +63,7 @@
                 </defs>
               </svg>
             </div>
-            <span class="logo-text">TourGuide</span>
+            <span class="logo-text">AIbracadabra</span>
           </router-link>
         </v-col>
 

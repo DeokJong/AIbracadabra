@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- 토글 버튼 -->
+    <!-- 토글 버튼 - 사이드바와 함께 움직임 -->
     <button 
       class="modern-toggle-btn right" 
       :class="{ open: drawer }"
@@ -14,13 +14,6 @@
       </div>
       <div class="toggle-pulse" :class="{ active: !drawer }"></div>
     </button>
-
-    <!-- 사이드바 오버레이 -->
-    <div 
-      v-if="drawer" 
-      class="sidebar-overlay" 
-      @click="drawer = false"
-    ></div>
 
     <!-- 메인 사이드바 -->
     <div class="modern-sidebar right" :class="{ open: drawer }" :style="{ width: sidebarWidth }">
@@ -164,7 +157,6 @@ const drawer = ref(false)
 const currentPage = ref(1)
 const totalPages = computed(() => myPlans.value.length ? myPlans.value.length : 1)
 
-// 기존 로직들은 동일하게 유지
 watch(
   () => myPlans.value.length,
   len => {
@@ -282,11 +274,12 @@ const props = defineProps({
 })
 
 const sidebarWidth = computed(() => formattedWidth(props.width))
+// 버튼이 사이드바와 함께 움직이도록 수정
 const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
 </script>
 
 <style scoped>
-/* 오른쪽 토글 버튼 */
+/* 오른쪽 토글 버튼 - 사이드바와 함께 움직임 */
 .modern-toggle-btn.right {
   position: fixed;
   top: 50%;
@@ -294,7 +287,6 @@ const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
   width: 48px;
   height: 90px;
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-right: none;
   border-radius: 20px 0 0 20px;
@@ -383,24 +375,6 @@ const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
   }
 }
 
-/* 오버레이 */
-.sidebar-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(2px);
-  z-index: 999;
-  animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 /* 오른쪽 사이드바 */
 .modern-sidebar.right {
   position: fixed;
@@ -408,7 +382,6 @@ const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
   right: 0;
   height: 100vh;
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 
     -4px 0 30px rgba(0, 0, 0, 0.1),
@@ -416,7 +389,7 @@ const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
   transform: translateX(100%);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
-  z-index: 1000;
+  z-index: 1200;
   display: flex;
   flex-direction: column;
 }
@@ -432,6 +405,7 @@ const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
   padding: 1.5rem;
   position: relative;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .sidebar-header::before {
@@ -460,7 +434,6 @@ const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
 
 .title-icon {
   font-size: 1.4rem;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .close-btn {
@@ -482,9 +455,10 @@ const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
   transform: scale(1.05);
 }
 
-/* 사이드바 콘텐츠 */
+/* 사이드바 콘텐츠 - 스크롤 영역 */
 .sidebar-content {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 2rem;
   display: flex;
@@ -509,6 +483,7 @@ const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
 /* 새 일정 버튼 */
 .action-section {
   margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .new-plan-btn {
@@ -545,14 +520,15 @@ const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
   overflow: hidden;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  flex: 1;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
 }
 
 .plan-header {
   padding: 1.5rem;
   background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  flex-shrink: 0;
 }
 
 .plan-title {
@@ -610,14 +586,17 @@ const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
 
 /* 스케줄 섹션 */
 .schedule-section {
-  flex: 1;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
+  max-height: 600px;
+  height: 550px;
+  overflow: hidden;
 }
 
 .schedule-header {
   margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .schedule-title {
@@ -636,7 +615,17 @@ const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
 
 .schedule-list {
   flex: 1;
-  min-height: 200px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.schedule-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.schedule-list::-webkit-scrollbar-thumb {
+  background: rgba(75, 109, 255, 0.2);
+  border-radius: 3px;
 }
 
 .draggable-container {
@@ -678,6 +667,7 @@ const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
 .title-edit-section {
   padding: 1.5rem;
   border-top: 1px solid #f0f0f0;
+  flex-shrink: 0;
 }
 
 .input-group {
@@ -723,6 +713,7 @@ const buttonRight = computed(() => (drawer.value ? sidebarWidth.value : '0px'))
   gap: 0.75rem;
   padding: 1.5rem;
   border-top: 1px solid #f0f0f0;
+  flex-shrink: 0;
 }
 
 .plan-btn {
