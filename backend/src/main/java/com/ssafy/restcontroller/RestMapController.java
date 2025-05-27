@@ -19,8 +19,8 @@ public interface RestMapController {
 
 	@Operation(summary = "주변 컨텐츠 조회", description = "위도, 경도 값과 컨텐츠 값을 이용해서 100개의 주변 상권 정보를 갖고 옵니다.")
 	@GetMapping("/contents")
-	Mono<ResponseEntity<?>> searchContents(@RequestParam String mapX,
-																				 @RequestParam String mapY,
+	Mono<ResponseEntity<?>> searchContents(@RequestParam(defaultValue = "126.978652258309") String mapX,
+																				 @RequestParam(defaultValue = "37.566826004661") String mapY,
 																				 @RequestParam(defaultValue = "20000") String radius,
 																				 @RequestParam ContentTypeId contentTypeId,
 																				 @RequestParam(defaultValue = "1") Integer pageNo);

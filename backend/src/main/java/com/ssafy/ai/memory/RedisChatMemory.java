@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class RedisChatMemory implements ChatMemory {
-    private static final String PREFIX = "chat:mem";
+    private static final String PREFIX = "chat:mem:";
     private final RedisTemplate<String, String> conversationHistory;
     private final Gson gson;
 

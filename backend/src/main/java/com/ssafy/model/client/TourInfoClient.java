@@ -91,7 +91,7 @@ public interface TourInfoClient {
      * @param contentTypeId 컨텐츠 타입
      * @return 해당 위치 좌표 기준 <code>radius</code> 이내 <code>contentTypeId</code> 타입의 컨텐츠를 <code>pageNo</code> 페이지 조회
      */
-    default Mono<TourInfoResponse> locationBasedList(String mapX, String mapY, Integer pageNo, String radius, ContentTypeId contentTypeId) {
+    default Mono<TourInfoResponse> locationBasedList(String mapX, String mapY, Integer pageNo, String radius, String contentTypeId) {
         return locationBasedList(mapX, mapY, pageNo, radius, contentTypeId, null);
     }
 
@@ -106,7 +106,7 @@ public interface TourInfoClient {
      * @param primaryCategoryCode 대분류 카테고리
      * @return 해당 위치 좌표 기준 <code>radius</code> 이내 <code>contentTypeId</code> 타입의 컨텐츠를 하위 카테고리에 맞게 <code>pageNo</code> 페이지 조회
      */
-    default Mono<TourInfoResponse> locationBasedList(String mapX, String mapY, Integer pageNo, String radius, ContentTypeId contentTypeId, String primaryCategoryCode){
+    default Mono<TourInfoResponse> locationBasedList(String mapX, String mapY, Integer pageNo, String radius, String contentTypeId, String primaryCategoryCode){
         return locationBasedList(mapX, mapY, pageNo, radius, contentTypeId, primaryCategoryCode, null);
     }
 
@@ -122,7 +122,7 @@ public interface TourInfoClient {
      * @param secondaryCategoryCode 중분류 카테고리
      * @return 해당 위치 좌표 기준 <code>radius</code> 이내 <code>contentTypeId</code> 타입의 컨텐츠를 하위 카테고리에 맞게 <code>pageNo</code> 페이지 조회
      */
-    Mono<TourInfoResponse> locationBasedList(String mapX, String mapY, Integer pageNo, String radius, ContentTypeId contentTypeId, String primaryCategoryCode, String secondaryCategoryCode);
+    Mono<TourInfoResponse> locationBasedList(String mapX, String mapY, Integer pageNo, String radius, String contentTypeId, String primaryCategoryCode, String secondaryCategoryCode);
 
     /**
      * Content ID 기반 상세 정보 조회

@@ -1,10 +1,8 @@
 package com.ssafy.model.service.impl;
 
-import com.ssafy.exception.RecordNotFoundException;
 import com.ssafy.model.dao.PlanDao;
 import com.ssafy.model.dto.domain.Plan;
 import com.ssafy.model.service.PlanService;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,33 +16,33 @@ public class PlanServiceImpl implements PlanService {
 	private final PlanDao planDao;
 
 	@Override
-	public int add(Plan plan) {
-		return planDao.add(plan);
-	}
-
-	@Override
-	public Plan get(int pno) {
-		Plan plan = planDao.get(pno);
-
-		if (plan == null) {
-			throw new RecordNotFoundException("존재하지 않는 pno로 조회");
+	public void insert(Plan plan) {
+		if (planDao.insert(plan) == 0 ) {
+			throw new RuntimeException("예상치 못한 흐름: 여행 계획 생성 실패");
 		}
-
-		return plan;
 	}
 
 	@Override
-	public List<Plan> getByMember(int mno) {
-		return planDao.getByMember(mno);
+	public List<Plan> findByMno(int mno) {
+		return planDao.findByMno(mno);
 	}
 
 	@Override
-	public int set(Plan plan) {
-		return planDao.set(plan);
+	public void update(Plan plan) {
+		if (planDao.update(plan) == 0 ) {
+			throw new RuntimeException("예상치 못한 흐름: 여행 계획 업데이트 실패");
+		}
 	}
 
 	@Override
-	public int remove(int pno) {
-		return planDao.remove(pno);
+	public Plan getByPno(Integer pno) {
+		return planDao.findByPno(pno);
+	}
+
+	@Override
+	public void delete(Integer pno) {
+		if (planDao.delete(pno) == 0 ) {
+			throw new RuntimeException("예상치 못한 흐름: 여행 계획 제거 실패");
+		}
 	}
 }

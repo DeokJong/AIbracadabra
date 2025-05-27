@@ -4,11 +4,11 @@ import axios, { isAxiosError } from 'axios'
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
 import { useToast } from 'vue-toastification'
-
 export interface UserInfo {
   mno: number
   name: string
   email: string
+  role: string
 }
 
 export type LoginRequest = {
@@ -35,6 +35,7 @@ const GUEST_USER: UserInfo = {
   mno: -1,
   name: '',
   email: '',
+  role: 'GUEST'
 }
 
 export const useAuth = defineStore(
@@ -56,12 +57,9 @@ export const useAuth = defineStore(
         userInfo.mno = data.mno
         userInfo.name = data.name
         userInfo.email = data.email
-
+        userInfo.role = data.role
         isLoggined.value = true
-      } catch (err) {
-        if (isAxiosError(err) && err.response?.status === 401) {
-          console.log(err.response?.data)
-        }
+      } catch {
         isLoggined.value = false
         Object.assign(userInfo, GUEST_USER)
       }
@@ -100,6 +98,8 @@ export const useAuth = defineStore(
         } else {
           toast.warning('로그아웃 중 에러')
         }
+      } finally {
+        window.location.reload()
       }
     }
 
