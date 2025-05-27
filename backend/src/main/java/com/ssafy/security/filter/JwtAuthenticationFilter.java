@@ -124,9 +124,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Res
 
 	}
 
+	// TODO 이거 로직 손댐
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-		return !request.getServletPath().startsWith("/api/v1");// TODO Version Update Check
+	    String path = request.getServletPath();
+	    // 1) v1 이 아닌 모든 요청 -> 필터링 안 함
+	    if (!path.startsWith("/api/v1")) {
+	        return true;
+	    }
+	    // 2) 이미지 조회 API 만 필터링 안 함
+	    if (request.getMethod().equals("GET") && path.startsWith("/api/v1/board/images/")) {
+	        return true;
+	    }
+	    // 3) 그 외 모든 /api/v1/** 요청은 인증 로직 실행
+	    return false;
+		
 	}
 
 	private void writeError(HttpServletResponse response, HttpStatus status, String message) throws IOException {

@@ -20,6 +20,7 @@
         <java.version>17</java.version>
         <lombok.version>1.18.26</lombok.version>
         <spring-ai.version>1.0.0-M6</spring-ai.version>
+        <mybatis.version>3.5.13</mybatis.version>
     </properties>
 
     <dependencies>

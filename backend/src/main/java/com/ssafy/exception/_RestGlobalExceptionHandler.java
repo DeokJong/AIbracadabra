@@ -1,11 +1,10 @@
 package com.ssafy.exception;
 
+import com.ssafy.restcontroller.ResponseEntityHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import com.ssafy.restcontroller.ResponseEntityHelper;
 
 @RestControllerAdvice
 public class _RestGlobalExceptionHandler implements ResponseEntityHelper {
@@ -15,7 +14,7 @@ public class _RestGlobalExceptionHandler implements ResponseEntityHelper {
 		return handleFail(ex, HttpStatus.UNAUTHORIZED);
 	}
 
-	@ExceptionHandler(MismatchException.class)
+	@ExceptionHandler({MismatchException.class, IllegalArgumentException.class})
 	public ResponseEntity<?> handleBadRequest(MismatchException ex) {
 		return handleFail(ex, HttpStatus.BAD_REQUEST);
 	}
@@ -35,4 +34,8 @@ public class _RestGlobalExceptionHandler implements ResponseEntityHelper {
 		return handleFail(ex, HttpStatus.CONFLICT);
 	}
 
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<?> handleException(RuntimeException ex) {
+		return handleFail(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 }
