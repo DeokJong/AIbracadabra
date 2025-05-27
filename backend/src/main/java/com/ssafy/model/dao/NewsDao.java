@@ -19,5 +19,6 @@ public interface NewsDao {
     // 웹에 보내기 위한 함수
     // 시도 코드로 가져오는 함수
     List<News> selectAll();
+    List<News> selectBySidoCode(int sidoCode);
 
 }

@@ -1,6 +1,6 @@
 package com.ssafy.restcontroller;
 
-import com.ssafy.model.dto.response.PromptResponse;
+import com.ssafy.model.dto.domain.RecommendChat;
 import com.ssafy.security.dto.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Tag(name = "Chat", description = "채팅 기반 추천 및 히스토리 관리 API")
+@Tag(name = "RecommendChat", description = "채팅 기반 추천 및 히스토리 관리 API")
 public interface RestChatController {
 	@Operation(
 		summary = "일정 추천 채팅",
@@ -26,7 +26,7 @@ public interface RestChatController {
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "추천 대화 성공", content = @Content(
 			mediaType = "application/json",
-			schema = @Schema(implementation = PromptResponse.class)
+			schema = @Schema(implementation = RecommendChat.class)
 		))
 	})
 	@GetMapping("/recommend")

@@ -2,7 +2,6 @@ package com.ssafy.restcontroller;
 
 import com.ssafy.constant.ContentTypeId;
 import com.ssafy.model.service.MapService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +26,7 @@ public class RestMapControllerImpl implements ResponseEntityHelper, RestMapContr
 
 	@Override
 	public Mono<ResponseEntity<?>> searchContents(String mapX, String mapY, String radius, ContentTypeId contentTypeId, Integer pageNo) {
-		return mapService.searchContent(mapX, mapY, contentTypeId, pageNo, radius).map(raw -> handleResponse(raw, "OK", HttpStatus.OK));
+		return mapService.searchContent(mapX, mapY, contentTypeId.getCode() , pageNo, radius).map(raw -> handleResponse(raw, "OK", HttpStatus.OK));
 	}
 
 	@Override

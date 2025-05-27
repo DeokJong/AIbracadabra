@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.model.dao.BoardImageDao">
+
+  <resultMap id="boardImageMap" type="com.ssafy.model.dto.domain.BoardImage">
+    <id     column="img_no"       property="imgNo"       jdbcType="BIGINT"/>
+    <result column="bno"          property="bno"         jdbcType="INTEGER"/>
+    <result column="filename"     property="filename"    jdbcType="VARCHAR"/>
+    <result column="content_type" property="contentType" jdbcType="VARCHAR"/>
+    <result column="size"         property="size"        jdbcType="BIGINT"/>
+    <result column="storage_path" property="storagePath" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <insert id="insertImage"
+          parameterType="com.ssafy.model.dto.domain.BoardImage"
+          useGeneratedKeys="true" keyProperty="imgNo" keyColumn="img_no">
+    INSERT INTO board_images
+      (bno, filename, content_type, size, storage_path)
+    VALUES
+      (#{bno}, #{filename}, #{contentType}, #{size}, #{storagePath})
+  </insert>
+
+  <select id="selectImageIdsByBno" resultType="long">
+    SELECT img_no
+      FROM board_images
+     WHERE bno = #{bno}
+  </select>
+
+  <select id="selectImageMetaById" resultMap="boardImageMap">
+    SELECT img_no, bno, filename, content_type, size, storage_path
+      FROM board_images
+     WHERE img_no = #{imgNo}
+  </select>
+
+</mapper>
