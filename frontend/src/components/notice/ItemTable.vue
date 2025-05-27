@@ -39,7 +39,7 @@
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/hooks/useAuth'
-import BoardItem from '../board/BoardItem.vue'
+import BoardItem from '@//board/BoardItem.vue'
 
 const userInfo = useAuth().userInfo
 

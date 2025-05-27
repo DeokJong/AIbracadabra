@@ -86,24 +86,15 @@ const useChatbot = () => {
     })
     inputText.value = ''
 
-    // 2) ASSISTANT placeholder 등록
-    chatHistory.value.push({ messageType: 'ASSISTANT', text: '응답중.' })
-    const placeholderIndex = chatHistory.value.length - 1
-
-    // 3) 점 개수 순환 애니메이션
-    let dotCount = 1
-    const intervalId = setInterval(() => {
-      dotCount = (dotCount % 3) + 1 // 1 → 2 → 3 → 1 ...
-      chatHistory.value[placeholderIndex].text = '응답중' + '.'.repeat(dotCount)
-    }, 500) // 0.5초마다 변경
-
     try {
       isChatLoading.value = true
       const { data } = await axios.get<CommonResponse<ChatResponse>>(`/api/v1/chat/recommend`, {
         params: { userInput: text },
       })
       // 4) 실제 응답으로 대체
-      chatHistory.value[placeholderIndex].text = data.data.message
+      chatHistory.value.push({
+        messageType:"ASSISTANT",
+        text:data.data.message}) 
 
       const recommendPlan = data.data.recommendPlan
       if (recommendPlan != null &&recommendPlan.schedules.length) {
@@ -111,10 +102,11 @@ const useChatbot = () => {
         planStore.setPlan(recommendPlan)
       }
     } catch {
-      chatHistory.value[placeholderIndex].text = '⚠️ 서버 요청 중 오류가 발생했습니다.'
+            chatHistory.value.push({
+        messageType:"ASSISTANT",
+        text:'⚠️ 서버 요청 중 오류가 발생했습니다.'}) 
     } finally {
       isChatLoading.value = false
-      clearInterval(intervalId)
     }
   }
 
