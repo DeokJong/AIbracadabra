@@ -1,22 +1,19 @@
 package com.ssafy.model.dto.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ssafy.constant.ContentTypeId;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Data;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TourInfoResponse {
-    /**
-     * 최상위 JSON 키가 "response" 이므로,
-     * 이 필드에 전체 response 객체가 매핑됩니다.
-     */
+
     @JsonProperty("response")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Response response;
 
     @Data
@@ -39,7 +36,11 @@ public class TourInfoResponse {
     @Builder
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Body {
+
+        // 커스텀 deserializer 적용
+        @JsonDeserialize(using = ItemsDeserializer.class)
         private Items items;
+
         private Integer numOfRows;
         private Integer pageNo;
         private Integer totalCount;
@@ -49,10 +50,6 @@ public class TourInfoResponse {
     @Builder
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Items {
-        /**
-         * JSON 속에 "item" 이라는 배열로 되어 있으므로,
-         * List<Item> 으로 받습니다.
-         */
         private List<Item> item;
     }
 
@@ -68,7 +65,7 @@ public class TourInfoResponse {
         private String cat2;
         private String cat3;
         private String contentid;
-        private ContentTypeId contenttypeid;
+        private String contenttypeid;
         private Long createdtime;
         private String firstimage;
         private String firstimage2;
@@ -83,7 +80,6 @@ public class TourInfoResponse {
         private String zipcode;
         private String homepage;
         private String overview;
-
         private Integer rnum;
         private String code;
         private String name;

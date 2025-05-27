@@ -1,56 +1,51 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper 
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.model.dao.PlanDao">
 
-  <resultMap id="planMap" type="com.ssafy.model.dto.domain.Plan">
-    <id     property="pno"           column="pno"/>
-    <result property="title"         column="title"/>
-    <result property="days"          column="days"/>
-    <result property="scheduleCount" column="schedule_count"/>
-    <result property="mno"           column="mno"/>
-  </resultMap>
+    <resultMap id="PlanResultMap" type="com.ssafy.model.dto.domain.Plan">
+        <id     property="pno"      column="pno"/>
+        <result property="title"    column="title"/>
+        <result property="mno"      column="mno"/>
+        <result property="schedules"
+                column="schedules"
+                jdbcType="OTHER"
+                typeHandler="com.ssafy.model.dao.typehandler.ListJsonTypeHandler"/>
+    </resultMap>
 
-  <insert id="add" 
-          parameterType="com.ssafy.model.dto.domain.Plan"
-          useGeneratedKeys="true" keyProperty="pno" keyColumn="pno">
-    INSERT INTO plans (title, days, mno)
-    VALUES (#{title}, #{days}, #{mno})
-  </insert>
+    <insert id="insert" parameterType="com.ssafy.model.dto.domain.Plan"
+            useGeneratedKeys="true" keyProperty="pno">
+        INSERT INTO plan (title, mno, schedules)
+        VALUES (
+                   #{title},
+                   #{mno},
+                   #{schedules, typeHandler=com.ssafy.model.dao.typehandler.ListJsonTypeHandler}
+               )
+    </insert>
 
-  <select id="get" 
-          parameterType="int" 
-          resultMap="planMap">
-    SELECT pno, title, days, schedule_count, mno
-      FROM plans
-     WHERE pno = #{pno}
-  </select>
+    <update id="update" parameterType="com.ssafy.model.dto.domain.Plan">
+        UPDATE plan
+        SET title     = #{title},
+            mno       = #{mno},
+            schedules = #{schedules, typeHandler=com.ssafy.model.dao.typehandler.ListJsonTypeHandler}
+        WHERE pno = #{pno}
+    </update>
 
-  <select id="getByMember" 
-          parameterType="int" 
-          resultMap="planMap">
-    SELECT pno, title, days, schedule_count, mno
-      FROM plans
-     WHERE mno = #{mno}
-  </select>
+    <delete id="delete" parameterType="int">
+        DELETE
+        FROM plan
+        WHERE pno = #{pno}
+    </delete>
 
-  <update id="set" parameterType="com.ssafy.model.dto.domain.Plan">
-    UPDATE plans
-       SET title          = #{title},
-           days           = #{days},
-           schedule_count = #{scheduleCount}
-     WHERE pno = #{pno}
-  </update>
+    <select id="findByMno" resultMap="PlanResultMap" parameterType="int">
+        SELECT pno, title, mno, schedules
+        FROM plan
+        WHERE mno = #{mno}
+    </select>
 
-  <delete id="remove" parameterType="int">
-    DELETE FROM plans
-     WHERE pno = #{pno}
-  </delete>
-
-  <delete id="removeAll" parameterType="int">
-    DELETE FROM plans
-     WHERE mno = #{mno}
-  </delete>
+    <select id="findByPno" resultMap="PlanResultMap" parameterType="int">
+        SELECT pno, title, mno, schedules FROM plan WHERE pno = #{pno}
+    </select>
 
 </mapper>

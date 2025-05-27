@@ -34,6 +34,11 @@
 		<collection property="comments"
 			ofType="com.ssafy.model.dto.domain.Comment" resultMap="commentMap"
 			columnPrefix="c_" />
+		<collection property="imageUrls"
+                ofType="java.lang.Long"
+                javaType="java.util.ArrayList"
+                column="bno"
+                select="com.ssafy.model.dao.BoardImageDao.selectImageIdsByBno"/>
 	</resultMap>
 
 	<!-- 댓글 테이블 -->
@@ -46,7 +51,37 @@
 		<result column="content" property="content" />
 		<result column="created_date" property="createdDate" />
 		<result column="updated_date" property="updatedDate" />
+	
 	</resultMap>
+	
+	<!-- 전체 댓글 가져오기 -->
+	<select id="getCommentAll" resultMap="commentMap">
+		select *
+		from comments
+		where mno=#{mno}
+	</select>
+
+	<!-- mmo로 게시물 가져오기 -->
+	<select id="getBoardMno" resultMap="boardMap">
+		select *
+		from boards
+		where mno = #{mno}
+	
+	</select>
+	<!-- boardType으로만 검색 -->
+	<select id="getBoardType" resultMap="boardMap">
+		select *
+		from boards
+		where board_type=#{boardType}
+	</select>
+	
+	<!-- 인기글 가져오기 조회수로 판단-->
+	<select id="getBoardViews" resultMap="boardMap">
+		select * from boards
+		where board_type=#{boardType}
+		order by views DESC
+		limit 5
+	</select>
 
 
 	<insert id="add"
