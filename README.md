@@ -6,19 +6,21 @@
 
 ## 목차 (Table of Contents)
 
-1. [✈️ 소개 (Introduction)](#✈️-소개-introduction)
-2. [⚙️ 기능 (Features)](#⚙️-기능-features)
-3. [🚀 설치 및 실행 방법 (Installation & Usage)](#🚀-설치-및-실행-방법-installation--usage)
+1. [✈️ 소개 (Introduction)](#introduction)
+2. [⚙️ 기능 (Features)](#features)
+3. [🚀 설치 및 실행 방법 (Installation & Usage)](#installation-and-usage)
 
-   * [📝 사전 요구사항 (Prerequisites)](#📝-사전-요구사항-prerequisites)
-   * [🔧 설치 (Installation)](#🔧-설치-installation)
-   * [▶️ 실행 (Running)](#▶️-실행-running)
-4. [📁 폴더 구조 (Project Structure)](#📁-폴더-구조-project-structure)
-5. [🌐 환경 설정 (Configuration)](#🌐-환경-설정-configuration)
-6. [📊 다이어그램 (Diagrams)](#📊-다이어그램-diagrams)
-7. [🔖 커밋 컨벤션 (Commit Convention)](#🔖-커밋-컨벤션-commit-convention)
+   * [📝 사전 요구사항 (Prerequisites)](#prerequisites)
+   * [🔧 설치 (Installation)](#installation)
+   * [▶️ 실행 (Running)](#running)
+4. [📁 폴더 구조 (Project Structure)](#project-structure)
+5. [🌐 환경 설정 (Configuration)](#configuration)
+6. [📊 다이어그램 (Diagrams)](#diagrams)
+7. [🔖 커밋 컨벤션 (Commit Convention)](#commit-convention)
 
 ---
+
+<a id="introduction"></a>
 
 ## ✈️ 소개 (Introduction)
 
@@ -32,6 +34,8 @@ SSAFY Enjoy Trip은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend
 * 날씨 정보: OpenWeatherMap API 연동
 * 채팅 여행 플래너: **Spring AI** 기반 LLM을 활용해 대화형 일정 및 상권 추천
 
+<a id="features"></a>
+
 ## ⚙️ 기능 (Features)
 
 | 구분        | 설명                                           |
@@ -42,6 +46,8 @@ SSAFY Enjoy Trip은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend
 | 공공 데이터    | 공공 데이터 포털 API를 통해 관광지·숙소 목록 제공               |
 | 날씨 정보     | OpenWeatherMap API를 통한 실시간 날씨 조회             |
 | 채팅 여행 플래너 | Spring AI(OpenAI)와 Redis를 활용한 대화형 일정 및 상권 계획 |
+
+<a id="tech-stack"></a>
 
 ## 🧰 기술 스택 (Tech Stack)
 
@@ -69,7 +75,11 @@ SSAFY Enjoy Trip은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend
 * **vue3-kakao-maps**: Kakao Map 연동
 * **ESLint & Prettier**: 코드 스타일 유지
 
+<a id="installation-and-usage"></a>
+
 ## 🚀 설치 및 실행 방법 (Installation & Usage)
+
+<a id="prerequisites"></a>
 
 ### 📝 사전 요구사항 (Prerequisites)
 
@@ -78,6 +88,8 @@ SSAFY Enjoy Trip은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend
 * **Docker & Docker Compose** (선택)
 * **Node.js** ≥ 16
 * **npm** ≥ 8 또는 **yarn**
+
+<a id="installation"></a>
 
 ### 🔧 설치 (Installation)
 
@@ -102,6 +114,8 @@ npm install  # 또는 yarn install
 docker-compose up --build
 ```
 
+<a id="running"></a>
+
 ### ▶️ 실행 (Running)
 
 ```bash
@@ -114,26 +128,35 @@ cd ../frontend
 npm run dev
 ```
 
+<a id="project-structure"></a>
+
 ## 📁 폴더 구조 (Project Structure)
 
 ```
 .
-├── docker-compose.yml       # Docker Compose 설정
-├── README.md                # 이 문서
-├── backend/                 # Spring Boot 프로젝트
-│   ├── Dockerfile           # Docker 이미지 설정
-│   ├── pom.xml              # Maven 설정
-│   └── src/                 # 소스 코드
-│       ├── main/            # 메인 애플리케이션
-│       └── test/            # 테스트 코드
-├── frontend/                # Vue.js 프로젝트
-│   ├── package.json         # npm 스크립트 및 의존성
-│   ├── public/              # 정적 자원
-│   └── src/                 # Vue 컴포넌트 등
-├── database/                # DB 초기화 스크립트
-│   └── init/                # 스키마 및 데이터 로드 SQL
-└── document/                # 기획·설계 문서
+├── docker-compose.yml           # Docker Compose 설정
+├── README.md                    # 이 문서
+├── backend/                     # Spring Boot 프로젝트
+│   ├── Dockerfile               # Docker 이미지 설정
+│   ├── pom.xml                  # Maven 설정
+│   └── src/                     # 소스 코드
+│       ├── main/                # 메인 애플리케이션
+│       └── test/                # 테스트 코드
+├── frontend/                    # Vue.js 프로젝트
+│   ├── package.json             # npm 스크립트 및 의존성
+│   ├── public/                  # 정적 자원
+│   └── src/                     # Vue 컴포넌트 등
+├── database/                    # DB 초기화 스크립트
+│   └── init/                    # 스키마 및 데이터 로드 SQL
+└── docs/                        # 추가 문서 및 다이어그램
+    └── diagrams/                # 설계 다이어그램 이미지
+        ├── Controller_Diagram.png
+        ├── DAO_Class_Diagram.png
+        ├── Service_Class_Diagram.png
+        └── Spring_AI_Class_Diagram.png
 ```
+
+<a id="configuration"></a>
 
 ## 🌐 환경 설정 (Configuration)
 
@@ -164,6 +187,8 @@ spring.web-client.kakao-api-key=YOUR_KAKAO_API_KEY
 
 > 설정 변경 시 애플리케이션을 재시작해야 적용됩니다.
 
+<a id="diagrams"></a>
+
 ## 📊 다이어그램 (Diagrams)
 
 ### Controller
@@ -173,10 +198,6 @@ spring.web-client.kakao-api-key=YOUR_KAKAO_API_KEY
 ### DAO
 
 ![DAO Class Diagram](/docs/diagrams/DAO_Class_Diagram.png)
-
-### DTO
-
-![DTO Class Diagram](/docs/diagrams/DTO_Class_Diagram.png)
 
 ### Service
 
@@ -190,7 +211,7 @@ spring.web-client.kakao-api-key=YOUR_KAKAO_API_KEY
 
 ![ERD](/docs/diagrams/ERD.png)
 
-> 자기소개서에서 프로젝트 기술 역량을 강조할 때, 아키텍처 다이어그램을 포함하면 설계 능력을 효과적으로 어필할 수 있습니다.
+<a id="commit-convention"></a>
 
 ## 🔖 커밋 컨벤션 (Commit Convention)
 
