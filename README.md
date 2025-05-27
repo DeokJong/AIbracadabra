@@ -8,35 +8,32 @@
 
 1. [✈️ 소개 (Introduction)](#introduction)
 2. [⚙️ 기능 (Features)](#features)
-3. [🚀 설치 및 실행 방법 (Installation & Usage)](#installation-and-usage)
+3. [🧰 기술 스택 (Tech Stack)](#tech-stack)
+4. [🚀 설치 및 실행 방법 (Installation & Usage)](#installation-and-usage)
 
    * [📝 사전 요구사항 (Prerequisites)](#prerequisites)
    * [🔧 설치 (Installation)](#installation)
    * [▶️ 실행 (Running)](#running)
-4. [📁 폴더 구조 (Project Structure)](#project-structure)
-5. [🌐 환경 설정 (Configuration)](#configuration)
-6. [📊 다이어그램 (Diagrams)](#diagrams)
-7. [🔖 커밋 컨벤션 (Commit Convention)](#commit-convention)
+5. [📁 폴더 구조 (Project Structure)](#project-structure)
+6. [🌐 환경 설정 (Configuration)](#configuration)
+7. [📊 다이어그램 (Diagrams)](#diagrams)
+8. [🔖 커밋 컨벤션 (Commit Convention)](#commit-convention)
 
 ---
 
-<a id="introduction"></a>
-
-## ✈️ 소개 (Introduction)
+<h2 id="introduction">✈️ 소개 (Introduction)</h2>
 
 SSAFY Enjoy Trip은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend로 개발된 채팅형 여행 계획 플랫폼입니다.
-다음과 같은 주요 기능을 제공합니다:
+주요 기능은 다음과 같습니다:
 
 * 기본 커뮤니티: 게시판, Q\&A, 공지사항 관리
-* 지역 축제 뉴스: 크롤링을 통한 실시간 축제 정보 제공
+* 지역 축제 뉴스: Jsoup를 활용한 실시간 웹 크롤링
 * 지도 서비스: Kakao Map 연동
-* 공공 데이터 활용: 관광지·숙소 정보 수집
+* 공공 데이터: 공공 데이터 포털 API를 통한 관광지·숙소 정보 수집
 * 날씨 정보: OpenWeatherMap API 연동
-* 채팅 여행 플래너: **Spring AI** 기반 LLM을 활용해 대화형 일정 및 상권 추천
+* 채팅 여행 플래너: **Spring AI (OpenAI)** 기반 LLM을 활용한 대화형 일정 및 상권 추천
 
-<a id="features"></a>
-
-## ⚙️ 기능 (Features)
+<h2 id="features">⚙️ 기능 (Features)</h2>
 
 | 구분        | 설명                                           |
 | --------- | -------------------------------------------- |
@@ -47,9 +44,7 @@ SSAFY Enjoy Trip은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend
 | 날씨 정보     | OpenWeatherMap API를 통한 실시간 날씨 조회             |
 | 채팅 여행 플래너 | Spring AI(OpenAI)와 Redis를 활용한 대화형 일정 및 상권 계획 |
 
-<a id="tech-stack"></a>
-
-## 🧰 기술 스택 (Tech Stack)
+<h2 id="tech-stack">🧰 기술 스택 (Tech Stack)</h2>
 
 ### Backend
 
@@ -75,13 +70,9 @@ SSAFY Enjoy Trip은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend
 * **vue3-kakao-maps**: Kakao Map 연동
 * **ESLint & Prettier**: 코드 스타일 유지
 
-<a id="installation-and-usage"></a>
+<h2 id="installation-and-usage">🚀 설치 및 실행 방법 (Installation & Usage)</h2>
 
-## 🚀 설치 및 실행 방법 (Installation & Usage)
-
-<a id="prerequisites"></a>
-
-### 📝 사전 요구사항 (Prerequisites)
+<h3 id="prerequisites">📝 사전 요구사항 (Prerequisites)</h3>
 
 * **Java 17** 이상
 * **Maven Wrapper**(`./mvnw`)
@@ -89,9 +80,7 @@ SSAFY Enjoy Trip은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend
 * **Node.js** ≥ 16
 * **npm** ≥ 8 또는 **yarn**
 
-<a id="installation"></a>
-
-### 🔧 설치 (Installation)
+<h3 id="installation">🔧 설치 (Installation)</h3>
 
 ```bash
 # 저장소 클론
@@ -114,9 +103,7 @@ npm install  # 또는 yarn install
 docker-compose up --build
 ```
 
-<a id="running"></a>
-
-### ▶️ 실행 (Running)
+<h3 id="running">▶️ 실행 (Running)</h3>
 
 ```bash
 # Backend (포트 8080)
@@ -128,9 +115,7 @@ cd ../frontend
 npm run dev
 ```
 
-<a id="project-structure"></a>
-
-## 📁 폴더 구조 (Project Structure)
+<h2 id="project-structure">📁 폴더 구조 (Project Structure)</h2>
 
 ```
 .
@@ -153,12 +138,11 @@ npm run dev
         ├── Controller_Diagram.png
         ├── DAO_Class_Diagram.png
         ├── Service_Class_Diagram.png
-        └── Spring_AI_Class_Diagram.png
+        ├── Spring_AI_Class_Diagram.png
+        └── ERD.png
 ```
 
-<a id="configuration"></a>
-
-## 🌐 환경 설정 (Configuration)
+<h2 id="configuration">🌐 환경 설정 (Configuration)</h2>
 
 Spring Boot 설정 파일:
 
@@ -187,9 +171,7 @@ spring.web-client.kakao-api-key=YOUR_KAKAO_API_KEY
 
 > 설정 변경 시 애플리케이션을 재시작해야 적용됩니다.
 
-<a id="diagrams"></a>
-
-## 📊 다이어그램 (Diagrams)
+<h2 id="diagrams">📊 다이어그램 (Diagrams)</h2>
 
 ### Controller
 
@@ -211,9 +193,9 @@ spring.web-client.kakao-api-key=YOUR_KAKAO_API_KEY
 
 ![ERD](/docs/diagrams/ERD.png)
 
-<a id="commit-convention"></a>
+> 설계 역량을 효과적으로 어필하기 위해, 프로젝트 자기소개서에 다이어그램을 포함하세요.
 
-## 🔖 커밋 컨벤션 (Commit Convention)
+<h2 id="commit-convention">🔖 커밋 컨벤션 (Commit Convention)</h2>
 
 본 프로젝트는 **Git Flow** 전략을 기반으로 하며, 다음과 같은 커밋 메시지 타입을 사용합니다:
 
