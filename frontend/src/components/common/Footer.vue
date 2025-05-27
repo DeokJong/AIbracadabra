@@ -10,7 +10,7 @@
             <div class="brand-content">
               <div class="logo-section">
                 <div class="logo-icon">🌍</div>
-                <h3 class="brand-name">TourGuide</h3>
+                <h3 class="brand-name">AIbracadabra</h3>
               </div>
               <p class="brand-tagline">
                 여행의 모든 순간을 함께하며<br>
@@ -56,8 +56,8 @@
                 <span class="contact-icon">📧</span>
                 <div class="contact-details">
                   <span class="contact-label">이메일</span>
-                  <a href="mailto:support@yoursite.com" class="contact-value">
-                    support@yoursite.com
+                  <a href="mailto:novel5573@gmail.com" class="contact-value">
+                    novell5573@gmail.com
                   </a>
                 </div>
               </div>
@@ -66,7 +66,7 @@
                 <div class="contact-details">
                   <span class="contact-label">전화</span>
                   <a href="tel:02-123-4567" class="contact-value">
-                    02-123-4567
+                    대표 진덕종:010-5573-1191
                   </a>
                 </div>
               </div>
@@ -112,7 +112,7 @@
         <div class="footer-container">
           <div class="bottom-content">
             <div class="copyright">
-              <p>© 2025 TourGuide. All rights reserved.</p>
+              <p>© 2025 AIbracadabra. All rights reserved.</p>
             </div>
             <div class="legal-links">
               <a href="/terms" class="legal-link">이용약관</a>

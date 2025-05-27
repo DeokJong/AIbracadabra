@@ -93,7 +93,6 @@ const submitPost = async () => {
       visibility: form.visibility
     })
     const bno = postRes.data.data.bno as number
-    console.log(bno)
 
     if (file.value) {
       await uploadBoardImage(bno, file.value)
@@ -103,7 +102,6 @@ const submitPost = async () => {
     router.push('/board')
   } catch (err) {
     toast.error('등록에 실패했습니다.')
-    console.error(err)
   } finally {
     loading.value = false
   }

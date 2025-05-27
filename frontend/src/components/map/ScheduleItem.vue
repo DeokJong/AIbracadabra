@@ -4,7 +4,8 @@
       <!-- 아이템 헤더 -->
       <div class="item-header">
         <div class="item-indicator">
-          <span class="indicator-dot"></span>
+          <!-- 이것만 수정하면됨-->
+           <v-icon> {{ IconType }}</v-icon>
           <span class="item-number">{{ index + 1 }}</span>
         </div>
         <button class="remove-btn" @click.stop="removeItem">
@@ -40,8 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
-import { type FullDocument, useKakaoMap } from '@/hooks/useKakaoMap'
+import { defineProps, defineEmits, computed } from 'vue'
+import { type FullDocument, useKakaoMap, ContentTypeFabIconResolver } from '@/hooks/useKakaoMap'
 
 const { kakaoMapProps, setCurrentContent } = useKakaoMap()
 
@@ -50,6 +51,8 @@ const props = defineProps<{
   index: number
 }>()
 
+
+const IconType = computed(() => ContentTypeFabIconResolver(props.item.contentsTypeId)) 
 const emit = defineEmits<{
   (e: 'remove', index: number): void
 }>()
