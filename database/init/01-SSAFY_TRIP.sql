@@ -1,227 +1,186 @@
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+-- 고유 제약 검사 비활성화 (대량 데이터 삽입 시 성능 향상)
+SET @OLD_UNIQUE_CHECKS = @@UNIQUE_CHECKS, UNIQUE_CHECKS = 0;
+
+-- 외래 키 제약 해제 (테이블 간 순환 참조 방지)
+SET @OLD_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS = 0;
+
+-- 기존 SQL_MODE 저장 후 엄격 모드 설정 (데이터 무결성 강화)
+SET @OLD_SQL_MODE = @@SQL_MODE, SQL_MODE = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema mydb
+-- 스키마 정의
 -- -----------------------------------------------------
--- -----------------------------------------------------
--- Schema ssafytrip
--- -----------------------------------------------------
+-- ssafytrip 스키마가 없으면 생성 (UTF8MB4 문자셋 사용)
+CREATE SCHEMA IF NOT EXISTS `ssafytrip` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
--- -----------------------------------------------------
--- Schema ssafytrip
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `ssafytrip` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
+-- ssafytrip 스키마로 변경
 USE `ssafytrip`;
 
---
-
+-- -----------------------------------------------------
+-- 기존 테이블 삭제 (참조 무결성 고려하여 순서대로)
+-- -----------------------------------------------------
 DROP TABLE IF EXISTS `schedules`;
 DROP TABLE IF EXISTS `plans`;
 DROP TABLE IF EXISTS `bucketlists`;
-
 DROP TABLE IF EXISTS `attractions`;
 DROP TABLE IF EXISTS `guguns`;
 DROP TABLE IF EXISTS `sidos`;
 DROP TABLE IF EXISTS `contenttypes`;
-
 DROP TABLE IF EXISTS `boards`;
+DROP TABLE IF EXISTS `board_images`;
 DROP TABLE IF EXISTS `comments`;
 DROP TABLE IF EXISTS `members`;
 DROP TABLE IF EXISTS `news`;
+DROP TABLE IF EXISTS `plan`;
+DROP TABLE IF EXISTS `image`;
+DROP TABLE IF EXISTS `hot_place`;
 
---
-
-CREATE TABLE IF NOT EXISTS `sidos` (
-  `no` int NOT NULL AUTO_INCREMENT  comment '시도번호',
-  `sido_code` int NOT NULL comment '시도코드',
-  `sido_name` varchar(20) DEFAULT NULL comment '시도이름',
-  PRIMARY KEY (`no`),
-  UNIQUE INDEX `sido_code_UNIQUE` (`sido_code` ASC) VISIBLE)
-ENGINE = InnoDB
-AUTO_INCREMENT = 1
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci comment '시도정보테이블';
-
-CREATE TABLE IF NOT EXISTS `ssafytrip`.`guguns` (
-  `no` int NOT NULL AUTO_INCREMENT comment '구군번호',
-  `sido_code` int NOT NULL comment '시도코드',
-  `gugun_code` int NOT NULL comment '구군코드',
-  `gugun_name` varchar(20) DEFAULT NULL comment '구군이름',
-  PRIMARY KEY (`no`),
-  UNIQUE INDEX `sido_gugun_unique` (`sido_code`, `gugun_code`),
-  INDEX `guguns_sido_to_sidos_code_fk_idx` (`sido_code` ASC) VISIBLE,
-  INDEX `gugun_code_idx` (`gugun_code` ASC) VISIBLE,
-  CONSTRAINT `guguns_sido_to_sidos_code_fk`
-    FOREIGN KEY (`sido_code`)
-    REFERENCES `ssafytrip`.`sidos` (`sido_code`)
-)
-ENGINE = InnoDB
-AUTO_INCREMENT = 1
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci
-comment '구군정보테이블';
-
-CREATE TABLE IF NOT EXISTS `ssafytrip`.`contenttypes` (
-  `content_type_id` int NOT NULL comment '콘텐츠타입번호',
-  `content_type_name` varchar(45) DEFAULT NULL comment '콘텐츠타입이름',
-  PRIMARY KEY (`content_type_id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci comment '콘텐츠타입정보테이블';
-
-CREATE TABLE IF NOT EXISTS `ssafytrip`.`attractions` (
-  `no` int NOT NULL AUTO_INCREMENT  comment '명소코드',
-  `content_id` int DEFAULT NULL comment '콘텐츠번호',
-  `title` varchar(500) DEFAULT NULL comment '명소이름',
-  `content_type_id` int DEFAULT NULL comment '콘텐츠타입',
-  `area_code` int DEFAULT NULL comment '시도코드',
-  `si_gun_gu_code` int DEFAULT NULL comment '구군코드',
-  `first_image1` varchar(100) DEFAULT NULL comment '이미지경로1',
-  `first_image2` varchar(100) DEFAULT NULL comment '이미지경로2',
-  `map_level` int DEFAULT NULL comment '줌레벨',
-  `latitude` decimal(20,17) DEFAULT NULL comment '위도',
-  `longitude` decimal(20,17) DEFAULT NULL comment '경도',
-  `tel` varchar(20) DEFAULT NULL comment '전화번호',
-  `addr1` varchar(100) DEFAULT NULL comment '주소1',
-  `addr2` varchar(100) DEFAULT NULL comment '주소2',
-  `homepage` varchar(1000) DEFAULT NULL comment '홈페이지',
-  `overview` varchar(10000) DEFAULT NULL comment '설명',
-  PRIMARY KEY (`no`),
-  INDEX `attractions_typeid_to_types_typeid_fk_idx` (`content_type_id` ASC) VISIBLE,
-  INDEX `attractions_sido_to_sidos_code_fk_idx` (`area_code` ASC) VISIBLE,
-  INDEX `attractions_sigungu_to_guguns_gugun_fk_idx` (`si_gun_gu_code` ASC) VISIBLE,
-  CONSTRAINT `attractions_area_to_sidos_code_fk`
-    FOREIGN KEY (`area_code`)
-    REFERENCES `ssafytrip`.`sidos` (`sido_code`),
-  CONSTRAINT `attractions_sigungu_to_guguns_gugun_fk`
-    FOREIGN KEY (`area_code`,`si_gun_gu_code`)
-    REFERENCES `ssafytrip`.`guguns` (`sido_code`, `gugun_code`),
-  CONSTRAINT `attractions_typeid_to_types_typeid_fk`
-    FOREIGN KEY (`content_type_id`)
-    REFERENCES `ssafytrip`.`contenttypes` (`content_type_id`))
-ENGINE = InnoDB
-AUTO_INCREMENT = 1
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci
-comment '명소정보테이블';
-
-
+-- -----------------------------------------------------
+-- 테이블: members
+-- 설명: 사용자 계정 정보 저장
+-- -----------------------------------------------------
 CREATE TABLE `members` (
-    `mno` INT NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(45) NOT NULL,
-    `email` VARCHAR(45) NOT NULL UNIQUE,
-    `password` VARCHAR(100) NOT NULL,
-    `role` VARCHAR(45)  NOT NULL DEFAULT "USER",
-    `profile` BLOB DEFAULT NULL,
+    `mno` INT NOT NULL AUTO_INCREMENT COMMENT '회원 고유번호 (PK)',
+    `name` VARCHAR(45) NOT NULL COMMENT '회원 이름',
+    `email` VARCHAR(45) NOT NULL UNIQUE COMMENT '회원 이메일 (고유)',
+    `password` VARCHAR(100) NOT NULL COMMENT '비밀번호 (해시)',
+    `role` VARCHAR(45) NOT NULL DEFAULT 'USER' COMMENT '사용자 역할 (USER, ADMIN 등)',
+    `profile` BLOB DEFAULT NULL COMMENT '프로필 이미지 (BLOB)',
     PRIMARY KEY (`mno`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
-
-CREATE TABLE `plans` (
-    `pno` INT NOT NULL AUTO_INCREMENT,
-    `title` VARCHAR(45) NOT NULL,
-    `days` INT NULL,
-    `schedule_count` INT NOT NULL DEFAULT 0,
-    `mno` INT NOT NULL,
-    PRIMARY KEY (`pno`),
-    CONSTRAINT `FK_members_TO_plans_1` FOREIGN KEY (`mno`) REFERENCES `members` (`mno`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `schedules` (
-    `sno` INT NOT NULL AUTO_INCREMENT,
-    `order` INT NOT NULL DEFAULT 0,
-    `pno` INT NOT NULL,
-    `ano` INT NOT NULL,
-    PRIMARY KEY (`sno`),
-    CONSTRAINT `FK_plans_TO_schedules_1` FOREIGN KEY (`pno`) REFERENCES `plans` (`pno`),
-    CONSTRAINT `FK_attractions_TO_schedules_1` FOREIGN KEY (`ano`) REFERENCES `attractions` (`no`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+-- -----------------------------------------------------
+-- 테이블: bucketlists
+-- 설명: 회원과 관광지 간의 다대다 관계 매핑
+-- -----------------------------------------------------
 CREATE TABLE `bucketlists` (
-    `mno` INT NOT NULL,
-    `ano` INT NOT NULL,
+    `mno` INT NOT NULL COMMENT '회원 번호 (FK)',
+    `ano` INT NOT NULL COMMENT '관광지 번호 (FK)',
     PRIMARY KEY (`mno`, `ano`),
     CONSTRAINT `FK_members_TO_bucketlists_1` FOREIGN KEY (`mno`) REFERENCES `members` (`mno`),
     CONSTRAINT `FK_attractions_TO_bucketlists_1` FOREIGN KEY (`ano`) REFERENCES `attractions` (`no`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
-
-
-
+-- -----------------------------------------------------
+-- 테이블: news
+-- 설명: 뉴스 기사 정보 저장
+-- -----------------------------------------------------
 CREATE TABLE `news` (
-    `id` int NOT NULL AUTO_INCREMENT COMMENT 'PK',
-    `title` varchar(200) NOT NULL COMMENT '뉴스 제목',
-    `publish_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '발행 일시',
-    `url_sido_code` smallint unsigned NOT NULL COMMENT '시도 코드',
-    `summary` text NOT NULL COMMENT '기사 요약',
-    `url` varchar(255) NOT NULL COMMENT '원문 URL',
+    `id` INT NOT NULL AUTO_INCREMENT COMMENT '뉴스 고유번호 (PK)',
+    `title` VARCHAR(200) NOT NULL COMMENT '뉴스 제목',
+    `publish_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '발행 일시',
+    `url_sido_code` SMALLINT UNSIGNED NOT NULL COMMENT '시도 코드',
+    `summary` TEXT NOT NULL COMMENT '기사 요약',
+    `url` VARCHAR(255) NOT NULL COMMENT '원문 URL',
     PRIMARY KEY (`id`),
     UNIQUE KEY `url` (`url`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '뉴스 테이블';
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT='뉴스 테이블';
 
+-- -----------------------------------------------------
+-- 테이블: boards
+-- 설명: 게시판 (일반, 공지, Q&A) 글 저장
+-- -----------------------------------------------------
 CREATE TABLE `boards` (
-`bno` INT NOT NULL AUTO_INCREMENT COMMENT '게시판 고유번호',
-`mno` INT NOT NULL COMMENT '작성자 회원번호 (members.mno 참조)',
-`board_type` ENUM('board', 'notice', 'qna' ) NOT NULL COMMENT '게시판 타입',
-`author` VARCHAR(45) NOT NULL COMMENT '작성자 이름',
-`views` INT NOT NULL DEFAULT 0 COMMENT '조회수',
-`title` VARCHAR(100) NOT NULL COMMENT '질문 제목',
-`content` LONGTEXT NOT NULL COMMENT '질문 내용',
-`created_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-COMMENT '작성일시',
-`updated_date` DATETIME NULL COMMENT '수정 완료일시',
-`visibility` ENUM('PUBLIC','PRIVATE')
-NOT NULL DEFAULT 'PUBLIC' COMMENT 'PUBLIC=공개, PRIVATE=비공개',
-PRIMARY KEY (`bno`),
-UNIQUE KEY `uq_boards_bno` (`bno`),
-CONSTRAINT `fk_boards_member`
-FOREIGN KEY (`mno`)
-REFERENCES `members` (`mno`)
-ON DELETE CASCADE
-ON UPDATE CASCADE
-) ENGINE=InnoDB
-DEFAULT CHARSET=utf8mb4
-COLLATE=utf8mb4_unicode_ci
-COMMENT='게시판 테이블';
+    `bno` INT NOT NULL AUTO_INCREMENT COMMENT '게시글 고유번호 (PK)',
+    `mno` INT NOT NULL COMMENT '작성자 회원번호 (FK)',
+    `board_type` ENUM('board','notice','qna') NOT NULL COMMENT '게시판 타입',
+    `author` VARCHAR(45) NOT NULL COMMENT '작성자 이름',
+    `views` INT NOT NULL DEFAULT 0 COMMENT '조회수',
+    `title` VARCHAR(100) NOT NULL COMMENT '제목',
+    `content` LONGTEXT NOT NULL COMMENT '내용',
+    `created_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '작성 일시',
+    `updated_date` DATETIME NULL COMMENT '수정 일시',
+    `visibility` ENUM('PUBLIC','PRIVATE') NOT NULL DEFAULT 'PUBLIC' COMMENT '공개 여부',
+    PRIMARY KEY (`bno`),
+    UNIQUE KEY `uq_boards_bno` (`bno`),
+    CONSTRAINT `fk_boards_member` FOREIGN KEY (`mno`) REFERENCES `members` (`mno`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT='게시판 테이블';
 
+-- -----------------------------------------------------
+-- 테이블: comments
+-- 설명: 게시글 댓글 저장
+-- -----------------------------------------------------
 CREATE TABLE `comments` (
-  `cno` INT NOT NULL AUTO_INCREMENT COMMENT '댓글 고유번호',
-  `bno` INT NOT NULL COMMENT '게시글 번호 (boards.bno 참조)',
-  `mno` INT NOT NULL COMMENT '댓글 작성자 회원번호 (members.mno 참조)',
-  `author` VARCHAR(45) NOT NULL COMMENT '댓글 작성자 이름',
-  `content` TEXT NOT NULL COMMENT '댓글 내용',
-  `created_date` DATETIME NOT NULL
-    DEFAULT CURRENT_TIMESTAMP
-    COMMENT '댓글 작성일시',
-  `updated_date` DATETIME NOT NULL
-    DEFAULT CURRENT_TIMESTAMP
-    ON UPDATE CURRENT_TIMESTAMP
-    COMMENT '수정 완료일시',
+    `cno` INT NOT NULL AUTO_INCREMENT COMMENT '댓글 고유번호 (PK)',
+    `bno` INT NOT NULL COMMENT '게시글 번호 (FK)',
+    `mno` INT NOT NULL COMMENT '댓글 작성자 회원번호 (FK)',
+    `author` VARCHAR(45) NOT NULL COMMENT '댓글 작성자 이름',
+    `content` TEXT NOT NULL COMMENT '댓글 내용',
+    `created_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '작성 일시',
+    `updated_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 일시',
+    PRIMARY KEY (`cno`),
+    CONSTRAINT `fk_comments_boards` FOREIGN KEY (`bno`) REFERENCES `boards` (`bno`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk_comments_members` FOREIGN KEY (`mno`) REFERENCES `members` (`mno`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT='댓글 테이블';
 
-  PRIMARY KEY (`cno`),
+-- -----------------------------------------------------
+-- 테이블: plan
+-- 설명: 여행 계획 저장 (JSON 일정 포함)
+-- -----------------------------------------------------
+CREATE TABLE `plan` (
+    `pno` INT NOT NULL AUTO_INCREMENT COMMENT '여행 계획 고유번호 (PK)',
+    `title` VARCHAR(255) NOT NULL COMMENT '계획 제목',
+    `mno` INT NOT NULL COMMENT '회원 번호 (FK)',
+    `schedules` JSON DEFAULT NULL COMMENT '일정 목록(JSON)',
+    PRIMARY KEY (`pno`),
+    KEY `idx_mno` (`mno`),
+    CONSTRAINT `fk_plan_member` FOREIGN KEY (`mno`) REFERENCES `members` (`mno`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT='여행 계획 테이블';
 
-  -- 외래키 제약
-  CONSTRAINT `fk_comments_boards`
-    FOREIGN KEY (`bno`)
-    REFERENCES `boards` (`bno`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_comments_members`
-    FOREIGN KEY (`mno`)
-    REFERENCES `members` (`mno`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
+-- -----------------------------------------------------
+-- 테이블: board_images
+-- 설명: 게시글 이미지 저장
+-- -----------------------------------------------------
+CREATE TABLE `board_images` (
+    `img_no` BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '이미지 고유번호 (PK)',
+    `bno` INT NOT NULL COMMENT '게시글 번호 (FK)',
+    `filename` VARCHAR(255) NOT NULL COMMENT '원본 파일명',
+    `content_type` VARCHAR(100) NOT NULL COMMENT 'MIME 타입',
+    `size` BIGINT NOT NULL COMMENT '파일 크기(바이트)',
+    `storage_path` VARCHAR(512) NOT NULL COMMENT '저장 경로',
+    `uploaded_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '업로드 일시',
+    FOREIGN KEY (`bno`) REFERENCES `boards` (`bno`) ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 
-) ENGINE=InnoDB
-  DEFAULT CHARSET=utf8mb4
-  COLLATE=utf8mb4_unicode_ci
-  COMMENT='댓글 테이블';
+-- -----------------------------------------------------
+-- 테이블: image
+-- 설명: 공통 이미지 저장소
+-- -----------------------------------------------------
+CREATE TABLE `image` (
+    `ino` INT NOT NULL AUTO_INCREMENT COMMENT '이미지 고유번호 (PK)',
+    `filename` VARCHAR(255) NOT NULL COMMENT '원본 파일명',
+    `content_type` VARCHAR(100) NOT NULL COMMENT 'MIME 타입',
+    `size` BIGINT NOT NULL COMMENT '파일 크기(바이트)',
+    `storage_path` VARCHAR(500) NOT NULL COMMENT '저장 경로',
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 일시',
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 일시',
+    PRIMARY KEY (`ino`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT='이미지 테이블';
 
+-- -----------------------------------------------------
+-- 테이블: hot_place
+-- 설명: 사용자가 저장한 핫플레이스 정보
+-- -----------------------------------------------------
+CREATE TABLE `hot_place` (
+    `hno` INT NOT NULL AUTO_INCREMENT COMMENT '핫플레이스 고유번호 (PK)',
+    `mno` INT NOT NULL COMMENT '회원 번호 (FK)',
+    `ino` INT DEFAULT NULL COMMENT '이미지 번호 (FK)',
+    `overview` TEXT COMMENT '간단 설명',
+    `title` VARCHAR(255) NOT NULL COMMENT '플레이스 제목',
+    `map_x` DECIMAL(13,10) NOT NULL COMMENT '경도',
+    `map_y` DECIMAL(13,10) NOT NULL COMMENT '위도',
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 일시',
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 일시',
+    PRIMARY KEY (`hno`),
+    KEY `idx_hp_mno` (`mno`),
+    KEY `idx_hp_imo` (`ino`),
+    CONSTRAINT `fk_hp_image` FOREIGN KEY (`ino`) REFERENCES `image` (`ino`) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT `fk_hp_member` FOREIGN KEY (`mno`) REFERENCES `members` (`mno`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 13 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT='핫플레이스 테이블';
 
---
-
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+-- -----------------------------------------------------
+-- 원래 설정 복원
+-- -----------------------------------------------------
+SET SQL_MODE = @OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS = @OLD_UNIQUE_CHECKS;
