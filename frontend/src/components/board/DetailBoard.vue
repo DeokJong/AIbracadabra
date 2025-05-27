@@ -39,7 +39,6 @@ const boardData = reactive<BoardDetail>({} as BoardDetail)
 onMounted(async () => {
   const detailApiUrl = `api/v1${route.path}`
   const response = await axios.get<CommonResponse<BoardDetail>>(detailApiUrl)
-  console.log(response.data.data)
   Object.assign(boardData, response.data.data)
 })
 
@@ -91,7 +90,6 @@ function cancelEdit() {
 }
 
 async function onCommentSubmit(content: string) {
-  console.log('🐣 onCommentSubmit!', content)
   try {
     const res = await axios.post<CommonResponse<Comment>>(
       `/api/v1/board/${boardData.bno}/comment`,

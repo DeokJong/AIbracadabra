@@ -84,7 +84,6 @@ onMounted(async () => {
     )
     Object.assign(boardData, res.data.data)
   } catch (err) {
-    console.error('상세 조회 실패', err)
   }
 })
 
@@ -97,7 +96,6 @@ async function onSubmit() {
     })
     router.push(`/${boardData.boardType}/${boardData.bno}`)
   } catch (err) {
-    console.error('수정 실패', err)
   }
 }
 
