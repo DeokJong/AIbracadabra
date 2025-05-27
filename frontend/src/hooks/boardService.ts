@@ -4,11 +4,12 @@ import axios from 'axios'
 export interface Board {
   bno: number
   title: string
-  mmo: number
+  mno: number
   content: string
   author: string
   createdDate: string
   views: number
+  visibility: 'PUBLIC' | 'PRIVATE'
   imageUrls: []
 }
 
@@ -19,6 +20,7 @@ export enum PostVisibility {
 
 export interface BoardPost {
   bno: number
+  mno: number
   title: string
   content: string
   author: string
