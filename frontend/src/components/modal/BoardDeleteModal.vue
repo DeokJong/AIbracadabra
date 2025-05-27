@@ -63,7 +63,6 @@ import router from '@/router';
 // 여기서 삭제를 호출
 const doWithdraw = async () => {
   const detailApiUrl = `api/v1${route.path}`
-  console.log(detailApiUrl)
   try {
     await axios.delete(detailApiUrl)
     toast.success('게시글이 삭제되었습니다.')

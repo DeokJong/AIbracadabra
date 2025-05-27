@@ -28,4 +28,15 @@ export default defineConfig({
       },
     },
   },
+  // ↓ 여기에 proxy 설정을 추가하세요
+  server: {
+    proxy: {
+      // /api 로 시작하는 모든 요청을 포워딩
+      '/api': {
+        target: 'http://localhost:8080',  // 백엔드 스프링 부트 서버 주소
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
+      },
+    }
+  }
 })

@@ -1,11 +1,10 @@
 package com.ssafy.model.service.impl;
 
-import com.ssafy.constant.ContentTypeId;
 import com.ssafy.model.client.KakaoClient;
 import com.ssafy.model.client.TourInfoClient;
 import com.ssafy.model.dto.client.AddressSearchResponse;
 import com.ssafy.model.dto.client.SearchResponse;
-import com.ssafy.model.dto.response.Document;
+import com.ssafy.model.dto.domain.Document;
 import com.ssafy.model.service.MapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ public class MapServiceImpl implements MapService {
 	}
 
 	@Override
-	public SearchResponse getSearchByQuery(String query, int page) {
+	public SearchResponse searchByKeyword(String query, int page) {
 		return kakaoClient.searchKeyword(query, page, 15).block();
 	}
 
@@ -53,7 +52,7 @@ public class MapServiceImpl implements MapService {
 	}
 
 	@Override
-	public Mono<Document> searchContent(String mapX, String mapY, ContentTypeId contentTypeId, Integer pageNo, String radius) {
+	public Mono<Document> searchContent(String mapX, String mapY, String contentTypeId, Integer pageNo, String radius) {
 		return tourInfoClient.locationBasedList(mapX, mapY, pageNo, radius, contentTypeId)
 			.map(result -> {
 				var body = result.getResponse().getBody();
