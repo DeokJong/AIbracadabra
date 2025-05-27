@@ -1,23 +1,19 @@
 package com.ssafy.model.dao;
 
-import org.apache.ibatis.annotations.Mapper;
-
 import com.ssafy.model.dto.domain.Plan;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
 public interface PlanDao {
+	int insert(Plan plan);
 
-	int add(Plan plan);
+	int update(Plan plan);
 
-	Plan get(int pno);
+	int delete(int pno);
 
-	List<Plan> getByMember(int mno);
+	List<Plan> findByMno(int mno);
 
-	int set(Plan plan);
-
-	int remove(int pno);
-
-	int removeAll(int mno);
+	Plan findByPno(int pno);
 }

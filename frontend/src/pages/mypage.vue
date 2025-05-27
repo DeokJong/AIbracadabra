@@ -1,110 +1,235 @@
 <template>
-  <v-row justify="center">
-    <v-col cols="auto">
-      <v-card width="360" class="border-1 elevation-6">
-        <v-card-title class="text-h5">내 정보 수정</v-card-title>
+  <div class="mypage-container">
+    <div class="page-header">
+      <h1 class="page-title">
+        <span class="title-icon">👤</span>
+        마이페이지
+      </h1>
+      <p class="page-subtitle">개인정보 관리 및 활동 내역을 확인하세요</p>
+    </div>
 
-        <v-divider thickness="2" class="my-3" opacity="0.3" />
-
-        <v-form ref="formRef" v-model="valid" lazy-validation @submit.prevent="doUpdate">
-          <v-card-text>
-            <v-text-field v-model="form.email" label="이메일" outlined dense class="ma-4" :rules="emailRules"
-              prepend-inner-icon="mdi-email" readonly />
-
-            <v-text-field v-model="form.name" label="이름" outlined dense class="ma-4"
-              :rules="[(v) => !!v || '이름을 입력하세요.']" prepend-inner-icon="mdi-account" required />
-
-            <PasswordTextField v-model="form.currentPassword" :label-name="'현재 비밀번호'" :is-required="true" />
-
-            <PasswordTextField v-model="form.newPassword" :label-name="'새 비밀번호'" :is-required="false" />
-
-            <PasswordTextField v-model="form.confirmPassword" :label-name="'새 비밀번호 확인'" :is-required="false" />
-          </v-card-text>
-
-          <v-card-actions class="pa-4 justify-center">
-            <v-btn block color="primary" type="submit" :loading="loading" :disabled="!valid || loading">
-              정보 수정
-            </v-btn>
-          </v-card-actions>
-
-        </v-form>
-
-        <v-divider thickness="2" class="ma-3 ga-3" opacity="0.3" />
-        <v-card-actions class="pa-4 justify-center">
-          <v-btn block color="error" @click="openWithdrawModal">
-            회원 탈퇴
-          </v-btn>
-        </v-card-actions>
-
-      </v-card>
-    </v-col>
-  </v-row>
+    <section class="content-section">
+      <div class="tab-navigation">
+        <button
+          v-for="tab in tabs"
+          :key="tab"
+          @click="activeTab = tab"
+          :class="['tab-button', { 'active': activeTab === tab }]"
+        >
+          <span class="tab-icon">{{ getTabIcon(tab) }}</span>
+          <span class="tab-label">{{ tabLabels[tab] }}</span>
+        </button>
+      </div>
+      
+      <div class="tab-content">
+        <div class="content-wrapper">
+          <div v-if="activeTab === 'profile'" class="tab-panel">
+            <MemberModify />
+          </div>
+          <div v-else-if="activeTab === 'boards'" class="tab-panel">
+            <MyBoards />
+          </div>
+          <div v-else class="tab-panel">
+            <MyComments />
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useToast } from 'vue-toastification'
-import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
+import MemberModify from '@/components/member/MemberModify.vue'
+import MyBoards from '@/components/board/MyBoards.vue'
+import MyComments from '@/components/comment/MyComments.vue'
 
-import { useModal } from '@/hooks/useModal'
-import { useAuth, UpdateRequest } from '@/hooks/useAuth'
-import { useValidationRules } from '@/hooks/useValidationRules'
-import WithdrawModal from '@/components/modal/WithdrawModal.vue'
-import PasswordTextField from '@/components/common/PasswordTextField.vue'
-
-const { addModal } = useModal()
-const auth = useAuth()
-const { userInfo } = storeToRefs(auth)
-const { emailRules } = useValidationRules()
-const toast = useToast()
-
-const form = reactive<UpdateRequest>({
-  email: '',
-  name: '',
-  currentPassword: '',
-  newPassword: '',
-  confirmPassword: ''
-})
-
-const valid = ref(false)
-const loading = ref(false)
-const formRef = ref<any>(null)
-
-onMounted(() => {
-  // 마운트시 필수 정보 기입
-  form.email = userInfo.value.email
-  form.name = userInfo.value.name
-})
-
-
-const doUpdate = async () => {
-  // 업데이트시 실행시킬 함수
-  if (!formRef.value?.validate()) return
-
-  if (form.newPassword && form.confirmPassword !== form.confirmPassword) {
-    toast.error('비밀번호가 일치하지 않습니다')
-    return
-  }
-
-  loading.value = true
-  const ok = await auth.updateUserInfo({
-    ...form
-  })
-  loading.value = false
-
-  if (ok) {
-    form.currentPassword = ''
-    form.newPassword = ''
-    form.confirmPassword = ''
-    formRef.value.resetValidation()
-  }
+const tabs = ['profile', 'boards', 'comments']
+const tabLabels: Record<string, string> = {
+  profile: '내 정보 수정',
+  boards: '내가 쓴 게시글',
+  comments: '내가 쓴 댓글',
 }
+const activeTab = ref('profile')
 
-const openWithdrawModal = async () => {
-  try {
-    await addModal<void>(WithdrawModal)
-  } catch {
+const navItems = tabs
+const navLabels = tabLabels
+const selectedNav = ref('profile')
+
+function getTabIcon(tab: string): string {
+  const icons: Record<string, string> = {
+    profile: '⚙️',
+    boards: '📝',
+    comments: '💬'
   }
+  return icons[tab] || '📄'
 }
-
 </script>
+
+<style scoped>
+.mypage-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 32px 16px;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.page-title {
+  font-size: 48px;
+  font-weight: 800;
+  color: white;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.title-icon {
+  font-size: 52px;
+}
+
+.page-subtitle {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  font-weight: 400;
+}
+
+.content-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+}
+
+.tab-navigation {
+  display: flex;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tab-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 32px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.tab-button::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.tab-button:hover {
+  background: rgba(102, 126, 234, 0.05);
+  color: #667eea;
+}
+
+.tab-button.active {
+  color: #667eea;
+  background: white;
+}
+
+.tab-button.active::before {
+  width: 80%;
+}
+
+.tab-icon {
+  font-size: 20px;
+}
+
+.tab-label {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.tab-content {
+  background: white;
+}
+
+.content-wrapper {
+  min-height: 600px;
+}
+
+.tab-panel {
+  padding: 40px;
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .mypage-container {
+    padding: 16px 8px;
+  }
+  
+  .page-title {
+    font-size: 36px;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .tab-navigation {
+    flex-direction: column;
+  }
+  
+  .tab-button {
+    padding: 16px 24px;
+  }
+  
+  .tab-panel {
+    padding: 24px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 28px;
+  }
+  
+  .tab-button {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  
+  .tab-icon {
+    font-size: 16px;
+  }
+}
+</style>
