@@ -1,21 +1,17 @@
 package com.ssafy.model.dto.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+import java.util.List;
+
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Board {
+public class Board extends BoardImage {
   
   /** 게시판 고유번호: AUTO_INCREMENT */
   @JsonProperty(access = Access.READ_ONLY)
@@ -57,9 +53,6 @@ public class Board {
   private List<Comment> comments;
   
   private List<Long> imageUrls;
-
-
-  
 
 }
 

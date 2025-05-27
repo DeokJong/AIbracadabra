@@ -5,7 +5,6 @@
 
 <mapper namespace="com.ssafy.model.dao.HotPlaceDao">
 
-    <!-- 결과 매핑: join한 image.storage_path → imageUrl -->
     <resultMap id="HotPlaceResult" type="com.ssafy.model.dto.domain.HotPlace">
         <id property="hno" column="hno"/>
         <result property="mno" column="mno"/>
@@ -17,12 +16,13 @@
         <result property="imageUrl" column="storage_path"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+        <result property="likeCount" column="like_count"/>
     </resultMap>
 
-    <!-- 1) 주변 조회: bounding-box + Haversine 공식, LEFT JOIN image -->
-	<select id="findByCoordinates"
-	        resultMap="HotPlaceResult"
-	        parameterType="map"><![CDATA[
+    <!-- 주변 조회 -->
+    <select id="findByCoordinates"
+            resultMap="HotPlaceResult"
+            parameterType="map"><![CDATA[
 	  SELECT
 	    hp.hno,
 	    hp.mno,
@@ -33,7 +33,12 @@
 	    hp.map_y,
 	    img.storage_path AS storage_path,
 	    hp.created_at,
-	    hp.updated_at
+	    hp.updated_at,
+	    (
+	      SELECT COUNT(*)
+	      FROM hotplace_likes hl
+	      WHERE hl.hno = hp.hno
+	    ) AS like_count
 	  FROM hot_place hp
 	  LEFT JOIN image img ON hp.ino = img.ino
 	  WHERE
@@ -41,16 +46,11 @@
 	      POINT(hp.map_x, hp.map_y),
 	      POINT(#{mapX}, #{mapY})
 	    ) <= #{meter}
-	  ORDER BY
-	    ST_Distance_Sphere(
-	      POINT(hp.map_x, hp.map_y),
-	      POINT(#{mapX}, #{mapY})
-	    )
+	  ORDER BY like_count DESC
 	]]>
-	</select>
+    </select>
 
-
-    <!-- 2) 상세 조회: LEFT JOIN으로 imageUrl 포함 -->
+    <!-- 상세 조회 -->
     <select id="findById"
             parameterType="int"
             resultMap="HotPlaceResult">
@@ -64,7 +64,12 @@
         hp.map_y,
         img.storage_path AS storage_path,
         hp.created_at,
-        hp.updated_at
+        hp.updated_at,
+        (
+        SELECT COUNT(*)
+        FROM hotplace_likes hl
+        WHERE hl.hno = hp.hno
+        ) AS like_count
         FROM hot_place hp
         LEFT JOIN image img
         ON hp.ino = img.ino

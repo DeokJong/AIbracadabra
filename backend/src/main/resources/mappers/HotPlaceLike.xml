@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.model.dao.HotPlaceLikeDao">
+
+    <!-- 좋아요 추가 -->
+    <insert id="insert">
+        INSERT INTO hotplace_likes (mno, hno)
+        VALUES (#{mno}, #{hno})
+    </insert>
+
+    <!-- 좋아요 제거 -->
+    <delete id="delete">
+        DELETE FROM hotplace_likes
+        WHERE mno = #{mno} AND hno = #{hno}
+    </delete>
+
+    <!-- 좋아요 여부 확인 -->
+    <select id="exists" resultType="boolean">
+        SELECT EXISTS(
+        SELECT 1
+        FROM hotplace_likes
+        WHERE mno = #{mno} AND hno = #{hno}
+        )
+    </select>
+
+    <select id="findLikedHotPlaceIdsByMno" resultType="int">
+        SELECT hno
+        FROM hotplace_likes
+        WHERE mno = #{mno}
+    </select>
+
+</mapper>
