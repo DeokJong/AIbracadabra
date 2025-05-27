@@ -35,6 +35,8 @@ DROP TABLE IF EXISTS `plan`;
 DROP TABLE IF EXISTS `image`;
 DROP TABLE IF EXISTS `hot_place`;
 
+DROP TABLE IF EXISTS `hotplace_likes`;
+
 -- -----------------------------------------------------
 -- 테이블: members
 -- 설명: 사용자 계정 정보 저장
@@ -177,6 +179,15 @@ CREATE TABLE `hot_place` (
     CONSTRAINT `fk_hp_image` FOREIGN KEY (`ino`) REFERENCES `image` (`ino`) ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT `fk_hp_member` FOREIGN KEY (`mno`) REFERENCES `members` (`mno`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB AUTO_INCREMENT = 13 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT='핫플레이스 테이블';
+
+CREATE TABLE `hotplace_likes` (
+  `mno` int NOT NULL,
+  `hno` int NOT NULL,
+  PRIMARY KEY (`mno`,`hno`),
+  KEY `hno` (`hno`),
+  CONSTRAINT `hotplace_likes_ibfk_1` FOREIGN KEY (`mno`) REFERENCES `members` (`mno`) ON DELETE CASCADE,
+  CONSTRAINT `hotplace_likes_ibfk_2` FOREIGN KEY (`hno`) REFERENCES `hot_place` (`hno`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- -----------------------------------------------------
 -- 원래 설정 복원
