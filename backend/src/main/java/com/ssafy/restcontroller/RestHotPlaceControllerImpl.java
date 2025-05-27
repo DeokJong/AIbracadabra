@@ -22,7 +22,7 @@ public class RestHotPlaceControllerImpl implements ResponseEntityHelper, RestHot
   @Override
   public ResponseEntity<?> registerHotPlace(HotPlace hotPlace, MultipartFile image, CustomUserDetails user) {
     hotPlace.setMno(user.getMember().getMno());
-    hotPlaceService.registHotPlace(hotPlace, image);
+    hotPlaceService.registerHotPlace(hotPlace, image);
     return handleResponse("CREATED", HttpStatus.CREATED);
   }
 
@@ -49,4 +49,25 @@ public class RestHotPlaceControllerImpl implements ResponseEntityHelper, RestHot
     hotPlaceService.deleteByHno(hno, user.getMember().getMno());
     return handleResponse("NO_CONTENT", HttpStatus.NO_CONTENT);
   }
+
+  @Override
+  public ResponseEntity<?> likeHotPlace(Integer hno, CustomUserDetails user) {
+    int mno = user.getMember().getMno();
+    hotPlaceService.likeHotPlace(mno, hno);
+    return handleResponse("LIKED", HttpStatus.CREATED);
+  }
+
+  @Override
+  public ResponseEntity<?> unlikeHotPlace(Integer hno, CustomUserDetails user) {
+    int mno = user.getMember().getMno();
+    hotPlaceService.unlikeHotPlace(mno, hno);
+    return handleResponse("UNLIKED", HttpStatus.NO_CONTENT);
+  }
+
+  @Override
+  public ResponseEntity<?> findMyLikedHotPlaces(CustomUserDetails user) {
+    int mno = user.getMember().getMno();
+    return handleResponse(hotPlaceService.findLikedHotPlaceIdsByMember(mno), "OK", HttpStatus.OK);
+  }
+
 }

@@ -15,37 +15,46 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "HotPlace", description = "핫플레이스 관련 API")
 public interface RestHotPlaceController {
 
-  @RequestBody(content = @Content(encoding = {
-          @Encoding(name = "hotPlace", contentType = MediaType.APPLICATION_JSON_VALUE),
-          @Encoding(name = "image", contentType = MediaType.MULTIPART_FORM_DATA_VALUE)}))
-  @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,
-          MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
-  ResponseEntity<?> registerHotPlace(@RequestPart HotPlace hotPlace,
-                                     @RequestPart(required = false) MultipartFile image,
-                                     @AuthenticationPrincipal CustomUserDetails user);
+	@RequestBody(content = @Content(encoding = {
+		@Encoding(name = "hotPlace", contentType = MediaType.APPLICATION_JSON_VALUE),
+		@Encoding(name = "image", contentType = MediaType.MULTIPART_FORM_DATA_VALUE)}))
+	@PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,
+		MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+	ResponseEntity<?> registerHotPlace(@RequestPart HotPlace hotPlace,
+																		 @RequestPart(required = false) MultipartFile image,
+																		 @AuthenticationPrincipal CustomUserDetails user);
 
-  @GetMapping
-  ResponseEntity<?> searchByLocation(@RequestParam String mapX,
-                                     @RequestParam String mapY,
-                                     @RequestParam(defaultValue = "20000") String meter);
+	@GetMapping
+	ResponseEntity<?> searchByLocation(@RequestParam String mapX,
+																		 @RequestParam String mapY,
+																		 @RequestParam(defaultValue = "20000") String meter);
 
-  @GetMapping("/{hno}")
-  ResponseEntity<?> searchByHno(@PathVariable Integer hno);
+	@GetMapping("/{hno}")
+	ResponseEntity<?> searchByHno(@PathVariable Integer hno);
 
-  @RequestBody(content = @Content(encoding = {
-          @Encoding(name = "hotPlace", contentType = MediaType.APPLICATION_JSON_VALUE),
-          @Encoding(name = "image", contentType = MediaType.MULTIPART_FORM_DATA_VALUE)}))
-  @PutMapping(consumes = {
-          MediaType.MULTIPART_FORM_DATA_VALUE,
-          MediaType.APPLICATION_JSON_VALUE}
-          , produces = MediaType.APPLICATION_JSON_VALUE
-  ,
-          value = "/{hno}")
-  ResponseEntity<?> updateHotPlace(@RequestPart HotPlace hotPlace,
-                                   @RequestPart(required = false) MultipartFile image,
-                                   @PathVariable Integer hno,
-                                   @AuthenticationPrincipal CustomUserDetails user);
+	@RequestBody(content = @Content(encoding = {
+		@Encoding(name = "hotPlace", contentType = MediaType.APPLICATION_JSON_VALUE),
+		@Encoding(name = "image", contentType = MediaType.MULTIPART_FORM_DATA_VALUE)}))
+	@PutMapping(consumes = {
+		MediaType.MULTIPART_FORM_DATA_VALUE,
+		MediaType.APPLICATION_JSON_VALUE}
+		, produces = MediaType.APPLICATION_JSON_VALUE
+		,
+		value = "/{hno}")
+	ResponseEntity<?> updateHotPlace(@RequestPart HotPlace hotPlace,
+																	 @RequestPart(required = false) MultipartFile image,
+																	 @PathVariable Integer hno,
+																	 @AuthenticationPrincipal CustomUserDetails user);
 
-  @DeleteMapping("/{hno}")
-  ResponseEntity<?> deleteByHno(@PathVariable Integer hno, @AuthenticationPrincipal CustomUserDetails user);
+	@DeleteMapping("/{hno}")
+	ResponseEntity<?> deleteByHno(@PathVariable Integer hno, @AuthenticationPrincipal CustomUserDetails user);
+
+	@PostMapping("/like/{hno}")
+	ResponseEntity<?> likeHotPlace(@PathVariable Integer hno, @AuthenticationPrincipal CustomUserDetails user);
+
+	@DeleteMapping("/like{hno}")
+	ResponseEntity<?> unlikeHotPlace(@PathVariable Integer hno,@AuthenticationPrincipal CustomUserDetails user);
+
+	@GetMapping("/likes/me")
+	ResponseEntity<?> findMyLikedHotPlaces(@AuthenticationPrincipal CustomUserDetails user);
 }

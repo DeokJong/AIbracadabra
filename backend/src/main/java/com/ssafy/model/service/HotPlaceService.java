@@ -8,7 +8,7 @@ import com.ssafy.model.dto.domain.HotPlace;
 
 public interface HotPlaceService {
 	
-	void registHotPlace(HotPlace hotPlace, MultipartFile file);
+	void registerHotPlace(HotPlace hotPlace, MultipartFile file);
 	
 	List<HotPlace> findByLocation(String mapX, String mapY, String meter);
 	
@@ -17,4 +17,10 @@ public interface HotPlaceService {
 	void update(HotPlace hotPlace, MultipartFile file);
 
 	void deleteByHno(Integer hno, Integer mno);
-} 
+
+	void likeHotPlace(int mno, int hno);
+
+	void unlikeHotPlace(int mno, int hno);
+
+	List<Integer> findLikedHotPlaceIdsByMember(int mno);
+}

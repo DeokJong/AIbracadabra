@@ -36,4 +36,6 @@ public class HotPlace {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private LocalDateTime updatedAt;
 
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Integer likeCount;
 }

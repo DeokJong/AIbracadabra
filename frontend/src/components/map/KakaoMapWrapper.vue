@@ -71,6 +71,7 @@ function handleMarkerLoad(
   markerInstance: kakao.maps.Marker,
   markerData: typeof markerProps.value[number]) {
   kakao.maps.event.addListener(markerInstance, 'click', async () => {
+    console.log('Marker clicked:', markerData)
     await contentDetailSearch(markerData.info.contentId)
   })
 }

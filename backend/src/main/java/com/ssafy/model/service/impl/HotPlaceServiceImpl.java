@@ -2,6 +2,7 @@ package com.ssafy.model.service.impl;
 
 import java.util.List;
 
+import com.ssafy.model.dao.HotPlaceLikeDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,9 +23,10 @@ public class HotPlaceServiceImpl implements HotPlaceService {
 	private final ImageService imageService;
 
 	private final HotPlaceDao hotPlaceDao;
+	private final HotPlaceLikeDao hotPlaceLikeDao;
 
 	@Override
-	public void registHotPlace(HotPlace hotPlace, MultipartFile file) {
+	public void registerHotPlace(HotPlace hotPlace, MultipartFile file) {
 		if (file != null && !file.isEmpty()) {
 			Image image = imageService.createImage(file);
 			hotPlace.setIno(image.getIno());
@@ -65,4 +67,26 @@ public class HotPlaceServiceImpl implements HotPlaceService {
 	public void deleteByHno(Integer hno, Integer mno) {
 		hotPlaceDao.delete(hno,mno);
 	}
+
+	@Override
+	public void likeHotPlace(int mno, int hno) {
+		if (!hotPlaceLikeDao.exists(mno, hno)) {
+			hotPlaceLikeDao.insert(mno, hno);
+		}
+	}
+
+	@Override
+	public void unlikeHotPlace(int mno, int hno) {
+		if (hotPlaceLikeDao.exists(mno, hno)) {
+			hotPlaceLikeDao.delete(mno, hno);
+		}
+	}
+
+	@Override
+	public List<Integer> findLikedHotPlaceIdsByMember(int mno) {
+		return hotPlaceLikeDao.findLikedHotPlaceIdsByMno(mno);
+	}
+
+
+
 }
