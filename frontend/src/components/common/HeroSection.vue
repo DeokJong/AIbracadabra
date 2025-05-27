@@ -103,7 +103,7 @@
             </div>
             <div class="destinations-list">
               <div class="destination-item" v-for="dest in popularDestinations" :key="dest.id">
-                <img :src="dest.image" :alt="dest.name" class="dest-image" />
+                <!-- <img :src="dest.image" :alt="dest.name" class="dest-image" /> -->
                 <div class="dest-info">
                   <span class="dest-name">{{ dest.name }}</span>
                   <span class="dest-visitors">{{ dest.visitors }}</span>
