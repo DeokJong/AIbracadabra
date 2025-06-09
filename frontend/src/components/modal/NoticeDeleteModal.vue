@@ -76,7 +76,7 @@ const doWithdraw = async () => {
   const params = route.params as { bno: string }
 
   const bno = Number(params.bno)
-  const detailApiUrl = `api/v1/board/${bno}`
+  const detailApiUrl = `/api/v1/board/${bno}`
   console.log(detailApiUrl)
   try {
     await axios.delete(detailApiUrl)

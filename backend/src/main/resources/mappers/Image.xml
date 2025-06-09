@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ssafy.model.dao.ImageDao">
+<mapper namespace="com.aibracadabra.model.dao.ImageDao">
 
-    <resultMap id="ImageResult" type="com.ssafy.model.dto.domain.Image">
+    <resultMap id="ImageResult" type="com.aibracadabra.model.dto.domain.Image">
         <id     property="ino"         column="ino"/>
         <result property="filename"    column="filename"/>
         <result property="contentType" column="content_type"/>
@@ -16,7 +16,7 @@
     </resultMap>
 
     <insert id="insertImage"
-            parameterType="com.ssafy.model.dto.domain.Image"
+            parameterType="com.aibracadabra.model.dto.domain.Image"
             useGeneratedKeys="true"
             keyProperty="ino">
         INSERT INTO image
@@ -26,7 +26,7 @@
     </insert>
 
     <update id="updateImage"
-            parameterType="com.ssafy.model.dto.domain.Image">
+            parameterType="com.aibracadabra.model.dto.domain.Image">
         UPDATE image
         SET
         filename      = #{filename},
