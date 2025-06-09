@@ -2,10 +2,10 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ssafy.model.dao.BoardDao">
+<mapper namespace="com.aibracadabra.model.dao.BoardDao">
 
 	<resultMap id="boardMap"
-		type="com.ssafy.model.dto.domain.Board">
+		type="com.aibracadabra.model.dto.domain.Board">
 		<!-- PK -->
 		<id column="bno" property="bno" jdbcType="INTEGER" />
 		<!-- 내부 로직용 회원번호 -->
@@ -32,18 +32,18 @@
 		<result column="visibility" property="visibility"
 			jdbcType="VARCHAR" />
 		<collection property="comments"
-			ofType="com.ssafy.model.dto.domain.Comment" resultMap="commentMap"
-			columnPrefix="c_" />
+                    ofType="com.aibracadabra.model.dto.domain.Comment" resultMap="commentMap"
+                    columnPrefix="c_" />
 		<collection property="imageUrls"
                 ofType="java.lang.Long"
                 javaType="java.util.ArrayList"
                 column="bno"
-                select="com.ssafy.model.dao.BoardImageDao.selectImageIdsByBno"/>
+                select="com.aibracadabra.model.dao.BoardImageDao.selectImageIdsByBno"/>
 	</resultMap>
 
 	<!-- 댓글 테이블 -->
 	<resultMap id="commentMap"
-		type="com.ssafy.model.dto.domain.Comment">
+		type="com.aibracadabra.model.dto.domain.Comment">
 		<id column="cno" property="cno" />
 		<result column="bno" property="bno" />
 		<result column="mno" property="mno" />
@@ -85,7 +85,7 @@
 
 
 	<insert id="add"
-		parameterType="com.ssafy.model.dto.domain.Board"
+		parameterType="com.aibracadabra.model.dto.domain.Board"
 		useGeneratedKeys="true" keyProperty="bno" keyColumn="bno">
 		INSERT INTO boards
 		(mno, board_type,author, title, content, visibility)
@@ -96,7 +96,7 @@
 
 	<!-- 댓글 추가하기 -->
 	<insert id="addComment"
-		parameterType="com.ssafy.model.dto.domain.Comment"
+		parameterType="com.aibracadabra.model.dto.domain.Comment"
 		useGeneratedKeys="true" keyProperty="cno" keyColumn="cno">
 		INSERT INTO
 		comments
@@ -114,7 +114,7 @@
 	</delete>
 	
 	<!-- 댓글 수정하기 -->
-	<update id="setComment" parameterType="com.ssafy.model.dto.domain.Comment" >
+	<update id="setComment" parameterType="com.aibracadabra.model.dto.domain.Comment" >
 		update comments 
 		set content=#{content},
 		updated_date = NOW()
@@ -123,7 +123,7 @@
 	</update>
 	
 	<!-- 댓글 하나 가져오기 수정이나 삭제할 때 체크용도로 사용 -->
-	<select id="getCommentCno" parameterType="com.ssafy.model.dto.domain.Comment" resultMap="commentMap">
+	<select id="getCommentCno" parameterType="com.aibracadabra.model.dto.domain.Comment" resultMap="commentMap">
 		select * from comments
 		where cno = #{cno}
 	</select>
@@ -187,7 +187,7 @@
 
 	<!-- 게시글 수정 -->
 	<update id="set"
-		parameterType="com.ssafy.model.dto.domain.Board">
+		parameterType="com.aibracadabra.model.dto.domain.Board">
 		UPDATE boards
 		SET title = #{title},
 		content = #{content},

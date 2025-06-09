@@ -10,11 +10,11 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.ssafy</groupId>
+    <groupId>com.aibracadabra</groupId>
     <artifactId>trip</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>SSAFY_TRIP</name>
-    <description>Demo project for Spring Boot</description>
+    <name>AIbracadabra</name>
+    <description>AIbracadabra</description>
 
     <properties>
         <java.version>17</java.version>

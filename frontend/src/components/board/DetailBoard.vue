@@ -37,7 +37,7 @@ type Comment = {
 const boardData = reactive<BoardDetail>({} as BoardDetail)
 
 onMounted(async () => {
-  const detailApiUrl = `api/v1${route.path}`
+  const detailApiUrl = `/api/v1${route.path}`
   const response = await axios.get<CommonResponse<BoardDetail>>(detailApiUrl)
   Object.assign(boardData, response.data.data)
 })
@@ -60,7 +60,7 @@ const onDeleteComment = async (comment: Comment) => {
 }
 
 const onRowClick = () => {
-  router.push({ 
+  router.push({
     path: `/${boardData.boardType}/${boardData.bno}/edit`
   })
 }
@@ -131,8 +131,8 @@ async function saveEdit(comment: Comment) {
       <v-col cols="12" lg="10" xl="8">
         <!-- 상단 네비게이션 -->
         <div class="breadcrumb-nav mb-4">
-          <v-btn 
-            variant="text" 
+          <v-btn
+            variant="text"
             prepend-icon="mdi-arrow-left"
             class="back-btn"
             @click="router.push('/board')"
@@ -145,7 +145,7 @@ async function saveEdit(comment: Comment) {
         <v-card class="main-post-card" elevation="2">
           <!-- 타입 컬러 바 -->
           <div class="type-indicator" :class="boardData.boardType"></div>
-          
+
           <!-- 헤더 섹션 -->
           <v-card-text class="post-header">
             <div class="title-section">
@@ -164,9 +164,9 @@ async function saveEdit(comment: Comment) {
                 </div>
               </div>
             </div>
-            
+
             <!-- 액션 버튼들 -->
-            <div 
+            <div
               class="action-buttons"
               v-if="auth.userInfo?.role==='admin'||auth.isLoggined && auth.userInfo.name === boardData.author"
             >
@@ -245,7 +245,7 @@ async function saveEdit(comment: Comment) {
                       <span class="comment-author">{{ comment.author }}</span>
                       <span class="comment-date">{{ comment.createdDate }}</span>
                     </div>
-                    
+
                     <!-- 댓글 액션 버튼 -->
                     <div
                       class="comment-actions"
@@ -314,7 +314,7 @@ async function saveEdit(comment: Comment) {
             >
               댓글 작성하기
             </v-btn>
-            
+
             <div v-if="showCommentForm" class="comment-form-wrapper">
               <RegistComment
                 :bno="boardData.bno"
@@ -645,23 +645,23 @@ async function saveEdit(comment: Comment) {
   .board-detail-modern {
     background: #121212;
   }
-  
+
   .main-post-card {
     background: #1e1e1e;
   }
-  
+
   .post-title,
   .author-name,
   .comments-title,
   .comment-author {
     color: #ffffff;
   }
-  
+
   .content-body,
   .comment-body {
     color: #e0e0e0;
   }
-  
+
   .meta-details,
   .comment-date {
     color: #9e9e9e;

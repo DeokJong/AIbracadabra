@@ -2,33 +2,33 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ssafy.model.dao.PlanDao">
+<mapper namespace="com.aibracadabra.model.dao.PlanDao">
 
-    <resultMap id="PlanResultMap" type="com.ssafy.model.dto.domain.Plan">
+    <resultMap id="PlanResultMap" type="com.aibracadabra.model.dto.domain.Plan">
         <id     property="pno"      column="pno"/>
         <result property="title"    column="title"/>
         <result property="mno"      column="mno"/>
         <result property="schedules"
                 column="schedules"
                 jdbcType="OTHER"
-                typeHandler="com.ssafy.model.dao.typehandler.ListJsonTypeHandler"/>
+                typeHandler="com.aibracadabra.model.dao.typehandler.ListJsonTypeHandler"/>
     </resultMap>
 
-    <insert id="insert" parameterType="com.ssafy.model.dto.domain.Plan"
+    <insert id="insert" parameterType="com.aibracadabra.model.dto.domain.Plan"
             useGeneratedKeys="true" keyProperty="pno">
         INSERT INTO plan (title, mno, schedules)
         VALUES (
                    #{title},
                    #{mno},
-                   #{schedules, typeHandler=com.ssafy.model.dao.typehandler.ListJsonTypeHandler}
+                   #{schedules, typeHandler=com.aibracadabra.model.dao.typehandler.ListJsonTypeHandler}
                )
     </insert>
 
-    <update id="update" parameterType="com.ssafy.model.dto.domain.Plan">
+    <update id="update" parameterType="com.aibracadabra.model.dto.domain.Plan">
         UPDATE plan
         SET title     = #{title},
             mno       = #{mno},
-            schedules = #{schedules, typeHandler=com.ssafy.model.dao.typehandler.ListJsonTypeHandler}
+            schedules = #{schedules, typeHandler=com.aibracadabra.model.dao.typehandler.ListJsonTypeHandler}
         WHERE pno = #{pno}
     </update>
 
