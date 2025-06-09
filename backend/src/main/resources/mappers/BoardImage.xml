@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ssafy.model.dao.BoardImageDao">
+<mapper namespace="com.aibracadabra.model.dao.BoardImageDao">
 
-  <resultMap id="boardImageMap" type="com.ssafy.model.dto.domain.BoardImage">
+  <resultMap id="boardImageMap" type="com.aibracadabra.model.dto.domain.BoardImage">
     <id     column="img_no"       property="imgNo"       jdbcType="BIGINT"/>
     <result column="bno"          property="bno"         jdbcType="INTEGER"/>
     <result column="filename"     property="filename"    jdbcType="VARCHAR"/>
@@ -14,7 +14,7 @@
   </resultMap>
 
   <insert id="insertImage"
-          parameterType="com.ssafy.model.dto.domain.BoardImage"
+          parameterType="com.aibracadabra.model.dto.domain.BoardImage"
           useGeneratedKeys="true" keyProperty="imgNo" keyColumn="img_no">
     INSERT INTO board_images
       (bno, filename, content_type, size, storage_path)

@@ -33,7 +33,7 @@ axios.defaults.withCredentials = true
 
 
 useKakao(
-  '43daa869365f2687cdd8f64f2a4c8ec4',
+  import.meta.env.VITE_KAKAO_MAP_API,
   ['services']
 )
 

@@ -2,11 +2,11 @@
 <!DOCTYPE mapper 
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ssafy.model.dao.MemberDao">
+<mapper namespace="com.aibracadabra.model.dao.MemberDao">
 
 	<resultMap
 		id="memberMap"
-		type="com.ssafy.model.dto.domain.Member">
+		type="com.aibracadabra.model.dto.domain.Member">
 		<id
 			property="mno"
 			column="mno" />
@@ -26,7 +26,7 @@
 
 	<insert
 		id="add"
-		parameterType="com.ssafy.model.dto.domain.Member"
+		parameterType="com.aibracadabra.model.dto.domain.Member"
 		useGeneratedKeys="true"
 		keyProperty="mno"
 		keyColumn="mno">
@@ -65,7 +65,7 @@
 
 	<update
 		id="set"
-		parameterType="com.ssafy.model.dto.domain.Member">
+		parameterType="com.aibracadabra.model.dto.domain.Member">
 		UPDATE members
 		<set>
 			<if test="name != null">

@@ -3,7 +3,7 @@
     <!-- 헤더 -->
     <div class="list-header">
       <h2 class="page-title">게시판</h2>
-      <button 
+      <button
         class="write-btn"
         @click="goWrite"
       >
@@ -20,8 +20,8 @@
 
     <!-- 게시글 그리드 -->
     <div v-else-if="table.items.length > 0" class="board-grid">
-      <BoardItem 
-        v-for="item in table.items" 
+      <BoardItem
+        v-for="item in table.items"
         :key="item.bno"
         :item="item"
       />
@@ -38,8 +38,8 @@
 
     <!-- 페이지네이션 -->
     <div v-if="table.pages > 1" class="pagination">
-      <button 
-        v-for="page in paginationRange" 
+      <button
+        v-for="page in paginationRange"
         :key="page"
         :class="['page-btn', { active: page === table.page }]"
         @click="fetchData(page)"
@@ -75,7 +75,7 @@ const paginationRange = computed(() => {
   const range = []
   const start = Math.max(1, table.page - 2)
   const end = Math.min(table.pages, table.page + 2)
-  
+
   for (let i = start; i <= end; i++) {
     range.push(i)
   }
@@ -222,18 +222,18 @@ onMounted(() => fetchData(table.page))
   .board-list-container {
     padding: 1rem 0.5rem;
   }
-  
+
   .list-header {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
   }
-  
+
   .board-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .page-title {
     font-size: 1.5rem;
   }

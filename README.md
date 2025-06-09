@@ -1,6 +1,8 @@
-# 🌍 SSAFY Enjoy Trip
+# 🌍 AIbracadabra
 
 **Spring Boot & Vue.js 기반 채팅 여행 계획 플랫폼**
+
+> 삼성 청년 AI·SW 아카데미(SSAFY) 13기 1학기 관통프로젝트
 
 ---
 
@@ -17,13 +19,15 @@
 5. [📁 폴더 구조 (Project Structure)](#project-structure)
 6. [🌐 환경 설정 (Configuration)](#configuration)
 7. [📊 다이어그램 (Diagrams)](#diagrams)
-8. [🔖 커밋 컨벤션 (Commit Convention)](#commit-convention)
+8. [🖼️ 화면 설계 (UI)](#ui)
+9. [🔖 커밋 컨벤션 (Commit Convention)](#commit-convention)
 
 ---
 
 <h2 id="introduction">✈️ 소개 (Introduction)</h2>
 
-SSAFY Enjoy Trip은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend로 개발된 채팅형 여행 계획 플랫폼입니다.
+AIbracadabra은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend로 개발된 여행 정보 제공 및 OpenAI 기반 챗봇을 통한 여행 계획 추천 서비스를 제공하는 플랫폼입니다.
+
 주요 기능은 다음과 같습니다:
 
 * 기본 커뮤니티: 게시판, Q\&A, 공지사항 관리
@@ -84,7 +88,7 @@ SSAFY Enjoy Trip은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend
 
 ```bash
 # 저장소 클론
-git clone https://lab.ssafy.com/novelss5573/EnjoyTrip_FINAL_PJT.git
+git clone https://github.com/DeokJong/AIbracadabra.git
 cd EnjoyTrip_FINAL_PJT
 
 # Backend 빌드
@@ -193,7 +197,24 @@ spring.web-client.kakao-api-key=YOUR_KAKAO_API_KEY
 
 ![ERD](/docs/diagrams/ERD.png)
 
-> 설계 역량을 효과적으로 어필하기 위해, 프로젝트 자기소개서에 다이어그램을 포함하세요.
+
+<h2 id="ui"> 🖼️ 화면 설계 (UI)</h2>
+
+### 메인
+
+![Main Page](/docs/ui/index.png)
+
+### 로그인
+
+![Login Page](/docs/ui/login.png)
+
+### 게시판
+
+![Board Page](/docs/ui/board.png)
+
+### 여행 지도
+
+![Map Page](/docs/ui/map.png)
 
 <h2 id="commit-convention">🔖 커밋 컨벤션 (Commit Convention)</h2>
 

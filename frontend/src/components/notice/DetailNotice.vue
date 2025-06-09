@@ -39,7 +39,7 @@ const comments = ref<Comment[]>([])
 onMounted(async () => {
   const params = route.params as { bno: string }
   const bno = Number(params.bno)
-  const detailApiUrl = `api/v1/board/${bno}`
+  const detailApiUrl = `/api/v1/board/${bno}`
   const response = await axios.get<CommonResponse<BoardDetail>>(detailApiUrl)
   console.log(response.data.data)
   Object.assign(boardData, response.data.data)
@@ -66,7 +66,7 @@ const editingCommentId = ref<number | null>(null)
 const editingContent = ref<string>('')
 
 const onRowClick = () => {
-  router.push({ 
+  router.push({
     path: `/${boardData.boardType}/${boardData.bno}/edit`
   })
 }
@@ -135,8 +135,8 @@ async function saveEdit(comment: Comment) {
       <v-col cols="12" lg="10" xl="8">
         <!-- 상단 네비게이션 -->
         <div class="breadcrumb-nav mb-4">
-          <v-btn 
-            variant="text" 
+          <v-btn
+            variant="text"
             prepend-icon="mdi-arrow-left"
             class="back-btn"
             @click="router.push('/notice')"
@@ -149,7 +149,7 @@ async function saveEdit(comment: Comment) {
         <v-card class="main-notice-card" elevation="2">
           <!-- 타입 컬러 바 -->
           <div class="type-indicator notice"></div>
-          
+
           <!-- 헤더 섹션 -->
           <v-card-text class="notice-header">
             <div class="title-section">
@@ -172,9 +172,9 @@ async function saveEdit(comment: Comment) {
                 </div>
               </div>
             </div>
-            
+
             <!-- 액션 버튼들 (관리자만) -->
-            <div 
+            <div
               class="action-buttons"
               v-if="auth.userInfo?.role === 'admin'"
             >
@@ -241,7 +241,7 @@ async function saveEdit(comment: Comment) {
                       <span class="comment-author">{{ comment.author }}</span>
                       <span class="comment-date">{{ comment.createdDate }}</span>
                     </div>
-                    
+
                     <!-- 댓글 액션 버튼 -->
                     <div
                       class="comment-actions"
@@ -311,7 +311,7 @@ async function saveEdit(comment: Comment) {
             >
               댓글 작성하기
             </v-btn>
-            
+
             <div v-if="showCommentForm" class="comment-form-wrapper">
               <RegistComment
                 :bno="boardData.bno"
@@ -357,8 +357,8 @@ async function saveEdit(comment: Comment) {
   height: 5px;
   width: 100%;
 }
-.type-indicator.notice { 
-  background: linear-gradient(90deg, #2196f3, #1976d2, #0d47a1); 
+.type-indicator.notice {
+  background: linear-gradient(90deg, #2196f3, #1976d2, #0d47a1);
 }
 
 /* 공지사항 헤더 섹션 */
@@ -669,29 +669,29 @@ async function saveEdit(comment: Comment) {
   .notice-detail-modern {
     background: #121212;
   }
-  
+
   .main-notice-card,
   .comment-card {
     background: #1e1e1e;
   }
-  
+
   .notice-header {
     background: linear-gradient(135deg, #263238, #37474f);
   }
-  
+
   .notice-title,
   .author-name,
   .comments-title,
   .comment-author {
     color: #90caf9;
   }
-  
+
   .notice-text,
   .comment-body {
     color: #e0e0e0;
     background: #2a2a2a;
   }
-  
+
   .meta-details,
   .comment-date {
     color: #64b5f6;
