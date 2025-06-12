@@ -1,4 +1,4 @@
-# 🌍 AIbracadabra
+# AIbracadabra
 
 **Spring Boot & Vue.js 기반 채팅 여행 계획 플랫폼**
 
@@ -8,23 +8,23 @@
 
 ## 목차 (Table of Contents)
 
-1. [✈️ 소개 (Introduction)](#introduction)
-2. [⚙️ 기능 (Features)](#features)
-3. [🧰 기술 스택 (Tech Stack)](#tech-stack)
-4. [🚀 설치 및 실행 방법 (Installation & Usage)](#installation-and-usage)
+1. [소개 (Introduction)](#introduction)
+2. [기능 (Features)](#features)
+3. [기술 스택 (Tech Stack)](#tech-stack)
+4. [설치 및 실행 방법 (Installation & Usage)](#installation-and-usage)
 
-   * [📝 사전 요구사항 (Prerequisites)](#prerequisites)
-   * [🔧 설치 (Installation)](#installation)
-   * [▶️ 실행 (Running)](#running)
-5. [📁 폴더 구조 (Project Structure)](#project-structure)
-6. [🌐 환경 설정 (Configuration)](#configuration)
-7. [📊 다이어그램 (Diagrams)](#diagrams)
-8. [🖼️ 화면 설계 (UI)](#ui)
-9. [🔖 커밋 컨벤션 (Commit Convention)](#commit-convention)
+   * [사전 요구사항 (Prerequisites)](#prerequisites)
+   * [설치 (Installation)](#installation)
+   * [실행 (Running)](#running)
+5. [폴더 구조 (Project Structure)](#project-structure)
+6. [환경 설정 (Configuration)](#configuration)
+7. [다이어그램 (Diagrams)](#diagrams)
+8. [화면 설계 (UI)](#ui)
+9. [커밋 컨벤션 (Commit Convention)](#commit-convention)
 
 ---
 
-<h2 id="introduction">✈️ 소개 (Introduction)</h2>
+<h2 id="introduction">소개 (Introduction)</h2>
 
 AIbracadabra은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend로 개발된 여행 정보 제공 및 OpenAI 기반 챗봇을 통한 여행 계획 추천 서비스를 제공하는 플랫폼입니다.
 
@@ -37,7 +37,7 @@ AIbracadabra은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend로 
 * 날씨 정보: OpenWeatherMap API 연동
 * 채팅 여행 플래너: **Spring AI (OpenAI)** 기반 LLM을 활용한 대화형 일정 및 상권 추천
 
-<h2 id="features">⚙️ 기능 (Features)</h2>
+<h2 id="features">기능 (Features)</h2>
 
 | 구분        | 설명                                           |
 | --------- | -------------------------------------------- |
@@ -48,7 +48,7 @@ AIbracadabra은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend로 
 | 날씨 정보     | OpenWeatherMap API를 통한 실시간 날씨 조회             |
 | 채팅 여행 플래너 | Spring AI(OpenAI)와 Redis를 활용한 대화형 일정 및 상권 계획 |
 
-<h2 id="tech-stack">🧰 기술 스택 (Tech Stack)</h2>
+<h2 id="tech-stack">기술 스택 (Tech Stack)</h2>
 
 ### Backend
 
@@ -74,9 +74,9 @@ AIbracadabra은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend로 
 * **vue3-kakao-maps**: Kakao Map 연동
 * **ESLint & Prettier**: 코드 스타일 유지
 
-<h2 id="installation-and-usage">🚀 설치 및 실행 방법 (Installation & Usage)</h2>
+<h2 id="installation-and-usage">설치 및 실행 방법 (Installation & Usage)</h2>
 
-<h3 id="prerequisites">📝 사전 요구사항 (Prerequisites)</h3>
+<h3 id="prerequisites">사전 요구사항 (Prerequisites)</h3>
 
 * **Java 17** 이상
 * **Maven Wrapper**(`./mvnw`)
@@ -84,7 +84,7 @@ AIbracadabra은 **Spring Boot** 기반 Backend와 **Vue.js** 기반 Frontend로 
 * **Node.js** ≥ 16
 * **npm** ≥ 8 또는 **yarn**
 
-<h3 id="installation">🔧 설치 (Installation)</h3>
+<h3 id="installation">설치 (Installation)</h3>
 
 ```bash
 # 저장소 클론
@@ -107,7 +107,7 @@ npm install  # 또는 yarn install
 docker-compose up --build
 ```
 
-<h3 id="running">▶️ 실행 (Running)</h3>
+<h3 id="running">실행 (Running)</h3>
 
 ```bash
 # Backend (포트 8080)
@@ -119,7 +119,7 @@ cd ../frontend
 npm run dev
 ```
 
-<h2 id="project-structure">📁 폴더 구조 (Project Structure)</h2>
+<h2 id="project-structure">폴더 구조 (Project Structure)</h2>
 
 ```
 .
@@ -146,7 +146,7 @@ npm run dev
         └── ERD.png
 ```
 
-<h2 id="configuration">🌐 환경 설정 (Configuration)</h2>
+<h2 id="configuration">환경 설정 (Configuration)</h2>
 
 Spring Boot 설정 파일:
 
@@ -173,9 +173,7 @@ weather.openweathermap.api-key=YOUR_API_KEY
 spring.web-client.kakao-api-key=YOUR_KAKAO_API_KEY
 ```
 
-> 설정 변경 시 애플리케이션을 재시작해야 적용됩니다.
-
-<h2 id="diagrams">📊 다이어그램 (Diagrams)</h2>
+<h2 id="diagrams">다이어그램 (Diagrams)</h2>
 
 ### Controller
 
@@ -198,7 +196,7 @@ spring.web-client.kakao-api-key=YOUR_KAKAO_API_KEY
 ![ERD](/docs/diagrams/ERD.png)
 
 
-<h2 id="ui"> 🖼️ 화면 설계 (UI)</h2>
+<h2 id="ui">화면 설계 (UI)</h2>
 
 ### 메인
 
@@ -216,7 +214,7 @@ spring.web-client.kakao-api-key=YOUR_KAKAO_API_KEY
 
 ![Map Page](/docs/ui/map.png)
 
-<h2 id="commit-convention">🔖 커밋 컨벤션 (Commit Convention)</h2>
+<h2 id="commit-convention">커밋 컨벤션 (Commit Convention)</h2>
 
 본 프로젝트는 **Git Flow** 전략을 기반으로 하며, 다음과 같은 커밋 메시지 타입을 사용합니다:
 
